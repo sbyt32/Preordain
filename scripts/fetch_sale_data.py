@@ -64,9 +64,9 @@ def fetch_tcg_prices():
                     ship_price      = sale_data['shippingPrice']
                     try:
                         with conn.transaction() as tx2:
-                            log.debug(f'Attempting to insert into table sample with data | order date: {order_date}, cond: {condition}, variant: {variant}, qty: {qty}, sale $: {buy_price}, ship $: {ship_price}')
+                            log.debug(f'Attempting to insert into table card_data_tcg with data | order date: {order_date}, cond: {condition}, variant: {variant}, qty: {qty}, sale $: {buy_price}, ship $: {ship_price}')
                             tx1.connection.execute("""
-                            INSERT INTO sample
+                            INSERT INTO card_data_tcg
                             VALUES (%s, %s,%s, %s,%s, %s,%s, %s)
                             """, (  order_id,
                                     card_id,

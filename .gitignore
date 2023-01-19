@@ -1,6 +1,3 @@
-# This should just be a general folder for all pulled cards
-logs/*/*.log
-
 # ? What do these do?
 */*/__pycache__
 variables.py
@@ -13,7 +10,7 @@ psql.md
 sample.py
 
 # TODO: Configure the test folder
-tests
+# tests
 
 # Old files, can be reworked
 .old
