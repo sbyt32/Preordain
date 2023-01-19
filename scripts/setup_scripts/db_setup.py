@@ -7,7 +7,7 @@ from scripts import config_reader
 
 log = logging.getLogger()
 
-def _set_up_db():
+def set_up_db():
     """
     Creates the database, etc. Info below.
     

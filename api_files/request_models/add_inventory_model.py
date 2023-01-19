@@ -1,10 +1,10 @@
-from typing import Union
+from typing import Optional
 from pydantic import BaseModel
 
 class AddInventory(BaseModel):
-    tcg_id      : Union[str, None] = None
-    set         : Union[str, None] = None
-    col_num     : Union[str, None] = None
+    tcg_id      : Optional[str]
+    set         : Optional[str]
+    col_num     : Optional[str]
     qty         : int
     buy_price   : int
     condition   : str

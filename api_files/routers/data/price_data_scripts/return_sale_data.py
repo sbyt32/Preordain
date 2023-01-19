@@ -49,7 +49,7 @@ async def get_tcg_sales(tcg_id:str, response: Response):
                 card_data_tcg.tcg_id = %s
             ORDER BY
                 order_date desc
-            LIMIT '5'
+            LIMIT 5
         """, (tcg_id,))
         
         recieved_sale_data = cur.fetchall()

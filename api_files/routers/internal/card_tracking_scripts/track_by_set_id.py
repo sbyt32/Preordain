@@ -25,24 +25,20 @@ async def add_card_to_track(set: str, coll_num:str):
         log.error(f"KeyError:{e}")
 
     else:
-        if not resp['total_cards'] == 1:
+        if resp['total_cards'] != 1:
             error_msg = f"Recieved list with more than 1. Set:{set}, ID:{coll_num}"
             log.error(error_msg)
             return error_msg
 
         resp = resp['data'][0]
         conn, cur = to_db.connect_db()
-
         cur.execute("SELECT * from card_info.info where id = %s AND set= %s", (resp['collector_number'], resp['set']))
-        if len(cur.fetchall()) == 0:
-                # tcg_etched_id = ''
-                try:
-                    resp['tcgplayer_etched_id']
-                except KeyError:
-                    tcg_etched_id = None
-                else:
+        if not cur.fetchall(): # * Run this section if no results (empty lists are False)                    
+                if 'tcgplayer_etched_id' in resp:
                     tcg_etched_id = resp['tcgplayer_etched_id']
-                    
+                else:
+                    tcg_etched_id = None
+
                 add_info_to_postgres = """
                     INSERT INTO card_info.info (name, set, id, uri, tcg_id, tcg_id_etch, new_search)
 

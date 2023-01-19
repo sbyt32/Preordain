@@ -21,4 +21,4 @@ async def remove_card_groups_with_set_id(card_group: CardGroups):
     # * If the card exists and the group is associated with the card. 
     if fetched_card and card_group.group in fetched_card['group']:
         cur.execute("UPDATE card_info.info SET groups = array_remove(card_info.info.groups, %s) WHERE id = %s and set = %s", (card_group.group, card_group.id,card_group.set))
-        pass
+        

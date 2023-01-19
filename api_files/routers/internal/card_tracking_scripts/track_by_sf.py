@@ -30,14 +30,11 @@ async def add_card_to_track_with_sf_id(url: str):
 
         cur.execute("SELECT * from card_info.info where id = %s AND set= %s", (resp['id'], resp['set']))
         if len(cur.fetchall()) == 0:
-                # tcg_etched_id = ''
-                try:
-                    resp['tcgplayer_etched_id']
-                except KeyError:
-                    print('hi')
-                    tcg_etched_id = None
-                else:
+            
+                if 'tcgplayer_etched_id' in resp:
                     tcg_etched_id = resp['tcgplayer_etched_id']
+                else:
+                    tcg_etched_id = None
                     
                 add_info_to_postgres = """
                     INSERT INTO card_info.info (name, set, id, uri, tcg_id, tcg_id_etch)

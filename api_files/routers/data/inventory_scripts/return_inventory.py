@@ -1,6 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Response, status
-from api_files.dependencies import select_access
-from api_files.response_models.card_info import CardInfo
+from fastapi import APIRouter
 from psycopg.rows import dict_row
 import scripts.connect.to_database as to_db
 

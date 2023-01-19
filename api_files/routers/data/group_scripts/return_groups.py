@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from typing import Union
+from typing import Optional
 from api_files.response_class.pretty import PrettyJSONResp
 import scripts.connect.to_database as to_db
 from psycopg.rows import dict_row
@@ -8,7 +8,7 @@ router = APIRouter()
 
 # Return all group names in current use
 @router.get("/", status_code=200, response_class=PrettyJSONResp)
-async def get_group_names(use: Union[bool, None] = None):
+async def get_group_names(use: Optional[bool]):
     if use:
         query = """
 

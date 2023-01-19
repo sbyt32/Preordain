@@ -1,20 +1,22 @@
 # This should just be a general folder for all pulled cards
-*/__pycache__
-logs/*.log
 logs/*/*.log
 
-data/*.ndjson
-data/tracking
+# ? What do these do?
 */*/__pycache__
 variables.py
-config.ini
-data/tracking_old
-sql_joins.jpg
-psql.md
 __pycache__
-config.ini
-.old
-sample.py
-config_files/
-tests
+
+
+# Local Notes & Test Files
 psql_notes.md
+psql.md
+sample.py
+
+# TODO: Configure the test folder
+tests
+
+# Old files, can be reworked
+.old
+
+# Configuration folder
+config_files/

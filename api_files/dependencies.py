@@ -1,10 +1,10 @@
 # from fastapi import Response, status
 from fastapi import Header
 from api_files.exceptions import TokenError
-from scripts.config_reader import config_reader
+from scripts.config_reader import read_config
 import logging
 log = logging.getLogger()
-config = config_reader("CONNECT", "tokens")
+config = read_config("CONNECT", "tokens")
 
 #  = Header() makes it so it has to pass through a header rather than a string
 

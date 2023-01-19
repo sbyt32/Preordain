@@ -19,7 +19,7 @@ async def add_card_groups_with_set_id(card_group: CardGroups):
 
     fetched_card = cur.fetchone()
     # * If the card doesn't already have a group, it'll return Null/None.
-    if fetched_card['groups'] == None:
+    if fetched_card['groups'] is None:
         fetched_card['groups'] = []
 
     # * If the card exists and the group is not associated with the card.

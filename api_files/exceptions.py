@@ -5,9 +5,18 @@ app = FastAPI()
 log = logging.getLogger()
 
 # Accessing root
+
+# TODO: make an exception that mimics the Scryfall API response for the root error 
+"""
+{
+  "object": "error",
+  "code": "bad_request",
+  "status": 400,
+  "details": "This is the root of the Scryfall API and no data is returned at this path. For more information about the methods and objects this API publishes, please see https://scryfall.com/docs/api"
+}
+"""
 class RootException(Exception):
-    def __init__(self):
-        pass
+    pass
 
 @app.exception_handler(RootException)
 async def root_exception_handler(request: Request, exc: RootException): # Yes, 'request: Request' is required.
@@ -40,7 +49,6 @@ async def token_exception_handler(request: Request, exc: TokenError):
 class BadResponseException(Exception):
     def __init__(self, error):
         self.error = error
-        pass
 
 @app.exception_handler(BadResponseException)
 async def bad_response_exception_handler(request: Request, exc: BadResponseException):

@@ -108,7 +108,7 @@ def fetch_tcg_prices():
                         # We should merge because of an override like adding a new card after initial fetch (new_search under card_info.info), 
                         # If there was no previous checks performed (cfg file check), 
                         # If the data point was added after the initial fetch (cfg file check against order date).
-                    if duplicate_merge == True or cfg["tcg_sales"] == 'None' or isoparse(order_date) > isoparse(cfg["tcg_sales"]):
+                    if duplicate_merge or cfg["tcg_sales"] == 'None' or isoparse(order_date) > isoparse(cfg["tcg_sales"]):
                         conn.rollback()
                         log.warning(f"Duplicate data for card {card_name}, approx. # {offset_value} - {offset_value + 25}, merging ID {order_id}")
                         cur.execute("""
