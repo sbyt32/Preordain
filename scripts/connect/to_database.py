@@ -1,6 +1,6 @@
 import psycopg
 import logging
-from scripts.config_reader import config_reader
+from scripts.config_reader import read_config
 log = logging.getLogger()
 
 def connect_db(**kwargs):
@@ -11,7 +11,7 @@ def connect_db(**kwargs):
     
     \n[More info about psycopg](https://www.psycopg.org/psycopg3/docs/api/connections.html#psycopg.Connection)
     """
-    db_info = config_reader("CONNECT", 'database')
+    db_info = read_config("CONNECT", 'database')
     log.debug(f"Connecting to database: {db_info['dbname']}")
     conn_info = psycopg.conninfo.make_conninfo(**db_info)
     
