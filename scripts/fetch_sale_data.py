@@ -1,4 +1,3 @@
-import configparser
 import time
 import hashlib
 import json
@@ -8,10 +7,28 @@ import datetime
 import scripts.connect.to_requests_wrapper as to_requests_wrapper
 import scripts.config_reader as cfg_reader
 import scripts.connect.to_database as to_db
+from scripts.update_config import update_config
 from dateutil.parser import isoparse
 log = logging.getLogger()
 
+def _get_next_data(card_id:str, offset_value:int):
+    url = f"https://mpapi.tcgplayer.com/v2/product/{card_id}/latestsales"
+    # Check the notes for the structure of the Payload.
+    payload = {
+        "listingType":"All",
+        "languages": [1], # We really only support about English at the moment, opt-in language support maybe later?
+        "offset":offset_value,
+        "limit":25
+        }
+    headers = {
+        "content-type": "application/json",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36"
+        }
+
+    return to_requests_wrapper.send_response("POST", url, json=payload, headers=headers)
+
 def fetch_tcg_prices():
+    # Define some stuff we will use later
     stop_future_looping = "UPDATE card_info.info SET new_search = false WHERE tcg_id = %s"
 
     start = time.perf_counter() # ? Used for timing the length to parse everything
@@ -25,25 +42,10 @@ def fetch_tcg_prices():
         card_id:str = card_data[0]
         card_name:str = card_data[1]
         duplicate_merge:bool = card_data[2]
-        print(duplicate_merge)
         offset_value = 0
         increment = 0
 
-        url = f"https://mpapi.tcgplayer.com/v2/product/{card_id}/latestsales"
-        # ? Is there a much easier way to do more than 25? Yes, but it's a bit tougher.
-        payload = {
-            "listingType":"All",
-            "languages": [1], # We really only support about English at the moment, opt-in language support maybe later?
-            "offset":offset_value,
-            "limit":25
-            }
-        headers = {
-            "content-type": "application/json",
-            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36"
-            }
-
-        resp = to_requests_wrapper.send_response("POST", url, json=payload, headers=headers)            
-
+        resp = _get_next_data(card_id,offset_value)
         try:
             if resp['resultCount'] > 0:
                 keep_adding_cards = True
@@ -89,11 +91,7 @@ def fetch_tcg_prices():
                                 SET qty = card_data_tcg.qty + %s
                                 WHERE order_id = %s
 
-                            """,
-                                (
-                                    qty,
-                                    order_id
-                                )
+                            """,(qty, order_id)
                             )
                         else:
                             log.info(f"Grabbed {increment} new data points from {card_name}.")
@@ -106,19 +104,12 @@ def fetch_tcg_prices():
                 if resp['nextPage'] == "Yes": # ? Originally, it also contained  '...or keep_adding_cards == False:' Not sure if needed
 
                     offset_value += 25
-                    payload['offset'] = offset_value
-
-                    resp = to_requests_wrapper.send_response("POST", url, json=payload, headers=headers)
+                    resp = _get_next_data(card_id, offset_value)
                     time.sleep(.5)
                 else:
                     tx1.connection.execute(stop_future_looping, (card_id,))
                     keep_adding_cards = False
 
     # * After parsing, update the records to show the data.
-    config = configparser.ConfigParser()
-    config.read('config_files/database.ini')
-    config['UPDATES']['tcg_sales'] = str(datetime.datetime.now(datetime.timezone.utc))
-    with open('config_files/database.ini', 'w') as config_update:
-        config.write(config_update)
-
+    update_config('database', 'UPDATES', 'tcg_sales', str(datetime.datetime.now(datetime.timezone.utc)))
     log.debug(f"Elapsed time: {time.perf_counter() - start}") # ? Sends length to parse to debug

@@ -1,10 +1,11 @@
 from scripts.connect import to_database
 from scripts.connect import to_requests_wrapper as to_requests
+from scripts.update_config import update_config
 import arrow
+import datetime
 import logging
 from time import sleep
 log = logging.getLogger()
-
 
 def query_price():
     conn, cur = to_database.connect_db()
@@ -26,7 +27,7 @@ def query_price():
         insert_values, (
             r['set'],
             r['collector_number'],
-            arrow.utcnow().format('YYYY-MM-DD'),
+            arrow.utcnow().format('YYYY-MM-DD'), # TODO: Convert this and exisiting data into ISO8601 w/ UTC TZ
             r['prices']['usd'],
             r['prices']['usd_foil'],
             r['prices']['eur'],
@@ -36,3 +37,4 @@ def query_price():
 
     conn.commit()
     log.debug(f"Parsed all {len(records)} cards")
+    update_config('database', 'UPDATES', 'price_fetch', str(datetime.datetime.now(datetime.timezone.utc)))

@@ -3,7 +3,8 @@ import scripts.connect.to_database as to_database
 import scripts.connect.to_requests_wrapper as to_requests
 import logging
 from psycopg import sql
-from scripts import config_reader
+from scripts.config_reader import read_config
+from scripts.update_config import update_config
 
 log = logging.getLogger()
 
@@ -23,7 +24,7 @@ def set_up_db():
     | card_info.groups | Table    | card_info schema, does nothing at the moment                             |
 
     """
-    cfg = config_reader.config_reader("CONNECT", "database")
+    cfg = read_config("CONNECT", "database")
     
     # conn, cur = to_database.connect_db()
     conn = psycopg.connect(f"host={cfg['host']} user={cfg['user']} password={cfg['password']}")
@@ -189,4 +190,4 @@ def set_up_db():
     conn.commit()
     conn.close()
 
-    return True
+    update_config('config', 'FILE_DATA','db_exists','true')

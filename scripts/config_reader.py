@@ -23,7 +23,8 @@ def read_config(section:str, cfg:str):
               - password `str`
               - dbname `str`
       - UPDATES
-              - tcg_sales `str`
+              - tcg_sales `iso8601`
+              - price_fetch `iso8601`
     - tokens.ini
       - CONNECT
               - sec_token `str`

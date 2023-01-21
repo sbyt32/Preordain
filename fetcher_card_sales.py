@@ -1,4 +1,5 @@
 # This script grabs the price of recent sale data.
+# ! TO BE PHASED OUT, SEE fetch_card_data.py
 import arrow
 from scripts.fetch_sale_data import fetch_tcg_prices
 from scripts.config_reader import read_config
