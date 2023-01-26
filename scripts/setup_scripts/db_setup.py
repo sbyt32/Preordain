@@ -12,24 +12,22 @@ def set_up_db():
     """
     Creates the database, etc. Info below.
     
-
     | Name             | Type     | Desc                                                                     |
     |------------------|----------|--------------------------------------------------------------------------|
     | {database name}  | Database | The name of your database                                                |
     | card_data        | Table    | public schema, holds card price data. Fetched daily via Scryfall         |
     | card_data_tcg    | Table    | public schema, grabs recent sales from TCGPlayer. Fetched weekly         |
     | card_info        | Schema   | A schema to separate the price data and the information that supports it |
-    | card_info.info   | Table    | card_info schema, holds identifiying information formation for cards     |
-    | card_info.sets   | Table    | card_info schema, holds the names of sets and information about them     |
-    | card_info.groups | Table    | card_info schema, does nothing at the moment                             |
-
+    | card_info.info   | Table    | card_info table, holds identifiying information formation for cards      |
+    | card_info.sets   | Table    | card_info table, holds the names of sets and information about them      |
+    | card_info.groups | Table    | card_info table, does nothing at the moment                              |
+    
     """
     cfg = read_config("CONNECT", "database")
     
-    # conn, cur = to_database.connect_db()
     conn = psycopg.connect(f"host={cfg['host']} user={cfg['user']} password={cfg['password']}")
     cur = conn.cursor()
-    # Create database, if not existing.
+    # Create database
     conn.autocommit = True
 
     try:

@@ -1,4 +1,3 @@
-# from fastapi import Response, status
 from fastapi import Header
 from api_files.exceptions import TokenError
 from scripts.config_reader import read_config

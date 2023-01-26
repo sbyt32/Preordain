@@ -1,4 +1,3 @@
-
 # Build-your-own-query, TCG Edition
 ## Payload
 ```json

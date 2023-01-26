@@ -28,6 +28,7 @@ def main():
     data_stuff = dict(zip(date_to_compare,[PRICE_CHECK,SALE_CHECK]))
 
     for file, date_stuff in data_stuff.items(): 
+        # ! THIS WILL NOT FUNCTION IF THE DATE IS A BOOL OR A NON ISO8601-FORMAT DATE!
         if abs(isoparse(date_to_compare[file]) - datetime.datetime.now(datetime.timezone.utc)) >= date_stuff:
             
             if file == 'tcg_sales':

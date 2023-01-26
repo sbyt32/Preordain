@@ -1,10 +1,9 @@
 import logging
-from fastapi import Request, FastAPI, HTTPException
+from fastapi import Request, FastAPI
 from fastapi.responses import JSONResponse
 app = FastAPI()
 log = logging.getLogger()
 
-# Accessing root
 
 # TODO: make an exception that mimics the Scryfall API response for the root error 
 """
@@ -15,6 +14,7 @@ log = logging.getLogger()
   "details": "This is the root of the Scryfall API and no data is returned at this path. For more information about the methods and objects this API publishes, please see https://scryfall.com/docs/api"
 }
 """
+# Accessing root
 # class RootException(Exception):
 #     pass
 

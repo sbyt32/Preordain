@@ -1,6 +1,6 @@
 import configparser
 import logging
-log = logging.getLogger()
+log = logging.getLogger("config_reader")
 
 def read_config(section:str, cfg:str):
     """A way to read and parse the different config files.

@@ -1,8 +1,6 @@
 # TODO: Figure out how to correctly write tests
 from starlette.testclient import TestClient
 from api import app
-# import api_files.exceptions as exceptions
-# import pytest
 class TestConnections:
 
     def test_connect(self):
