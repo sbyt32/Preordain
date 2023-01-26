@@ -13,9 +13,12 @@ This is a compiled list of API functions, how to use them, and expected response
     - [`/card/search/{set}/{col_num}`](#cardsearchsetcol_num)
       - [Responses](#responses-3)
   - [Manage Your Inventory](#manage-your-inventory)
-  - [Fetch Card Prices](#fetch-card-prices)
-  - [Card Group](#card-group)
-  - [Manage Tracked Cards](#manage-tracked-cards)
+    - [`/inventory/`](#inventory)
+      - [Responses](#responses-4)
+    - [`/inventory/add`](#inventoryadd)
+      - [Responses](#responses-5)
+    - [`/inventory/delete`](#inventorydelete)
+      - [Responses](#responses-6)
 
 ## Test Connection
 
@@ -48,7 +51,7 @@ Want to get some info about some cards? This is where you get them!
 ### `/card/search`
 - Method: GET
 - Parameters: `access`
-- Example URL: `localhost:8000/card/search`
+- Example URL: `localhost:8000/card/search?access={access_token}`
 - Access Tokens: `access`
 Returns all the cards that you are tracking, including any groups that card belongs to. This method can be extremely verbose and likely not what you want to be using if you are tracking a large amount of cards.
 
@@ -83,7 +86,7 @@ Returns all the cards that you are tracking, including any groups that card belo
 ### `/card/search/{group}`
 - Method: GET
 - Parameters: `access`, `group`
-- Example URL: `localhost:8000/card/search/dnt`
+- Example URL: `localhost:8000/card/search/dnt?access={access_token}`
 - Access Tokens: `access`
 Care only about a certain group of cards? If you know what the group name of that card is, you can search for those cards here! This will also return the most recent price of those cards, if applicable.
 
@@ -123,7 +126,7 @@ Care only about a certain group of cards? If you know what the group name of tha
 ### `/card/search/{set}/{col_num}`
 - Method: GET
 - Parameters: `access`, `set`, `col_number`
-- Example URL: `localhost:8000/card/search/vow/38`
+- Example URL: `localhost:8000/card/search/vow/38?access={access_token}`
 - Access Tokens: `access`
 If you know what exact card you are looking for, you can recieve that cards information directly! You just need to use the three-letter set code (set) and the collector number (col_num) to get the data. Currently returns internal data.
 #### Responses
@@ -148,30 +151,122 @@ If you know what exact card you are looking for, you can recieve that cards info
 ```
 
 ## Manage Your Inventory
-## Fetch Card Prices
-## Card Group
-## Manage Tracked Cards
+### `/inventory/`
+- Method: GET
+- Parameters: `access`
+- Example URL: `localhost:8000/inventory?access={access_token}`
+- Access Tokens: `access`
+Did you know we can also operate as an inventory tracker? If you need to monitor your inventory, here you go! **THIS ONLY WORKS IF YOU ARE ALSO TRACKING THE CARD**
+#### Responses
+`status:200` Normal operations; Return a card that is in inventory
+```json
+[
+  {
+    "Name": "Thalia, Guardian of Thraben",
+    "Set": "Innistrad: Crimson Vow",
+    "Quantity": 2,
+    "Condition": "NM",
+    "Variation": "Normal",
+    "Avg. Cost": 2
+  }
+]
+```
+`status:200` Normal operations; When you have nothing in inventory *OR* you have something in inventory, but are not tracking it.
+```json
+[]
+```
+
+### `/inventory/add`
+- Method: POST
+- Parameters: `write_access`
+- Example URL: `localhost:8000/inventory/add`
+- Access Tokens: `write_access`
+- **Requires**: .JSON Body
+  ```json
+  {
+    "tcg_id": "string",
+    "set": "string",
+    "col_num": "string",
+    "qty": 0,
+    "buy_price": 0,
+    "condition": "string",
+    "card_variant": "string"
+  }  
+  ```
+
+
+Do you need to add cards to your inventory? We can do that! You need either the tcgplayer id *or* the three-letter set code and collector number.
+
+The following are valid **Conditions**:
+- 'NM',
+- 'LP',
+- 'MP',
+- 'HP',
+- 'DMG',
+- 'SEAL'
+
+
+The following are valid **Card Variants**:
+-  'Normal',
+-  'Foil',
+-  'Etched'
+
+
+#### Responses
+`status:200` Normal operations; Added a card from the set and collector number
+```json
+  {
+    "add_date": "2023-01-26",
+    "tcg_id": "240325",
+    "qty": 2,
+    "buy_price": 20,
+    "card_condition": "NM",
+    "card_variant": "Normal"
+  }
+```
+`status:500` Internal Server Error 
+```
+Internal Server Error
+```
+
+### `/inventory/delete`
+- Method: GET
+- Parameters: `write_access`
+- Example URL: `localhost:8000/inventory/delete`
+- Access Tokens: `write_access`
+Not Implemented
+#### Responses
+`status:200` Normal operations; Not Implemented
+```json
+null
+```
+
+<!-- TODO: Document the function of these groups -->
+<!-- ## Fetch Card Prices -->
+<!-- ## Card Group -->
+<!-- ## Manage Tracked Cards -->
 
 <!-- ? Templates -->
  <!-- 
  ? TEMPLATE FOR EACH FUNCTION, USE THIS AAAA
-    ### `/PATH/TO/STUFF`
-    - Method: GET
-    - Parameters: `PARAMETERS`, `AND`, `TOKENS`
-    - Example URL: `localhost:8000/PATH/TO/{STUFF}
-    - Access Tokens: `TOEN`
-    PUT A DESCRIPTION IN HERE, MAKE IT CLEAN AND COHERENT
-    #### Responses
-    `status:200` Normal operations; EXPLAIN WHAT IS CONSIDERED A NORMAL SEARCH, LIKE CARD IN DB OR W/E
-    ```json
-    {
-      "IT": "IS JSON"
-    }
-    ```
-    `status:ERR_CODE` WHEN BAD
-    ```json
-    {
-      "IT": "IS JSON BUT ERROR"
-    }
-    ```
+### `/PATH/TO/STUFF`
+- Method: GET
+- Parameters: `PARAMETERS`, `AND`, `TOKENS`
+- Example URL: `localhost:8000/PATH/TO/{STUFF}`
+- Access Tokens: `TOKEN`
+PUT A DESCRIPTION IN HERE, MAKE IT CLEAN AND COHERENT
+#### Responses
+`status:200` Normal operations; EXPLAIN WHAT IS CONSIDERED A NORMAL SEARCH, LIKE CARD IN DB OR W/E
+```json
+{
+  "IT": "IS JSON"
+}
+```
+`status:ERR_CODE` WHEN BAD
+```json
+{
+  "IT": "IS JSON BUT ERROR"
+}
+```
+ 
  -->
