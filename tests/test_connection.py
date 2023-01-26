@@ -1,7 +1,8 @@
 # TODO: Figure out how to correctly write tests
 from starlette.testclient import TestClient
 from api import app
-
+# import api_files.exceptions as exceptions
+# import pytest
 class TestConnections:
 
     def test_connect(self):
@@ -22,3 +23,15 @@ class TestConnections:
                 "description": "PLACEHOLDER"
             }
         ]
+    
+    def test_root_conn(self):
+
+        client = TestClient(app)
+        response = client.get('/')
+        # TODO: Test exceptions!
+        assert response.status_code == 200
+        assert response.json() == {
+            "resp": "error",
+            "status": 200,
+            "message": "The request failed due to being at root. If you're just testing if it works, yeah it works.",
+        }
