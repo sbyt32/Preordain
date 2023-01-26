@@ -44,7 +44,6 @@ Example `*.log` output
 
 ## TODO:
 - Server
-    - Add card groups
     - Manipulate Price Data
     - Consistent import names
     - Committing as little as possible in the sale fetch data.
@@ -55,9 +54,12 @@ Example `*.log` output
 - Both
     - Custom Exceptions for cleaner errors
     - Update README
+- Front-End
+    - Exist
 
 ## Completed:
 - Server
+    - Search by card Groups
     - Tracking TCGP recent purchase data. 
         - Modify card_info.info table columns for TCGP and SF.
     - Config files are called as needed
