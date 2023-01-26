@@ -55,7 +55,8 @@ Example `*.log` output
 - Both
     - Custom Exceptions for cleaner errors
     - Update README
-
+- Front-End
+    - Maybe work on it idk
 ## Completed:
 - Server
     - Tracking TCGP recent purchase data. 
