@@ -1,9 +1,7 @@
-from fastapi import APIRouter, Depends, HTTPException, Response
-# from psycopg2.errors import DatetimeFieldOverflow
+from fastapi import APIRouter, Depends, HTTPException
 from api_files.exceptions import BadResponseException
 from psycopg.errors import DatetimeFieldOverflow
-from api_files.dependencies import price_access
-from typing import Union
+from typing import Union, Optional
 import scripts.connect.to_database as to_db
 from api_files.response_class.pretty import PrettyJSONResp
 import logging
@@ -14,7 +12,9 @@ router = APIRouter(
     prefix="/price",
 )
 
-@router.get("/", status_code=200, response_class=PrettyJSONResp)
+# ? status_code in HTTPException is required, missing the status_code in router.get "undocumented" in the response code
+# ? Can get the most recent price data, instead?
+@router.get("/", response_class=PrettyJSONResp)
 async def root_access():
     raise HTTPException(status_code=400, detail="Buddy this ain't the right way to get the price data.")
 
@@ -49,12 +49,16 @@ async def get_single_day_data(date:str):
         except DatetimeFieldOverflow as e:
             # Placeholder, this is if the date isn't valid.
             return BadResponseException("helpo")
-            raise SystemExit() 
+            # * Example:
+            """
+                {
+                    "error": "helpo"
+                }
+            """
 
         resp = cur.fetchall()
-        if resp == ():
-            raise HTTPException(status_code=404, detail=f"There is no price data for {date}")
-        else:
+        print(bool(resp))
+        if resp:
             price_data_single_day = []
             for cards in resp:
                 price_data_single_day.append(
@@ -71,19 +75,18 @@ async def get_single_day_data(date:str):
                     }
                     }
                 )
-            return price_data_single_day
+            return price_data_single_day            
+        else:
+            raise HTTPException(status_code=404, detail=f"There is no price data for {date}")
 
 
 @router.get("/{set}/{id}", description="Get the price data for one card. Last 25 results only.")
-async def get_single_card_data(set: str, id: str, max: Union[int, None] = 25, sort: Union[str, None] = "asc"):
+async def get_single_card_data(set: str, id: str, max: Optional[int] = 25):
     if max > 25:
         # TODO: Figure out how to know where the > 25 query came from.
         log.error("User attempted to search more than 25 queries, setting to 25.")
         max = 25
         
-    if not sort.lower() == "desc":
-        sort = "asc"
-
 
     conn, cur = to_db.connect_db()
     cur.execute(""" 
@@ -106,8 +109,8 @@ async def get_single_card_data(set: str, id: str, max: Union[int, None] = 25, so
             ON card_data.set = card_info.sets.set
         WHERE
             card_data.set = %s AND card_data.id = %s
+        ORDER BY date DESC
         LIMIT %s
-
         """,
 
         (set, id, max)

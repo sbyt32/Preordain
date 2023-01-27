@@ -1,7 +1,6 @@
 from pydantic import BaseModel
 import datetime
 
-
 class SaleData(BaseModel):
     order_date: datetime.datetime
     condition : str
@@ -18,6 +17,6 @@ class CardInfo(BaseModel):
     sale_data: list[SaleData]
 
 class SaleDataSingleCardResponse(BaseModel):
-    resp  : str
-    response: int
-    data: list[CardInfo]
+    resp  : str             # What kind of data
+    status_code: int        # Response Code
+    data: list[CardInfo]    # The data itself

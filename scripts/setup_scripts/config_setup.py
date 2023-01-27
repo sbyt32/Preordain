@@ -5,9 +5,7 @@ import re
 def cfg_setup():
     # cfg_files = [("config.ini", "cfg"), ("database.ini", ""), ("tokens.ini", "")]
 
-    cfg_folder_path = input("Config folder (Default: config_files): ") or "config_files"
-    if not re.match(r"^.*/$", cfg_folder_path, re.IGNORECASE):
-        cfg_folder_path += '/'
+    cfg_folder_path = 'config_files/'
     if not os.path.exists(cfg_folder_path):
         os.makedirs(cfg_folder_path)
 
@@ -37,6 +35,7 @@ def cfg_setup():
     database['CONNECT']                  = {}
     database['UPDATES']                  = {}
     database['UPDATES']['tcg_sales']     = "None"
+    database['UPDATES']['price_fetch']   = "None"
     database['CONNECT']["host"]          = input("Host Address: (Default: localhost) ") or "localhost"
     database['CONNECT']["user"]          = input("Username: ")
     database['CONNECT']["password"]      = input(f"Password for {database['CONNECT']['user']}: ")

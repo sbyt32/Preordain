@@ -1,5 +1,5 @@
-
-### Build-your-own-query
+# Build-your-own-query, TCG Edition
+## Payload
 ```json
 {
     "variants": [
@@ -37,3 +37,41 @@
     "offset":0, // Self Explanatory
 }
 ```
+
+## Result
+### **Fetched Card:** Ragavan, Nimble Pilferer (MH2) (Regular)
+```json
+{
+	"previousPage": "Yes",
+	"nextPage": "",
+	"resultCount": 11, 
+	"totalResults": 1786,
+	"data": [
+		{
+			"condition": "Near Mint",                   // Card Condition
+			"variant": "Normal",                        // Variant, Foil or Normal. Etched are considered "Foil" in the API
+			"language": "English",                      // Language
+			"quantity": 1,                              // Quantity
+			"title": "Ragavan, Nimble Pilferer",        // Card Name
+			"listingType": "ListingWithoutPhotos",      // Does the listing have a Photo?
+			"customListingId": "",                      // Idunno 
+			"purchasePrice": 66.99,                     // Price it was sold for, not including Tax
+			"shippingPrice": 0.0,                       // Shipping price
+			"orderDate": "2022-09-22T02:31:47.62+00:00" // Order Date, using ISO 8601
+		},
+		{
+			"condition": "Near Mint",
+			"variant": "Normal",
+			"language": "English",
+			"quantity": 1,
+			"title": "Ragavan, Nimble Pilferer",
+			"listingType": "ListingWithoutPhotos",
+			"customListingId": "",
+			"purchasePrice": 59.99,
+			"shippingPrice": 4.99,
+			"orderDate": "2022-09-22T00:03:49.606+00:00"
+		}
+	]
+}
+```
+

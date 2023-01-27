@@ -3,32 +3,31 @@ import scripts.connect.to_database as to_database
 import scripts.connect.to_requests_wrapper as to_requests
 import logging
 from psycopg import sql
-from scripts import config_reader
+from scripts.config_reader import read_config
+from scripts.update_config import update_config
 
 log = logging.getLogger()
 
-def _set_up_db():
+def set_up_db():
     """
     Creates the database, etc. Info below.
     
-
     | Name             | Type     | Desc                                                                     |
     |------------------|----------|--------------------------------------------------------------------------|
     | {database name}  | Database | The name of your database                                                |
     | card_data        | Table    | public schema, holds card price data. Fetched daily via Scryfall         |
     | card_data_tcg    | Table    | public schema, grabs recent sales from TCGPlayer. Fetched weekly         |
     | card_info        | Schema   | A schema to separate the price data and the information that supports it |
-    | card_info.info   | Table    | card_info schema, holds identifiying information formation for cards     |
-    | card_info.sets   | Table    | card_info schema, holds the names of sets and information about them     |
-    | card_info.groups | Table    | card_info schema, does nothing at the moment                             |
-
-    """
-    cfg = config_reader.config_reader("CONNECT", "database")
+    | card_info.info   | Table    | card_info table, holds identifiying information formation for cards      |
+    | card_info.sets   | Table    | card_info table, holds the names of sets and information about them      |
+    | card_info.groups | Table    | card_info table, does nothing at the moment                              |
     
-    # conn, cur = to_database.connect_db()
+    """
+    cfg = read_config("CONNECT", "database")
+    
     conn = psycopg.connect(f"host={cfg['host']} user={cfg['user']} password={cfg['password']}")
     cur = conn.cursor()
-    # Create database, if not existing.
+    # Create database
     conn.autocommit = True
 
     try:
@@ -189,4 +188,4 @@ def _set_up_db():
     conn.commit()
     conn.close()
 
-    return True
+    update_config('config', 'FILE_DATA','db_exists','true')
