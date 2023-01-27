@@ -1,6 +1,6 @@
 import psycopg
 from scripts.config_reader import read_config
-
+# TODO: Eventually
 
 db_params = read_config('CONNECT', 'database')
 

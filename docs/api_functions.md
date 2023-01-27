@@ -1,5 +1,5 @@
 # API Functions
-This is a compiled list of API functions, how to use them, and expected response formats. If you are not sure what the expected format is, check in here.
+This is a compiled list of API functions, how to use them, and expected response formats. If you are not sure what the expected format is, or you want to know more, check in here.
 
 - [API Functions](#api-functions)
   - [Test Connection](#test-connection)

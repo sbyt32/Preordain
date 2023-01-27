@@ -1,5 +1,7 @@
 # MTG Price Fetcher
-> A simple price fetcher for Magic: The Gathering, powered via Scryfall's API and written in Python.
+> A simple price and sale fetcher for Magic: The Gathering, powered via Scryfall and TCGPlayer's API and written in Python.
+
+This project contains a group of Python scripts that will allow the user to create a PostgreSQL database, and begin to scrape price data from Scryfall and TCGPlayer. It uses FastAPI to retrieve information from the database and returns in a .json format. 
 
 - [MTG Price Fetcher](#mtg-price-fetcher)
   - [Features](#features)

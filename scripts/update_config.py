@@ -8,5 +8,5 @@ def update_config(cfg:str, section:str, key:str, value) -> None:
     config = configparser.ConfigParser()
     config.read(f'config_files/{cfg}.ini')
     config[section][key] = value
-    with open('config_files/database.ini', 'w') as config_update:
+    with open(f'config_files/{cfg}.ini', 'w') as config_update:
         config.write(config_update)

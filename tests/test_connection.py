@@ -1,5 +1,5 @@
 # TODO: Figure out how to correctly write tests
-from starlette.testclient import TestClient
+from fastapi.testclient import TestClient
 from api import app
 class TestConnections:
 
@@ -26,7 +26,7 @@ class TestConnections:
 
         client = TestClient(app)
         response = client.get('/')
-        # TODO: Test exceptions!
+        # TODO: Test exceptions! This will eventually be an exception.
         assert response.status_code == 200
         assert response.json() == {
             "resp": "error",
