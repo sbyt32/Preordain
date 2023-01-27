@@ -1,8 +1,5 @@
 # ? What do these do?
-*/*/__pycache__
-variables.py
 __pycache__
-
 
 # Local Notes & Test Files
 psql_notes.md
@@ -17,3 +14,6 @@ sample.py
 
 # Configuration folder
 config_files/
+
+# pytest --cov=tests/
+.coverage
