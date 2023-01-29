@@ -93,7 +93,7 @@ async def get_single_card_data(set: str, id: str, max: Optional[int] = 25):
         
         SELECT 
             card_info.info.name,
-            card_info.sets.set_full,
+            card_info.sets.set,
             card_info.info.id,
             date,
             usd,
@@ -123,8 +123,8 @@ async def get_single_card_data(set: str, id: str, max: Optional[int] = 25):
     else:
         price_data_single_card = {
                 "name": result[0][0],
-                "set": result[0][2],
-                "collector_id": result[0][1]
+                "set": result[0][1],
+                "collector_id": result[0][2]
             }
         price_data_single_card["price_history"] = []
         for data in result:

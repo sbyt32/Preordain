@@ -16,34 +16,56 @@ router = APIRouter(
     response_model=CardInfo, 
     description="Return all cards that are being tracked.")
 async def read_items(response: Response):
-    conn, cur = to_db.connect_db()
-    cur.execute(""" 
-        
-        SELECT   
-            card_info.info.name,
-            card_info.sets.set_full,
-            card_info.info.set,
-            card_info.info.id,
-            card_info.info.groups
-        FROM card_info.info
-        JOIN card_info.sets
-            ON card_info.info.set = card_info.sets.set
+    conn, cur = to_db.connect_db(row_factory = dict_row)
+    cur.execute("""
+        SELECT 
+            info.name,
+            info.set,
+            info.set_full,
+            info.id,
+            info.maxDate as "date",
+            price.usd,
+            price.usd_foil,
+            price.euro,
+            price.euro_foil,
+            price.tix
+        FROM card_data price
+        JOIN (
+            SELECT 
+                info.name, 
+                info.set,
+                sets.set_full,
+                info.id,
+                MAX(date) as maxDate
+            FROM card_data
+            JOIN card_info.info as info
+                ON info.set = card_data.set
+                AND info.id = card_data.id
+            JOIN card_info.sets as sets
+                ON sets.set = card_data.set
+            GROUP BY info.set, info.id, info.name, sets.set_full
+            ) info
+        ON price.id = info.id AND price.set = info.set AND price.date = info.maxDate
         """
         )
     resp = cur.fetchall()
-    if resp == ():
-        return {}
-    else:
+    # return resp
+    if resp:
         response.status_code = status.HTTP_200_OK
         card_data = []
         for cards in resp:
             card_data.append(
                 {
-                    'name': cards[0],
-                    'set_full': cards[1],
-                    'set': cards[2],
-                    'id': cards[3],
-                    'groups': cards[4]
+                    'name': cards['name'],
+                    'set': cards['set'],
+                    'set_full': cards['set_full'],
+                    'id': cards['id'],
+                    'last_update': cards['date'],
+                    'usd': cards['usd'],
+                    'usd_foil': cards['usd_foil'],
+                    'euro': cards['euro'],
+                    'euro_foil': cards['euro_foil'],
+                    'tix': cards['tix'],
                 }
             )
 
@@ -52,7 +74,8 @@ async def read_items(response: Response):
             "status"    : response.status_code,
             "data"      : card_data
         }
-
+    else:
+        return {}
 # Filter for cards by their grouping.
 @router.get("/{group}")
 async def find_by_group(group: str):
@@ -98,40 +121,71 @@ async def find_by_group(group: str):
         )
     resp = cur.fetchall()
     if resp == []:
-        return [{}]
+        return "No Groups Found!"
+        # return [{}]
     else:
         return resp
 
-# Filter for cards by their set + id combo
+# Get a single card card and return the data for that card.
 @router.get("/{set}/{col_num}",
     description="Look for a specific card based on that cards set + collector number"
     )
 async def search_by_set_collector_num(set: str, col_num: str, response: Response):
-    conn, cur = to_db.connect_db()
+    conn, cur = to_db.connect_db(row_factory = dict_row)
     cur.execute(""" 
-        
-        SELECT  * 
-        FROM    card_info.info
-        WHERE   set = %s AND id = %s
+        SELECT 
+            info.name,
+            info.set_full,
+            info.id,
+            info.maxDate as "date",
+            price.usd,
+            price.usd_foil,
+            price.euro,
+            price.euro_foil,
+            price.tix
+        FROM card_data price
+        JOIN (
+            SELECT 
+                info.name, 
+                info.set,
+                sets.set_full,
+                info.id,
+                MAX(date) as maxDate
+            FROM card_data
+            JOIN card_info.info as info
+                ON info.set = card_data.set
+                AND info.id = card_data.id
+            JOIN card_info.sets as sets
+                ON sets.set = card_data.set
+            GROUP BY info.set, info.id, info.name, sets.set_full
+            ) info
+        ON price.id = info.id AND price.set = info.set AND price.date = info.maxDate
+        WHERE   price.set = %s AND price.id = %s
 
         """,
 
         (set, col_num)
         )
     
-    result = cur.fetchone()
-    if result == None:
-        raise HTTPException(status_code=404, detail="This card does not exist on the database!")
-    else:
+    single_card = cur.fetchone()
+    if single_card:
         response.status_code = status.HTTP_200_OK
         return {
             "resp"      : "card_data",
             "status"    : response.status_code,
             "data"      : {
-                "name"      : result[0],
-                "set"       : result[1],
-                "id"        : result[2],
-                "URL"       : result[3]
+                    'name': single_card['name'],
+                    'set_full': single_card['set_full'],
+                    'id': single_card['id'],
+                    'last_update': single_card['date'],
+                    'prices': {
+                        'usd': single_card['usd'],
+                        'usd_foil': single_card['usd_foil'],
+                        'euro': single_card['euro'],
+                        'euro_foil': single_card['euro_foil'],
+                        'tix': single_card['tix'],
+                    }
             }
-
         }
+    else:
+        raise HTTPException(status_code=404, detail="This card does not exist on the database!")

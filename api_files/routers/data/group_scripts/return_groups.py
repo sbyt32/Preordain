@@ -11,18 +11,17 @@ router = APIRouter()
 async def get_group_names(use: Optional[bool]):
     if use:
         query = """
-
         SELECT 
-            DISTINCT(group_naming), 
-            groupings.description 
-        FROM 
-            (
-                SELECT 
-                    UNNEST(groups) 
-                FROM card_info.info
-            )   AS a(group_naming)
-        JOIN card_info.groups AS groupings
-            ON groupings.group_name = group_naming
+            DISTINCT(group_in_use) AS "group",
+            groups.description
+        FROM (
+            SELECT 
+                UNNEST(groups) 
+            FROM 
+            card_info.info
+            ) AS a(group_in_use)
+        JOIN card_info.groups AS groups
+            ON groups.group_name = group_in_use
     """
     else:
         query = """
@@ -36,5 +35,4 @@ async def get_group_names(use: Optional[bool]):
     conn, cur = to_db.connect_db(row_factory = dict_row)
 
     cur.execute(query)
-
     return cur.fetchall()

@@ -43,7 +43,7 @@ This project contains a group of Python scripts that will allow the user to crea
     - Update README
     - Testing
 - Front-End
-    - Exist
+    - Exist [Which means now.](https://github.com/sbyt32/price-fetcher-site)
 
 ## How it works
 

@@ -2,12 +2,8 @@
 __pycache__
 
 # Local Notes & Test Files
-psql_notes.md
 psql.md
 sample.py
-
-# TODO: Configure the test folder
-# tests
 
 # Old files, can be reworked
 .old

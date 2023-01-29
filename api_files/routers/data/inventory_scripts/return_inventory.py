@@ -4,6 +4,21 @@ import scripts.connect.to_database as to_db
 
 router = APIRouter()
 
+
+
+"""
+? Expected format
+[
+  {
+    "Name": "Thalia, Guardian of Thraben",
+    "Set": "Innistrad: Crimson Vow",
+    "Quantity": 2,
+    "Condition": "NM",
+    "Variation": "Normal",
+    "Avg. Cost": 2
+  }
+]
+"""
 @router.get(
     path="/",
     description="Return your entire inventory."
