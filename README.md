@@ -32,18 +32,8 @@ This project contains a group of Python scripts that will allow the user to crea
   - Automatic setup via `set_up.py`
 
 **To Do:**
-- Server
-    - Manipulate Price Data
-    - Consistent import names
-- API
-    - Refactor router-related data
-    - Custom classes for response formats
-- Both
-    - Custom Exceptions for cleaner errors
-    - Update README
-    - Testing
-- Front-End
-    - Exist [Which means now.](https://github.com/sbyt32/price-fetcher-site)
+
+  Just check [here](https://github.com/sbyt32/mtg_price_fetcher/discussions/22)
 
 ## How it works
 

@@ -10,6 +10,8 @@ sample.py
 
 # Configuration folder
 config_files/
+# Configuration folder, but for tests
+config_files_2/
 
 # pytest --cov=tests/
 .coverage

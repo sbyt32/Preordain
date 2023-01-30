@@ -30,7 +30,7 @@ def main():
 
     # * Create DB strucutre, if does not exist.
     if cfg['FILE_DATA'].getboolean('db_exists') == True:
-        db_reconfig = input(f"Database {cfg['FILE_DATA']['dbname']} is already set up, would you like to set it up again? ")
+        db_reconfig = input(f"Database is already set up, would you like to set it up again? ")
 
     if cfg['FILE_DATA'].getboolean('db_exists') == False or db_reconfig in ["y", "yes"]:
 
