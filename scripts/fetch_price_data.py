@@ -36,5 +36,6 @@ def query_price():
         ))
 
     conn.commit()
+    conn.close()
     log.debug(f"Parsed all {len(records)} cards")
     update_config('database', 'UPDATES', 'price_fetch', str(datetime.datetime.now(datetime.timezone.utc)))

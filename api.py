@@ -10,7 +10,6 @@ from api_files.routers.internal import internal_router
 
 # * Logging Information
 import logging
-# ? For some reason, scripts/config_reader.py having the logging setup works fine. Need to know why eventually. Commented out for now
 log = logging.getLogger()
 log.setLevel(logging.DEBUG)
 

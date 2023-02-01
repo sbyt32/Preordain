@@ -1,40 +1,27 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, status, Response
 from psycopg.rows import dict_row
+from api_files.models import BaseResponse, InventoryData
 import scripts.connect.to_database as to_db
 
 router = APIRouter()
-
-
-
-"""
-? Expected format
-[
-  {
-    "Name": "Thalia, Guardian of Thraben",
-    "Set": "Innistrad: Crimson Vow",
-    "Quantity": 2,
-    "Condition": "NM",
-    "Variation": "Normal",
-    "Avg. Cost": 2
-  }
-]
-"""
 @router.get(
     path="/",
-    description="Return your entire inventory."
-)
+    description="Return your entire inventory.",
+    response_model=BaseResponse[InventoryData])
 
-async def get_inventory():
+# Return your entire inventory
+# * retrieve_inventory
+async def get_inventory(response: Response):
     conn, cur = to_db.connect_db(row_factory = dict_row)
 
     cur.execute("""
         SELECT
-            info.name "Name",
-            set.set_full "Set",
-            SUM(inventory.qty) "Quantity",
-            inventory.card_condition "Condition",
-            inventory.card_variant "Variation",
-            TRUNC(AVG(avg_price.total_qty) / SUM(inventory.qty),2) as "Avg. Cost"
+            info.name as name,
+            set.set_full as set,
+            SUM(inventory.qty) as quantity,
+            inventory.card_condition as condition,
+            inventory.card_variant as variant,
+            (AVG(avg_price.total_qty) / SUM(inventory.qty))::numeric(10,2) as "avg_cost"
         FROM inventory as inventory
         JOIN card_info.info as info
             ON info.tcg_id = inventory.tcg_id
@@ -61,5 +48,7 @@ async def get_inventory():
             inventory.card_condition,
             inventory.card_variant
     """)
-
-    return cur.fetchall()
+    data = cur.fetchall()
+    response.status_code=status.HTTP_200_OK
+    conn.close()
+    return BaseResponse[InventoryData](data=data, status=response.status_code, resp='retrieve_inventory')

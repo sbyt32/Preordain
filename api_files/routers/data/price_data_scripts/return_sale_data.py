@@ -1,40 +1,39 @@
 import scripts.connect.to_database as to_db
 from fastapi import APIRouter, Response, status
-from typing import Union
+from api_files.models import RecentCardSales
 from psycopg.rows import dict_row
-# from api_files.exceptions import RootException
 
-router = APIRouter(
-    prefix="/sales",
-)
 
 def _check_card_exists(tcg_id:str = None, set:str = None, col_num:str = None):
-
     if set and col_num or tcg_id:
         query = ""
         params = ()
-        cur = to_db.connect_db()[1]
+        conn, cur = to_db.connect_db(row_factory = dict_row)
 
         if set and col_num:
             query = """
-            SELECT COUNT(*)
+            SELECT name, set, id, tcg_id
             FROM card_info.info
             WHERE set = %s AND id = %s
             """
             params = (set, col_num)
         else:
             query = """
-            SELECT COUNT(*)
+            SELECT name, set, id, tcg_id
             FROM card_info.info
             WHERE tcg_id = %s 
             """
             params = (tcg_id,)
         cur.execute(query,params)
-        
-        if cur.fetchone():
-            return True
+        identity = cur.fetchone()
+        if identity:
+            conn.close()
+            return identity
     return False
 
+router = APIRouter(
+    prefix="/sales",
+)
 
 @router.get("/", status_code=400)
 async def root_access():
@@ -44,25 +43,13 @@ async def root_access():
         "message": "To be implemented later.",
     }
 
+# Get the most recent sales from this card. Updates every week
+# * recent_card_sales
 @router.get("/card/{tcg_id}", description="Get the most recent sales from this card. Updates every week")
-async def get_tcg_sales(tcg_id:str, response: Response):
-    cur = to_db.connect_db(row_factory = dict_row)[1]
-
-    cur.execute("""
-        SELECT
-            info.name "card_name",
-            sets.set_full "set_name",
-            info.tcg_id 
-        FROM card_info.info AS info
-        JOIN card_info.sets AS sets
-            ON info.set = sets.set
-        WHERE
-            info.tcg_id = %s
-    """, (tcg_id,))
-
-    searched_card = cur.fetchone()
-
+async def recent_card_sales_tcg_id(tcg_id:str, response: Response):
+    searched_card = _check_card_exists(tcg_id=tcg_id)
     if searched_card:
+        cur = to_db.connect_db(row_factory = dict_row)[1]
 
         cur.execute("""
             SELECT 
@@ -86,22 +73,23 @@ async def get_tcg_sales(tcg_id:str, response: Response):
         """, (tcg_id,))
         
         recieved_sale_data = cur.fetchall()
-
-
         searched_card['sale_data'] = recieved_sale_data
+
         response.status_code = status.HTTP_200_OK
 
         return {
-            "resp": "hello",
+            "resp": "recent_card_sale",
             "status": response.status_code,
-            "data": [searched_card]
+            "data": {searched_card}
         }
 
-@router.get("/card/{set}/{col_num}")
+# Return the searched card + last sale data. 
+# * daily_card_sales
+@router.get("/daily/{set}/{col_num}")
 async def get_tcg_sales(set: str, col_num:str):
-    if _check_card_exists(set=set, col_num=col_num):
-        cur = to_db.connect_db(row_factory = dict_row)[1]
-
+    searched_card = _check_card_exists(set=set, col_num=col_num)
+    if searched_card:
+        conn, cur = to_db.connect_db(row_factory = dict_row)
         cur.execute("""
             SELECT 
                 info.name,
@@ -125,6 +113,7 @@ async def get_tcg_sales(set: str, col_num:str):
         """, (set,col_num,)
         )
         results = cur.fetchall()
+        conn.close()
         if results:
             resp = {
                 "name": results[0]['name'],

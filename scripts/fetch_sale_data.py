@@ -110,6 +110,7 @@ def fetch_tcg_prices():
                     tx1.connection.execute(stop_future_looping, (card_id,))
                     keep_adding_cards = False
 
+    conn.close()
     # * After parsing, update the records to show the data.
     update_config('database', 'UPDATES', 'tcg_sales', str(datetime.datetime.now(datetime.timezone.utc)))
     log.debug(f"Elapsed time: {time.perf_counter() - start}") # ? Sends length to parse to debug

@@ -2,7 +2,6 @@
 from fastapi.testclient import TestClient
 from api import app
 class TestConnections:
-
     def test_connect(self):
 
         client = TestClient(app)
@@ -13,11 +12,11 @@ class TestConnections:
         # ! This will eventually change, consider fixing this
         assert response.json() == [
             {
-                "group_naming": "dnt",
+                "group": "dnt",
                 "description": "This is part of the deck \"Death and Taxes\""
             },
             {
-                "group_naming": "white",
+                "group": "white",
                 "description": "PLACEHOLDER"
             }
         ]

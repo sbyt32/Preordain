@@ -2,7 +2,6 @@
 __pycache__
 
 # Local Notes & Test Files
-psql.md
 sample.py
 
 # Old files, can be reworked
@@ -13,5 +12,10 @@ config_files/
 # Configuration folder, but for tests
 config_files_2/
 
-# pytest --cov=tests/
+# pytest --cov=tests/ files
 .coverage
+cov_annotate
+
+# Environment
+.env
+hello.py
