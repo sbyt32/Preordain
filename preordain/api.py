@@ -7,6 +7,7 @@ from preordain.information.router import admin_router as info_admin_router
 from preordain.inventory.router import router as inventory_router
 from preordain.price_sales.router import price_router
 from preordain.price_sales.router import sale_router
+from preordain.groups.router import router as groups_router
 
 # * Logging Information
 import logging
@@ -35,7 +36,7 @@ app.include_router(info_user_router)
 app.include_router(inventory_router)
 app.include_router(price_router)
 app.include_router(sale_router)
-
+app.include_router(groups_router)
 
 
 @app.get("/", tags=["Test Connection"])

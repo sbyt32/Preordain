@@ -6,7 +6,7 @@ class TestConnections:
 
         client = TestClient(app)
 
-        response = client.get('/groups/?use=true&access=testing')
+        response = client.get('/groups/?use=true')
 
         assert response.status_code == 200
         # ! This will eventually change, consider fixing this

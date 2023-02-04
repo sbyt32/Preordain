@@ -1,4 +1,5 @@
-from preordain.models import InventoryData, RecentCardSales, BaseResponse
+from preordain.models import RecentCardSales, BaseResponse
+from preordain.inventory.models import InventoryData
 from pydantic import ValidationError
 import pytest
 
