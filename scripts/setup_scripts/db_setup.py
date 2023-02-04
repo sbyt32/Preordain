@@ -3,7 +3,7 @@ import scripts.connect.to_database as to_database
 import scripts.connect.to_requests_wrapper as to_requests
 import logging
 from psycopg import sql
-from scripts.config_reader import read_config
+from preordain.config_reader import read_config
 from scripts.update_config import update_config
 
 log = logging.getLogger()

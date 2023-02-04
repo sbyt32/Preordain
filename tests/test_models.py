@@ -1,4 +1,4 @@
-from api_files.models import InventoryData, RecentCardSales, BaseResponse
+from preordain.models import InventoryData, RecentCardSales, BaseResponse
 from pydantic import ValidationError
 import pytest
 

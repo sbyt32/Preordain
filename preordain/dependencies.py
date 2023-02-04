@@ -1,6 +1,6 @@
 from fastapi import Header
-from api_files.exceptions import TokenError
-from scripts.config_reader import read_config
+from preordain.exceptions import TokenError
+from preordain.config_reader import read_config
 import logging
 log = logging.getLogger()
 config = read_config("CONNECT", "tokens")

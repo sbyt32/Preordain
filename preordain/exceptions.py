@@ -14,20 +14,6 @@ log = logging.getLogger()
   "details": "This is the root of the Scryfall API and no data is returned at this path. For more information about the methods and objects this API publishes, please see https://scryfall.com/docs/api"
 }
 """
-# Accessing root
-# class RootException(Exception):
-#     pass
-
-# @app.exception_handler(RootException)
-# async def root_exception_handler(request: Request, exc: RootException): # Yes, 'request: Request' is required.
-#     return JSONResponse(
-#         status_code=200,
-#         content={
-#             "resp": "error",
-#             "status": 200,
-#             "message": "The request failed due to being at root. If you're just testing if it works, yeah it works.",
-#         }
-#     )
 
 # Failed Token
 class TokenError(Exception):

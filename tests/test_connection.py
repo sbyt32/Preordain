@@ -1,6 +1,6 @@
 # TODO: Figure out how to correctly write tests
 from fastapi.testclient import TestClient
-from api import app
+from preordain.api import app
 class TestConnections:
     def test_connect(self):
 

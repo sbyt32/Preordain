@@ -1,4 +1,4 @@
-from scripts.config_reader import read_config
+from preordain.config_reader import read_config
 from scripts.check_if_update import check_date_to_update
 class TestConfigFiles:
 

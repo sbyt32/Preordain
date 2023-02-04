@@ -5,7 +5,7 @@ import logging
 import psycopg
 import datetime
 import scripts.connect.to_requests_wrapper as to_requests_wrapper
-import scripts.config_reader as cfg_reader
+import preordain.config_reader as cfg_reader
 import scripts.connect.to_database as to_db
 from scripts.update_config import update_config
 from dateutil.parser import isoparse

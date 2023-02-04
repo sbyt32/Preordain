@@ -1,6 +1,6 @@
 from scripts.fetch_sale_data import fetch_tcg_prices
 from scripts.fetch_price_data import query_price
-from scripts.config_reader import read_config
+from preordain.config_reader import read_config
 from scripts.check_if_update import check_date_to_update
 import arrow
 import datetime

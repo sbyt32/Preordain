@@ -1,16 +1,70 @@
-from fastapi import APIRouter
-from api_files.models import ModifyInventory
+from fastapi import APIRouter, Depends, Response, status
+from preordain.inventory.models import ModifyInventory, InventoryData
+from preordain.models import BaseResponse
+from preordain.dependencies import select_access
 from psycopg.rows import dict_row
 import arrow
 import scripts.connect.to_database as to_db
 import scripts.connect.to_requests_wrapper as to_requests_wrapper
 import logging
+
 log = logging.getLogger()
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/inventory",
+    tags=["Inventory Management"],
+    dependencies=[Depends(select_access)]
+)
+@router.get(
+    path="/", description="Return your entire inventory.",
+    response_model=BaseResponse[InventoryData])
+
+# Return your entire inventory
+# * retrieve_inventory
+async def get_inventory(response: Response):
+    conn, cur = to_db.connect_db(row_factory = dict_row)
+
+    cur.execute("""
+        SELECT
+            info.name as name,
+            set.set_full as set,
+            SUM(inventory.qty) as quantity,
+            inventory.card_condition as condition,
+            inventory.card_variant as variant,
+            (AVG(avg_price.total_qty) / SUM(inventory.qty))::numeric(10,2) as "avg_cost"
+        FROM inventory as inventory
+        JOIN card_info.info as info
+            ON info.tcg_id = inventory.tcg_id
+        JOIN card_info.sets as set
+            ON info.set = set.set
+        JOIN (
+            SELECT 
+                inventory.tcg_id,
+                SUM (inventory.qty * inventory.buy_price)::numeric AS total_qty,
+                inventory.card_condition,
+                inventory.card_variant
+            FROM inventory 
+            GROUP BY
+                inventory.tcg_id,
+                inventory.card_condition,
+                inventory.card_variant
+        ) AS avg_price
+            ON avg_price.tcg_id = inventory.tcg_id
+            AND avg_price.card_condition = inventory.card_condition
+            AND avg_price.card_variant = inventory.card_variant
+        GROUP BY
+            info.name,
+            set.set_full,
+            inventory.card_condition,
+            inventory.card_variant
+    """)
+    data = cur.fetchall()
+    response.status_code=status.HTTP_200_OK
+    conn.close()
+    return BaseResponse[InventoryData](data=data, status=response.status_code, resp='retrieve_inventory')
 
 @router.post("/add")
-async def add_card_groups_with_set_id(inventory: ModifyInventory):
+async def add_to_inventory(inventory: ModifyInventory):
     current_date = arrow.utcnow().date()
     # ? If you have the set and collector number, but not the TCG_ID, it will pull that.
     if inventory.set and inventory.col_num and not inventory.tcg_id:
@@ -103,5 +157,5 @@ async def add_card_groups_with_set_id(inventory: ModifyInventory):
         return inventory_check
 
 @router.delete('/delete')
-async def remove_inventory():
+async def remove_from_inventory():
     pass

@@ -1,12 +1,12 @@
 import os
 from fastapi import FastAPI, Response, status
-from api_files.exceptions import TokenError, token_exception_handler
+from preordain.exceptions import TokenError, token_exception_handler
 from fastapi.middleware.cors import CORSMiddleware
-
-# ? Can I wrap this up in something more compact?
-from api_files.routers.data import data_router
-from api_files.routers.internal import internal_router
-
+from preordain.information.router import user_router as info_user_router
+from preordain.information.router import admin_router as info_admin_router
+from preordain.inventory.router import router as inventory_router
+from preordain.price_sales.router import price_router
+from preordain.price_sales.router import sale_router
 
 # * Logging Information
 import logging
@@ -15,7 +15,6 @@ log.setLevel(logging.DEBUG)
 
 # * Accessing the database should require the select_access token
 app = FastAPI()
-
 
 # ? I really don't like this out in the open, but I'm leaving it here for testing. 
 origins = [
@@ -31,8 +30,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(data_router.router)
-app.include_router(internal_router.router)
+app.include_router(info_admin_router)
+app.include_router(info_user_router)
+app.include_router(inventory_router)
+app.include_router(price_router)
+app.include_router(sale_router)
+
+
 
 @app.get("/", tags=["Test Connection"])
 async def root(response: Response):

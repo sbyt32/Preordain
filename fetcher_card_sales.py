@@ -2,7 +2,7 @@
 # ! TO BE PHASED OUT, SEE fetch_card_data.py
 import arrow
 from scripts.fetch_sale_data import fetch_tcg_prices
-from scripts.config_reader import read_config
+from preordain.config_reader import read_config
 import logging
 import logging_details
 logging_details.log_setup()

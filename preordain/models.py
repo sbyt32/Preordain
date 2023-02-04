@@ -2,23 +2,13 @@ from typing import TypeVar, Generic, Optional
 import datetime
 from enum import Enum
 from pydantic import BaseModel, validator, Extra
+# from preordain.utils.validators import verify_cond
 from pydantic.generics import GenericModel
 from enum import Enum
 from typing import Any
 # * Validator functions
 
 # Check if value is a condition or not.  
-def _verify_cond(condition: str):
-    condition = condition.upper()
-    if condition not in [cond for cond in CardConditions]:
-        raise ValueError(f'Condition "{condition}" not a valid condition')
-    return condition
-
-def _verify_vari(variant: str):
-    variant = variant.title()
-    if variant not in [var for var in CardVariants]:
-        raise ValueError(f'Variant "{variant}" is not a valid variant')
-    return variant
 
 # * Field Types
 
@@ -51,20 +41,14 @@ class SaleData(BaseModel):
     buy_price : float
     ship_price: float
 
-    _verify_condition = validator('condition', allow_reuse=True, pre=True)(_verify_cond)
+    # _verify_condition = validator('condition', allow_reuse=True, pre=True)(verify_cond)
 
 # * Response Models
 #   This is what you test against / import into FastAPI!
 
 # ? card/...
     # ? card/search/...
-class CardInformation(BaseModel):
-    name: str
-    set: str
-    set_full: str
-    id: str 
-    last_updated: datetime.date
-    prices: CardPrices
+
 
 # ? sales/...
 class RecentCardSales(BaseModel):
@@ -74,46 +58,20 @@ class RecentCardSales(BaseModel):
     sale_data: list[SaleData]
     
 # ? inventory/...
-class InventoryData(BaseModel):
-    name: str
-    set: str
-    quantity: int
-    condition: CardConditions
-    variant: CardVariants
-    avg_cost: float
-
-    class Config:
-        use_enum_values = True
-    # Verify
-    _verify_condition = validator('condition', allow_reuse=True, pre=True, each_item=True)(_verify_cond)
-    _verify_variant = validator('variant', allow_reuse=True, pre=True, each_item=True)(_verify_vari)
-
-# * Request Models
-#   For POST / DELETE / PUSH stuff
-
-# ? inventory/add | inventory/delete
-class ModifyInventory(BaseModel):
-    tcg_id      : Optional[str]
-    set         : Optional[str]
-    col_num     : Optional[str]
-    qty         : int
-    buy_price   : float
-    condition   : CardConditions
-    card_variant: CardVariants
 
 
 # * Generic Response & affiliates!
 
 class RespStrings(str, Enum):
     # ! Error
-    error_request:str = 'error_request'             # * For any Errors
+    error_request = 'error_request'             # * For any Errors
     # * card/...
-    card_info:str = 'card_info'                     # * /card/...
+    card_info = 'card_info'                     # * /card/...
     # * sales/...
-    daily_card_sales:str = 'daily_card_sales'       # * /daily/{set}/{col_num}
-    recent_card_sales:str = 'recent_card_sales'     # * /card/{tcg_id}
+    daily_card_sales = 'daily_card_sales'       # * /daily/{set}/{col_num}
+    recent_card_sales = 'recent_card_sales'     # * /card/{tcg_id}
     # * inventory/...
-    retrieve_inventory:str = 'retrieve_inventory'   # * /inventory/...
+    retrieve_inventory = 'retrieve_inventory'   # * /inventory/...
     
 ResponseDataTypes = TypeVar('ResponseDataTypes', list, dict)
 

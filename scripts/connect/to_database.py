@@ -1,6 +1,6 @@
 import psycopg
 import logging
-from scripts.config_reader import read_config
+from preordain.config_reader import read_config
 log = logging.getLogger()
 
 def connect_db(**kwargs):

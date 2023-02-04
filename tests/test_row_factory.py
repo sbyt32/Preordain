@@ -1,5 +1,5 @@
 # for tye custom row factory
-from api_files.models import BaseResponse, CardInformation, RespStrings
+from src.preordain.models import BaseResponse, CardInformation, RespStrings
 from datetime import date
 class TestRowFactory:
 

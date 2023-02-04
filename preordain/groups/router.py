@@ -1,19 +1,52 @@
-from api_files.request_models.card_groups_model import CardGroups
-from fastapi import APIRouter, Depends, HTTPException
-from psycopg.rows import dict_row
-import scripts.connect.to_database as to_db
-import scripts.connect.to_requests_wrapper as to_requests_wrapper
+from fastapi import APIRouter
+from typing import Optional
+from preordain.groups.models import CardGroups
+from preordain.utils.connections import connect_db
 import logging
+
+router = APIRouter(
+    prefix="/groups",
+    tags=["Card Groups"],
+)
+
 log = logging.getLogger()
 
+@router.get("/", status_code=200)
+async def get_group_names(use: Optional[bool]):
+    if use:
+        query = """
+        SELECT 
+            DISTINCT(group_in_use) AS "group",
+            groups.description
+        FROM (
+            SELECT 
+                UNNEST(groups) 
+            FROM 
+            card_info.info
+            ) AS a(group_in_use)
+        JOIN card_info.groups AS groups
+            ON groups.group_name = group_in_use
+    """
+    else:
+        query = """
+        
+        SELECT 
+            groups.group_name,
+            groups.description
+        FROM card_info.groups AS groups
+        
+    """
+    conn, cur = connect_db()
+    cur.execute(query)
+    group_data = cur.fetchall()
+    if group_data:
+        return group_data
 
-router = APIRouter()
-
-@router.post("/add/groups")
+@router.post("/add/")
 async def add_card_groups_with_set_id(card_group: CardGroups):
     text_resp = ''
 
-    conn, cur = to_db.connect_db(row_factory = dict_row)
+    conn, cur = connect_db()
 
     cur.execute("SELECT name, set, id, groups from card_info.info where id = %s AND set= %s", (card_group.id, card_group.set))
 
@@ -46,3 +79,17 @@ async def add_card_groups_with_set_id(card_group: CardGroups):
         log.error(card_group)
 
     return text_resp
+
+@router.delete("/remove/groups")
+async def remove_card_groups_with_set_id(card_group: CardGroups):
+    
+    conn, cur = connect_db()
+
+    cur.execute("SELECT name, set, id, groups from card_info.info where id = %s AND set= %s", (card_group.id, card_group.set))
+
+    fetched_card = cur.fetchone()
+
+    # * If the card exists and the group is associated with the card. 
+    if fetched_card and card_group.group in fetched_card['group']:
+        cur.execute("UPDATE card_info.info SET groups = array_remove(card_info.info.groups, %s) WHERE id = %s and set = %s", (card_group.group, card_group.id,card_group.set))
+        
