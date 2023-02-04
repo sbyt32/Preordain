@@ -4,28 +4,30 @@ from api_files.models import BaseResponse, CardInformation
 from psycopg.rows import dict_row
 import scripts.connect.to_database as to_db
 
-from typing import Any, Sequence
-from psycopg import Cursor
 
-# Using Psycopg to create a row factory to parse the data correctly.
-# https://www.psycopg.org/psycopg3/docs/advanced/rows.html#row-factory-create
-class DictPriceFactory:
-    def __init__(self, cursor: Cursor[Any]):
-        self.fields = [c.name for c in cursor.description]
-        self.dict_format = {'prices': {}}
-        for c in cursor.description:
-            if c.name in ['usd','usd_foil','euro','euro_foil','tix']:
-                self.dict_format['prices'][c.name] =  self.dict_format.get(c.name, None)
-            else:
-                self.dict_format[c.name] = self.dict_format.get(c.name, c.name)
-    
-    def __call__(self, values: Sequence[Any]):
-        card_info_data = dict(zip(self.fields[:5], values[:5]))
-        card_info_prices = dict(zip(self.fields[5:], values[5:]))
-
-        self.dict_format['prices'].update(card_info_prices)
-        self.dict_format.update(card_info_data)
-        return self.dict_format
+def parse_data_for_response(data: list):
+    """
+    Parse the data you recieved for this format.
+    """
+    card_data = []
+    for cards in data:
+        card_data.append(
+            {
+                'name': cards['name'],
+                'set': cards['set'],
+                'set_full': cards['set_full'],
+                'id': cards['id'],
+                'last_updated': cards['last_updated'],
+                'prices': {
+                    'usd': cards['usd'],
+                    'usd_foil': cards['usd_foil'],
+                    'euro': cards['euro'],
+                    'euro_foil': cards['euro_foil'],
+                    'tix': cards['tix'],
+                }
+            }
+        )
+    return card_data
 
 router = APIRouter(
     prefix="/search",
@@ -36,7 +38,7 @@ router = APIRouter(
     response_model=BaseResponse[CardInformation], 
     description="Return all cards that are being tracked.",)
 async def read_items(response: Response):
-    conn, cur = to_db.connect_db(row_factory = DictPriceFactory)
+    conn, cur = to_db.connect_db(row_factory = dict_row)
     cur.execute("""
         SELECT 
             info.name,
@@ -71,16 +73,16 @@ async def read_items(response: Response):
     data = cur.fetchall()
     if data:
         response.status_code = status.HTTP_200_OK
-        return BaseResponse[CardInformation](data=data, resp='card_info', status=response.status_code).dict(exclude_none=True)
+        return BaseResponse(resp='card_info', status=response.status_code, data=parse_data_for_response(data))
     response.status_code = status.HTTP_404_NOT_FOUND
-    return BaseResponse(resp='error_request', status=response.status_code)
+    return BaseResponse(resp='error_request', status=response.status_code, info={'message': 'There are no cards in the database!'})
 
 # Get a single card and return the data.
 @router.get("/{set}/{col_num}",
     description="Look for a specific card based on the set and collector number",
     response_model=BaseResponse[CardInformation])
 async def search_by_set_collector_num(set: str, col_num: str, response: Response):
-    conn, cur = to_db.connect_db(row_factory = DictPriceFactory)
+    conn, cur = to_db.connect_db(row_factory = dict_row)
     cur.execute(""" 
         SELECT 
             info.name,
@@ -121,16 +123,16 @@ async def search_by_set_collector_num(set: str, col_num: str, response: Response
     conn.close()
     if data:
         response.status_code = status.HTTP_200_OK
-        return BaseResponse[CardInformation](data=data, resp='card_info', status=response.status_code).dict(exclude_none=True)
+        return BaseResponse[CardInformation](resp='card_info', status=response.status_code,data=parse_data_for_response(data))
     response.status_code = status.HTTP_404_NOT_FOUND
     return BaseResponse(resp='error_request', status=response.status_code)
 
-# Filter for cards by their grouping.
+# # Filter for cards by their grouping.
 @router.get("/{group}",
     response_model=BaseResponse[CardInformation],
     description="Filter for cards by their groups.")
 async def find_by_group(group: str, response: Response):
-    conn, cur = to_db.connect_db(row_factory = DictPriceFactory)
+    conn, cur = to_db.connect_db(row_factory = dict_row)
     cur.execute(""" 
         
         SELECT   
@@ -173,10 +175,9 @@ async def find_by_group(group: str, response: Response):
         (group,)
         )
     data = cur.fetchall()
-    response.status_code = status.HTTP_200_OK
     conn.close()
     if data:
         response.status_code = status.HTTP_200_OK
-        return BaseResponse[CardInformation](info={'group': group, 'info': 'ye'}, data=data, resp='card_info', status=response.status_code)
+        return BaseResponse[CardInformation](info={'group': group, 'info': 'ye'}, data=parse_data_for_response(data), resp='card_info', status=response.status_code)
     response.status_code = status.HTTP_404_NOT_FOUND
     return BaseResponse(resp='error_request', status=response.status_code)

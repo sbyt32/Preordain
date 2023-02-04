@@ -19,3 +19,4 @@ cov_annotate
 # Environment
 .env
 hello.py
+.vscode/settings.json

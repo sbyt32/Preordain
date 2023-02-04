@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from api_files.request_models.add_inventory_model import AddInventory
+from api_files.models import ModifyInventory
 from psycopg.rows import dict_row
 import arrow
 import scripts.connect.to_database as to_db
@@ -10,7 +10,7 @@ log = logging.getLogger()
 router = APIRouter()
 
 @router.post("/add")
-async def add_card_groups_with_set_id(inventory: AddInventory):
+async def add_card_groups_with_set_id(inventory: ModifyInventory):
     current_date = arrow.utcnow().date()
     # ? If you have the set and collector number, but not the TCG_ID, it will pull that.
     if inventory.set and inventory.col_num and not inventory.tcg_id:

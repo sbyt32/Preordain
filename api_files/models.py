@@ -88,6 +88,19 @@ class InventoryData(BaseModel):
     _verify_condition = validator('condition', allow_reuse=True, pre=True, each_item=True)(_verify_cond)
     _verify_variant = validator('variant', allow_reuse=True, pre=True, each_item=True)(_verify_vari)
 
+# * Request Models
+#   For POST / DELETE / PUSH stuff
+
+# ? inventory/add | inventory/delete
+class ModifyInventory(BaseModel):
+    tcg_id      : Optional[str]
+    set         : Optional[str]
+    col_num     : Optional[str]
+    qty         : int
+    buy_price   : float
+    condition   : CardConditions
+    card_variant: CardVariants
+
 
 # * Generic Response & affiliates!
 
@@ -104,7 +117,7 @@ class RespStrings(str, Enum):
     
 ResponseDataTypes = TypeVar('ResponseDataTypes', list, dict)
 
-class BaseResponse(GenericModel, Generic[ResponseDataTypes]):
+class BaseResponse(GenericModel, Generic[ResponseDataTypes], BaseModel):
     resp: RespStrings
     status: int
     info: Optional[dict]
@@ -118,12 +131,11 @@ class BaseResponse(GenericModel, Generic[ResponseDataTypes]):
 
     def dict(self,*args, **kwargs) -> dict[str, Any]:
         """
-            Automaticaly exclude None values.
+            Automaticaly exclude None values. Replaces regular model.dict()
         """
         kwargs.pop("exclude_none", None)
         return super().dict(*args, exclude_none=True, **kwargs)
     
     class Config:
             title = 'Primary Response'
-            # extra = Extra.forbid
 

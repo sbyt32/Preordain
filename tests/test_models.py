@@ -3,7 +3,7 @@ from pydantic import ValidationError
 import pytest
 
 class TestModels:
-    # Testing if the full response properly validates
+    # Testing if just the models themselves work
     def test_return_inventory(self):
         incorrect_variant_data = {
                 "name": "Thalia, Guardian of Thraben",
@@ -15,8 +15,7 @@ class TestModels:
         }
         with pytest.raises(ValidationError):
             InventoryData(**incorrect_variant_data)
-
-    # Testing if just the models themselves work
+    # Testing if the full response properly validates
     def test_InventoryData(self):
         faulty_data = [
             {
