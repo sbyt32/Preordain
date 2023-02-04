@@ -1,8 +1,8 @@
 # ? What do these do?
 __pycache__
 
-# Local Notes & Test Files
-sample.py
+# Local Notes & Files to test stuff out
+playground.py
 
 # Old files, can be reworked
 .old
@@ -18,5 +18,4 @@ cov_annotate
 
 # Environment
 .env
-hello.py
 .vscode/settings.json

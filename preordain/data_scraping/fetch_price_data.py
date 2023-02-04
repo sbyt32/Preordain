@@ -1,5 +1,4 @@
-from scripts.connect import to_database
-from scripts.connect import to_requests_wrapper as to_requests
+from preordain.utils.connections import connect_db, send_response
 from scripts.update_config import update_config
 import arrow
 import datetime
@@ -8,14 +7,14 @@ from time import sleep
 log = logging.getLogger()
 
 def query_price():
-    conn, cur = to_database.connect_db()
+    conn, cur = connect_db()
 
     cur.execute("SELECT uri FROM card_info.info")
     records = cur.fetchall()
 
     log.debug(f"Parsing {len(records)} cards.")
     for uri in records:
-        r = to_requests.send_response('GET',f'https://api.scryfall.com/cards/{uri[0]}')
+        r = send_response('GET',f'https://api.scryfall.com/cards/{uri[0]}')
         sleep(.2)
         insert_values = """
             INSERT INTO card_data (set, id, date, usd, usd_foil, euro, euro_foil, tix) 

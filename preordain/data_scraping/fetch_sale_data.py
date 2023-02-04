@@ -4,10 +4,9 @@ import json
 import logging
 import psycopg
 import datetime
-import scripts.connect.to_requests_wrapper as to_requests_wrapper
 import preordain.config_reader as cfg_reader
-import scripts.connect.to_database as to_db
 from scripts.update_config import update_config
+from preordain.utils.connections import connect_db, send_response
 from dateutil.parser import isoparse
 log = logging.getLogger()
 
@@ -25,7 +24,7 @@ def _get_next_data(card_id:str, offset_value:int):
         "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36"
         }
 
-    return to_requests_wrapper.send_response("POST", url, json=payload, headers=headers)
+    return send_response("POST", url, json=payload, headers=headers)
 
 def fetch_tcg_prices():
     # Define some stuff we will use later
@@ -34,7 +33,7 @@ def fetch_tcg_prices():
     start = time.perf_counter() # ? Used for timing the length to parse everything
     cfg = cfg_reader.read_config('UPDATES', 'database')
 
-    conn, cur = to_db.connect_db()
+    conn, cur = connect_db()
     cur.execute("SELECT tcg_id, name, new_search FROM card_info.info'")
     res = cur.fetchall()
 
