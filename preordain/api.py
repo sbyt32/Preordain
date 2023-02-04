@@ -4,6 +4,7 @@ from preordain.exceptions import TokenError, token_exception_handler
 from fastapi.middleware.cors import CORSMiddleware
 from preordain.information.router import user_router as info_user_router
 from preordain.information.router import admin_router as info_admin_router
+from preordain.information.router import search_router as info_search_router
 from preordain.inventory.router import router as inventory_router
 from preordain.price_sales.router import price_router
 from preordain.price_sales.router import sale_router
@@ -33,6 +34,7 @@ app.add_middleware(
 
 app.include_router(info_admin_router)
 app.include_router(info_user_router)
+app.include_router(info_search_router)
 app.include_router(inventory_router)
 app.include_router(price_router)
 app.include_router(sale_router)

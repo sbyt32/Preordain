@@ -1,14 +1,11 @@
 from typing import TypeVar, Generic, Optional
 import datetime
 from enum import Enum
-from pydantic import BaseModel, validator, Extra
-# from preordain.utils.validators import verify_cond
+from pydantic import BaseModel, validator
 from pydantic.generics import GenericModel
 from enum import Enum
 from typing import Any
-# * Validator functions
 
-# Check if value is a condition or not.  
 
 # * Field Types
 
@@ -26,11 +23,11 @@ class CardVariants(str, Enum):
     Etched = "Etched"
 
 class CardPrices(BaseModel):
-    usd: float | None = None
-    usd_foil: float | None = None
-    euro: float | None = None
-    euro_foil: float | None = None
-    tix: float | None = None
+    usd: float | None = 0.00
+    usd_foil: float | None = 0.00
+    euro: float | None = 0.00
+    euro_foil: float | None = 0.00
+    tix: float | None = 0.00
 
 # ? sales/...
 class SaleData(BaseModel):
@@ -40,8 +37,6 @@ class SaleData(BaseModel):
     quantity  : int
     buy_price : float
     ship_price: float
-
-    # _verify_condition = validator('condition', allow_reuse=True, pre=True)(verify_cond)
 
 # * Response Models
 #   This is what you test against / import into FastAPI!
@@ -78,7 +73,7 @@ ResponseDataTypes = TypeVar('ResponseDataTypes', list, dict)
 class BaseResponse(GenericModel, Generic[ResponseDataTypes], BaseModel):
     resp: RespStrings
     status: int
-    info: Optional[dict]
+    info: Optional[dict] = {}
     data: Optional[list[ResponseDataTypes]]
 
     @validator('info', pre=True)
@@ -91,8 +86,8 @@ class BaseResponse(GenericModel, Generic[ResponseDataTypes], BaseModel):
         """
             Automaticaly exclude None values. Replaces regular model.dict()
         """
-        kwargs.pop("exclude_none", None)
-        return super().dict(*args, exclude_none=True, **kwargs)
+        kwargs.pop("exclude_defaults", None)
+        return super().dict(*args, exclude_defaults=True, **kwargs)
     
     class Config:
             title = 'Primary Response'

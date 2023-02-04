@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, Response, status
 from psycopg.errors import DatetimeFieldOverflow
 from typing import Optional
 from preordain.price_sales.utils import parse_data_for_response, check_card_exists
-import scripts.connect.to_database as to_db
+from preordain.utils.connections import connect_db
 import logging
 import re
 log = logging.getLogger()
@@ -22,7 +22,7 @@ async def get_single_day_data(date:str):
     if not re.match(r'^\d\d\d\d-(0?[1-9]|[1][0-2])-(0?[1-9]|[12][0-9]|3[01])', date):
         raise HTTPException(status_code=400, detail="Incorrect format.")
     else:
-        conn, cur = to_db.connect_db()
+        conn, cur = connect_db()
         try:
             cur.execute("""
 
@@ -64,12 +64,13 @@ async def get_single_card_data(set: str, id: str, max: Optional[int] = 25):
         log.error("User attempted to search more than 25 queries, setting to 25.")
         max = 25
 
-    conn, cur = to_db.connect_db()
+    conn, cur = connect_db()
     cur.execute(""" 
         
         SELECT 
             card_info.info.name,
             card_info.sets.set,
+            card_info.sets.set_full,
             card_info.info.id,
             date,
             usd,
@@ -98,21 +99,24 @@ async def get_single_card_data(set: str, id: str, max: Optional[int] = 25):
         raise HTTPException(status_code=404, detail="This card does not exist on the database!")
     else:
         price_data_single_card = {
-                "name": result[0][0],
-                "set": result[0][1],
-                "collector_id": result[0][2]
+                "name": result[0]['name'],
+                "set": result[0]['set'],
+                "set_full": result[0]['set_full'],
+                "id": result[0]['id'],
+                'data': []
             }
-        price_data_single_card["price_history"] = []
+        # price_data_single_card["price_history"] = []
         for data in result:
-            data = data[3:]
-            price_data_single_card['price_history'].append(
+            price_data_single_card['data'].append(
                 {
-                    "date": data[0],
-                    "usd" : data[1],
-                    "usd_foil" : data[2],
-                    "euro" : data[3],
-                    "euro_foil": data[4],
-                    "tix": data[5],
+                    "date": data['date'],
+                    'prices': {
+                        "usd" : data['usd'],
+                        "usd_foil" : data['usd_foil'],
+                        "euro" : data['euro'],
+                        "euro_foil": data['euro_foil'],
+                        "tix": data['tix'],
+                    }
                 }
             )
         log.debug(f"Returning card data for {price_data_single_card['name']}")
@@ -121,10 +125,10 @@ async def get_single_card_data(set: str, id: str, max: Optional[int] = 25):
 # Return the searched card + avg sale data. 
 # * daily_card_sales
 @sale_router.get("/recent/{set}/{id}", description="Get the most recent sales from this card. Max 25")
-async def recent_card_sales_tcg_id(tcg_id:str, response: Response):
+async def recent_card_sales_set_id(tcg_id:str, response: Response):
     searched_card = check_card_exists(tcg_id=tcg_id)
     if searched_card:
-        conn, cur = to_db.connect_db()
+        conn, cur = connect_db()
 
         cur.execute("""
             SELECT 
@@ -163,7 +167,7 @@ async def recent_card_sales_tcg_id(tcg_id:str, response: Response):
 async def get_tcg_sales(set: str, col_num:str):
     searched_card = check_card_exists(set=set, col_num=col_num)
     if searched_card:
-        conn, cur = to_db.connect_db()
+        conn, cur = connect_db()
         cur.execute("""
             SELECT 
                 info.name,
@@ -187,6 +191,7 @@ async def get_tcg_sales(set: str, col_num:str):
         """, (set,col_num,)
         )
         results = cur.fetchall()
+        # return results
         conn.close()
         if results:
             resp = {

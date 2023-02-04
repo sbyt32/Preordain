@@ -9,7 +9,8 @@ from preordain.models import BaseResponse
 from preordain.dependencies import write_access
 
 
-user_router = APIRouter(prefix="/search",tags=["Card Information, etc"])
+user_router = APIRouter(prefix="/card",tags=["Card Information, etc"])
+search_router = APIRouter(prefix='/search', tags=["Search for a card"])
 admin_router = APIRouter(prefix="/admin", tags=["Admin Panel"], dependencies=[Depends(write_access)])
 
 # Return all cards
@@ -160,6 +161,18 @@ async def find_by_group(group: str, response: Response):
     response.status_code = status.HTTP_404_NOT_FOUND
     return BaseResponse(resp='error_request', status=response.status_code)
 
+
+@search_router.get('/{query}')
+async def search_for_card(query: str):
+    conn, cur = connect_db()
+    cur.execute("""
+    SELECT * FROM card_info.info WHERE lower(card_info.info.name) ILIKE %s 
+
+    """, ('%{}%'.format(query),))
+    data = cur.fetchall()
+    conn.close()
+    if data:
+        return data
 
 @admin_router.post("/add/{set}/{coll_num}")
 async def add_card_to_track(set: str, coll_num:str):
