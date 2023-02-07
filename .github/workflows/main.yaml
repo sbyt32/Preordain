@@ -25,6 +25,7 @@ jobs:
           DB_EXISTS: true
           TESTING: true
           DB_HOST: ${{ secrets.DB_HOST }}
+          TCG_SALES: "2022-12-14 05:59:07.360573+00:00"
           USER: ${{ secrets.USER }}
           PASSWORD: ${{ secrets.PASSWORD }}
           DB_NAME: ${{ secrets.DB_NAME }}
