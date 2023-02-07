@@ -23,11 +23,11 @@ class CardVariants(str, Enum):
     Etched = "Etched"
 
 class CardPrices(BaseModel):
-    usd: float | None = 0.00
-    usd_foil: float | None = 0.00
-    euro: float | None = 0.00
-    euro_foil: float | None = 0.00
-    tix: float | None = 0.00
+    usd: Optional[float] = 0.00
+    usd_foil: Optional[float] = 0.00
+    euro: Optional[float] = 0.00
+    euro_foil: Optional[float] = 0.00
+    tix: Optional[float] = 0.00
 
 # ? sales/...
 class SaleData(BaseModel):
