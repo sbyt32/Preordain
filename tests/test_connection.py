@@ -1,12 +1,12 @@
 # TODO: Figure out how to correctly write tests
 from fastapi.testclient import TestClient
-from api import app
+from preordain.api import app
 class TestConnections:
     def test_connect(self):
 
         client = TestClient(app)
 
-        response = client.get('/groups/?use=true&access=testing')
+        response = client.get('/groups/?use=true')
 
         assert response.status_code == 200
         # ! This will eventually change, consider fixing this

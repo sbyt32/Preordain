@@ -1,13 +1,13 @@
 import configparser
 import os
 import logging
-import logging_details
+from preordain.logging_details import log_setup
 from scripts.setup_scripts import cfg_setup, set_up_db
-logging_details.log_setup()
-log = logging.getLogger()
-log.setLevel(logging.DEBUG)
 
 def main():
+    log_setup()
+    log = logging.getLogger()
+    log.setLevel(logging.DEBUG)
     cfg_reconfig = ''
     db_reconfig = ''
     # * Have to double check that we have a config.ini. Otherwise, can't do much, really
