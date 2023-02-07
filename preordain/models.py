@@ -60,8 +60,11 @@ class RecentCardSales(BaseModel):
 class RespStrings(str, Enum):
     # ! Error
     error_request = 'error_request'             # * For any Errors
+    no_results = 'no_results'                   # * For any Errors
     # * card/...
     card_info = 'card_info'                     # * /card/...
+    # * search/{query}
+    search_query = 'search_query'               # * /search/{query}
     # * sales/...
     daily_card_sales = 'daily_card_sales'       # * /daily/{set}/{col_num}
     recent_card_sales = 'recent_card_sales'     # * /card/{tcg_id}

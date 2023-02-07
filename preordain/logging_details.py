@@ -11,7 +11,8 @@ ERROR_FORMAT    =   "%(asctime)s | %(levelname)-8s | %(pathname)-20s | %(lineno)
 
 # TODO:
 # EXCEPT_FORMAT   =   "%(asctime)s | %(levelname)-8s | %(filename)-20s | %(message)s"
-
+# LOG_FORMAT_DEBUG = "%(levelname)s | %(message)s:%(pathname)s:%(funcName)s:%(lineno)d"
+LOG_FORMAT = "%(leveltime)s"
 
 log_file_info   = f"logs/{local.format('MMM_DD_YY').lower()}.log"
 

@@ -1,11 +1,9 @@
 from fastapi import APIRouter, Depends, Response, status
+from preordain.utils.connections import connect_db, send_response
 from preordain.inventory.models import ModifyInventory, InventoryData
 from preordain.models import BaseResponse
 from preordain.dependencies import select_access
-from psycopg.rows import dict_row
 import arrow
-import scripts.connect.to_database as to_db
-import scripts.connect.to_requests_wrapper as to_requests_wrapper
 import logging
 
 log = logging.getLogger()
@@ -22,7 +20,7 @@ router = APIRouter(
 # Return your entire inventory
 # * retrieve_inventory
 async def get_inventory(response: Response):
-    conn, cur = to_db.connect_db(row_factory = dict_row)
+    conn, cur = connect_db()
 
     cur.execute("""
         SELECT
@@ -68,14 +66,14 @@ async def add_to_inventory(inventory: ModifyInventory):
     current_date = arrow.utcnow().date()
     # ? If you have the set and collector number, but not the TCG_ID, it will pull that.
     if inventory.set and inventory.col_num and not inventory.tcg_id:
-        resp = to_requests_wrapper.send_response("GET", f'https://api.scryfall.com/cards/{inventory.set.lower()}/{inventory.col_num.lower()}')
+        resp = send_response("GET", f'https://api.scryfall.com/cards/{inventory.set.lower()}/{inventory.col_num.lower()}')
         if inventory.card_variant == "Etched":
             inventory.tcg_id = resp['tcgplayer_etched_id']
         else:
             inventory.tcg_id = str(resp['tcgplayer_id'])
         
     if inventory.tcg_id:
-        conn, cur = to_db.connect_db(row_factory = dict_row)
+        conn, cur = connect_db()
 
         cur.execute("""
             SELECT 

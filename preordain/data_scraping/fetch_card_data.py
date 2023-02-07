@@ -5,8 +5,7 @@ from scripts.check_if_update import check_date_to_update
 import arrow
 import datetime
 import logging
-import logging_details
-
+from preordain.logging_details import log_setup 
 
 # ? Maybe move this to a config file! How would I put a timedelta tho in an .ini
 # PRICE_CHECK should fetch data every 22 hours, which is around a day with some leeway.
@@ -15,7 +14,7 @@ PRICE_CHECK = datetime.timedelta(hours=22)
 SALE_CHECK  = datetime.timedelta(days=7)
 
 def main():
-    logging_details.log_setup()
+    log_setup()
     log = logging.getLogger()
     log.setLevel(logging.DEBUG)
 
