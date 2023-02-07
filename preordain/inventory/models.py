@@ -1,6 +1,5 @@
 from preordain.models import CardConditions, CardVariants
-# from preordain.utils.validators import verify_cond, verify_vari
-from pydantic import BaseModel, validator
+from pydantic import BaseModel
 from typing import Optional
 
 class InventoryData(BaseModel):
@@ -13,9 +12,6 @@ class InventoryData(BaseModel):
 
     class Config:
         use_enum_values = True
-    # Verify
-    # _verify_condition = validator('condition', allow_reuse=True, pre=True, each_item=True)(verify_cond)
-    # _verify_variant = validator('variant', allow_reuse=True, pre=True, each_item=True)(verify_vari)
 
 # ? inventory/add | inventory/delete
 class ModifyInventory(BaseModel):
@@ -26,6 +22,3 @@ class ModifyInventory(BaseModel):
     buy_price   : float
     condition   : CardConditions
     card_variant: CardVariants
-
-    # _verify_condition = validator('condition', allow_reuse=True, pre=True, each_item=True)(verify_cond)
-    # _verify_variant = validator('variant', allow_reuse=True, pre=True, each_item=True)(verify_vari)

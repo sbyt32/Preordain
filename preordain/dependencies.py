@@ -1,25 +1,22 @@
 from fastapi import Header
 from preordain.exceptions import TokenError
-from preordain.config_reader import read_config
+from preordain import config
 import logging
 log = logging.getLogger()
-config = read_config("CONNECT", "tokens")
 
 #  = Header() makes it so it has to pass through a header rather than a string
 
 # ? All routes.
 async def select_access(access: str):
-    if access != config['sec_token']:
+    if access != config.SEC_TOKEN:
         raise TokenError("access")
-
 
 # ? Admin route.
 async def write_access(write_access: str = Header()):
-    if write_access != config['write_token']:
+    if write_access != config.WRITE_TOKEN:
         raise TokenError('write')
-
 
 # ?  Price route.
 async def price_access(price_access: str = Header()):
-    if price_access != config['price_token']:
+    if price_access != config.PRICE_TOKEN:
         raise TokenError('price')

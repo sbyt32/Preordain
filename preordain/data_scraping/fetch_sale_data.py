@@ -4,7 +4,7 @@ import json
 import logging
 import psycopg
 import datetime
-import preordain.config_reader as cfg_reader
+from preordain import config
 from scripts.update_config import update_config
 from preordain.utils.connections import connect_db, send_response
 from dateutil.parser import isoparse
@@ -31,16 +31,15 @@ def fetch_tcg_prices():
     stop_future_looping = "UPDATE card_info.info SET new_search = false WHERE tcg_id = %s"
 
     start = time.perf_counter() # ? Used for timing the length to parse everything
-    cfg = cfg_reader.read_config('UPDATES', 'database')
 
     conn, cur = connect_db()
     cur.execute("SELECT tcg_id, name, new_search FROM card_info.info'")
     res = cur.fetchall()
 
     for card_data in res:
-        card_id:str = card_data[0]
-        card_name:str = card_data[1]
-        duplicate_merge:bool = card_data[2]
+        card_id:str = card_data['tcg_id']
+        card_name:str = card_data['name']
+        duplicate_merge:bool = card_data['new_search']
         offset_value = 0
         increment = 0
 
@@ -83,7 +82,7 @@ def fetch_tcg_prices():
                             # We should merge because of an override like adding a new card after initial fetch (new_search under card_info.info), 
                             # If there was no previous checks performed (cfg file check), 
                             # If the data point was added after the initial fetch (cfg file check against order date).
-                        if duplicate_merge or cfg["tcg_sales"] == 'None' or isoparse(order_date) > isoparse(cfg["tcg_sales"]):
+                        if duplicate_merge or config.TCG_SALES == 'None' or isoparse(order_date) > isoparse(config.TCG_SALES):
                             log.warning(f"Duplicate data for card {card_name}, approx. # {offset_value} - {offset_value + 25}, merging ID {order_id}")
                             tx1.connection.execute("""                            
                                 UPDATE card_data_tcg

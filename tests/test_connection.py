@@ -1,6 +1,7 @@
 # TODO: Figure out how to correctly write tests
 from fastapi.testclient import TestClient
 from preordain.api import app
+import os
 class TestConnections:
     def test_connect(self):
 
@@ -26,9 +27,18 @@ class TestConnections:
         client = TestClient(app)
         response = client.get('/')
         # TODO: Test exceptions! This will eventually be an exception.
-        assert response.status_code == 200
-        assert response.json() == {
-            "resp": "error",
-            "status": 200,
-            "message": "The request failed due to being at root. If you're just testing if it works, yeah it works.",
+        if os.path.exists('.env'):
+            assert response.status_code == 400
+            assert response.json() == {
+                "resp": "error",
+                "status": 400,
+                "message": "The request failed due to being at root. If you're just testing if it works, yeah it works.",
+            }
+            # So this just isn't the right way to do it, obv.
+        else:
+            assert response.status_code == 500
+            assert response.json() == {
+            'resp'  :   'error',
+            'status':   response.status_code,
+            'detail':   'Configuration file improperly configured. Script will not function.'
         }

@@ -12,8 +12,15 @@ router = APIRouter(
 log = logging.getLogger()
 
 @router.get("/", status_code=200)
-async def get_group_names(use: Optional[bool]):
-    if use:
+async def get_group_names(in_use: Optional[bool] = True):
+    """
+        Returns the lists of groups
+        Default returns only groups in use
+        ```python
+        in_use: bool
+        ```
+    """
+    if in_use:
         query = """
         SELECT 
             DISTINCT(group_in_use) AS "group",

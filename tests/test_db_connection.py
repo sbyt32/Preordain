@@ -1,10 +1,13 @@
 import psycopg
-from preordain.config_reader import read_config
+from preordain import config
 # TODO: Eventually
 
-db_params = read_config('CONNECT', 'database')
 
-conn_info = psycopg.conninfo.make_conninfo(**db_params)
+db_info = dict(
+        zip (   ('host','user', 'password', 'dbname'), 
+                (str(config.DB_HOST), str(config.USER), str(config.PASSWORD), str(config.DB_NAME))
+            ))
+conn_info = psycopg.conninfo.make_conninfo(**db_info)
 with psycopg.connect(conn_info) as conn:
 
     with conn.cursor() as cur:

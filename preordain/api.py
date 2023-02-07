@@ -15,7 +15,6 @@ import logging
 log = logging.getLogger()
 log.setLevel(logging.DEBUG)
 
-# * Accessing the database should require the select_access token
 app = FastAPI()
 
 # ? I really don't like this out in the open, but I'm leaving it here for testing. 
@@ -43,10 +42,11 @@ app.include_router(groups_router)
 
 @app.get("/", tags=["Test Connection"])
 async def root(response: Response):
-    if os.path.exists('config_files/config.ini'):
+    if os.path.exists('.env'):
+        response.status_code = status.HTTP_400_BAD_REQUEST
         return {
             "resp": "error",
-            "status": 200,
+            "status": response.status_code,
             "message": "The request failed due to being at root. If you're just testing if it works, yeah it works.",
         }
     else:

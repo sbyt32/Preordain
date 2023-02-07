@@ -124,9 +124,9 @@ async def get_single_card_data(set: str, id: str, max: Optional[int] = 25):
 
 # Return the searched card + avg sale data. 
 # * daily_card_sales
-@sale_router.get("/recent/{set}/{id}", description="Get the most recent sales from this card. Max 25")
-async def recent_card_sales_set_id(tcg_id:str, response: Response):
-    searched_card = check_card_exists(tcg_id=tcg_id)
+@sale_router.get("/recent/{set}/{col_num}", description="Get the most recent sales from this card. Max 25")
+async def recent_card_sales_set_id(set:str, col_num:str, response: Response):
+    searched_card = check_card_exists(set=set, col_num=col_num)
     if searched_card:
         conn, cur = connect_db()
 
@@ -150,7 +150,7 @@ async def recent_card_sales_set_id(tcg_id:str, response: Response):
             ORDER BY
                 order_date desc
             LIMIT 25
-        """, (tcg_id,))
+        """, (set,col_num,))
         
         recieved_sale_data = cur.fetchall()
         searched_card['sale_data'] = recieved_sale_data
