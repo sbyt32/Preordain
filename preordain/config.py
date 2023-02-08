@@ -7,8 +7,8 @@ config = Config('.env')
 
 DB_EXISTS = config('DB_EXISTS', cast=bool)
 DB_HOST = config('DB_HOST', cast=Secret)
-USER = config('USER', cast=Secret)
-PASSWORD = config('PASSWORD', cast=Secret)
+DB_USER = config('DB_USER', cast=Secret)
+DB_PASS = config('DB_PASS', cast=Secret)
 TCG_SALES = config('TCG_SALES', cast=str) # ? So, it's first a string, then needs to be cast as a datetime
 
 SEC_TOKEN = config('SEC_TOKEN', cast=Secret)
