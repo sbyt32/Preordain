@@ -12,7 +12,8 @@ ERROR_FORMAT    =   "%(asctime)s | %(levelname)-8s | %(pathname)-20s | %(lineno)
 # TODO:
 # EXCEPT_FORMAT   =   "%(asctime)s | %(levelname)-8s | %(filename)-20s | %(message)s"
 # LOG_FORMAT_DEBUG = "%(levelname)s | %(message)s:%(pathname)s:%(funcName)s:%(lineno)d"
-LOG_FORMAT = "%(leveltime)s"
+LOG_FORMAT_DEBUG = "%(asctime)s | %(levelname)-8s | %(pathname)-40s | %(funcName)s() : %(lineno)d | %(message)s"
+# LOG_FORMAT = "%(leveltime)s"
 
 log_file_info   = f"logs/{local.format('MMM_DD_YY').lower()}.log"
 
@@ -26,6 +27,9 @@ def log_setup():
             },
             'file_format': {
                 'format': FILE_FORMAT
+            },
+            'file_format_debug': {
+                'format': LOG_FORMAT_DEBUG
             },
             'file_format_error': {
                 'format': ERROR_FORMAT
@@ -46,7 +50,7 @@ def log_setup():
             'file_debug': {
                 'class': 'logging.FileHandler',
                 'level': logging.DEBUG,
-                'formatter': 'file_format',
+                'formatter': 'file_format_debug',
                 'filename': log_file_info,
             },
             'file_error': {

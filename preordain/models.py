@@ -1,5 +1,4 @@
 from typing import TypeVar, Generic, Optional
-import datetime
 from enum import Enum
 from pydantic import BaseModel, validator
 from pydantic.generics import GenericModel
@@ -7,9 +6,6 @@ from enum import Enum
 from typing import Any
 
 
-# * Field Types
-
-# ? All
 class CardConditions(str, Enum):
     NM = 'NM'
     LP = 'LP'
@@ -29,38 +25,12 @@ class CardPrices(BaseModel):
     euro_foil: Optional[float] = 0.00
     tix: Optional[float] = 0.00
 
-# ? sales/...
-class SaleData(BaseModel):
-    order_date: datetime.datetime
-    condition : CardConditions
-    variant   : CardVariants
-    quantity  : int
-    buy_price : float
-    ship_price: float
-
-# * Response Models
-#   This is what you test against / import into FastAPI!
-
-# ? card/...
-    # ? card/search/...
-
-
-# ? sales/...
-class RecentCardSales(BaseModel):
-    card_name: str
-    set_name: str
-    tcg_id: str
-    sale_data: list[SaleData]
-    
-# ? inventory/...
-
-
 # * Generic Response & affiliates!
 
 class RespStrings(str, Enum):
     # ! Error
     error_request = 'error_request'             # * For any Errors
-    no_results = 'no_results'                   # * For any Errors
+    no_results = 'no_results'                   # * No results
     # * card/...
     card_info = 'card_info'                     # * /card/...
     # * search/{query}

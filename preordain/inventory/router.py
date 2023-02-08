@@ -2,17 +2,12 @@ from fastapi import APIRouter, Depends, Response, status
 from preordain.utils.connections import connect_db, send_response
 from preordain.inventory.models import ModifyInventory, InventoryData
 from preordain.models import BaseResponse
-from preordain.dependencies import select_access
 import arrow
 import logging
 
 log = logging.getLogger()
 
-router = APIRouter(
-    prefix="/inventory",
-    tags=["Inventory Management"],
-    dependencies=[Depends(select_access)]
-)
+router = APIRouter()
 @router.get(
     path="/", description="Return your entire inventory.",
     response_model=BaseResponse[InventoryData])
