@@ -3,6 +3,17 @@
 
 This project contains a group of Python scripts that will allow the user to create a PostgreSQL database, and begin to scrape price data from Scryfall and TCGPlayer. It uses FastAPI to retrieve information from the database and returns in a .json format. 
 
+
+Start the API with...
+``` 
+    hypercorn preordain.api:app
+```
+Written documentation is a WIP. Location is currently [here](docs/api_functions.md). More functions will be added and documented over time.
+
+
+------------
+
+
 - [MTG Price Fetcher](#mtg-price-fetcher)
   - [Features](#features)
   - [How it works](#how-it-works)
@@ -32,18 +43,8 @@ This project contains a group of Python scripts that will allow the user to crea
   - Automatic setup via `set_up.py`
 
 **To Do:**
-- Server
-    - Manipulate Price Data
-    - Consistent import names
-- API
-    - Refactor router-related data
-    - Custom classes for response formats
-- Both
-    - Custom Exceptions for cleaner errors
-    - Update README
-    - Testing
-- Front-End
-    - Exist
+
+  Just check [here](https://github.com/sbyt32/mtg_price_fetcher/discussions/22)
 
 ## How it works
 
@@ -82,14 +83,6 @@ After token creation, `set_up.py` will then check if the database exists already
 | variant              | Enum     | Create a set of variables for PostgreSQL, for card variants              |
 | public.inventory     | Table    | public schema, holds the inventory of the user                           |
 
-### [`api.py`](api.py)
-`api.py` is the API for the project, run it with [hypercorn](https://pgjones.gitlab.io/hypercorn/). It is also currently the only way to add cards to be tracked at the moment (via the docs + Swagger UI docs).
-
-    hypercorn api:app
-
-Uvicorn might work, but have not tried it out.
-
-Written documentation is a WIP. Location is currently [Here](docs/api_functions.md). More functions will be added and documented over time.
 
 ### [`fetch_card_data.py`](fetch_card_data.py)
 Two scripts in one! The script will first check if the database exists before continuing. If it does not, it will return an error and not function. Otherwise, it will check if a certain time has elapsed, determined by the variables `PRICE_CHECK` and `SALE_CHECK` within the file.

@@ -7,7 +7,7 @@
         2, // Foil
     ],
     "conditions": [
-        1, // = Near Mint (NP)
+        1, // = Near Mint (NM)
         2, // = Lightly Played (LP)
         3, // = Moderately Played (MP)
         4, // = Heavily Played (HP)

@@ -1,19 +1,21 @@
 # ? What do these do?
 __pycache__
 
-# Local Notes & Test Files
-psql_notes.md
-psql.md
-sample.py
-
-# TODO: Configure the test folder
-# tests
+# Local Notes & Files to test stuff out
+playground.py
 
 # Old files, can be reworked
 .old
 
 # Configuration folder
 config_files/
+# Configuration folder, but for tests
+config_files_2/
 
-# pytest --cov=tests/
+# pytest --cov=tests/ files
 .coverage
+cov_annotate
+
+# Environment
+.env
+.vscode/settings.json
