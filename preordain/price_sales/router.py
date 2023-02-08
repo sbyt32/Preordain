@@ -8,54 +8,47 @@ import re
 log = logging.getLogger()
 
 
-price_router = APIRouter(
-    prefix="/price",
-    tags=["Get Prices (from Scryfall)"]
-)
-sale_router = APIRouter(
-    prefix="/sales",
-    tags=["Get Sales (From TCGPlayer)"]
-)
+price_router = APIRouter()
+sale_router = APIRouter()
 
 @price_router.get("/{date}",  description="Get the price data for the a certain day. YYYY-MM-DD format.")
 async def get_single_day_data(date:str):
     if not re.match(r'^\d\d\d\d-(0?[1-9]|[1][0-2])-(0?[1-9]|[12][0-9]|3[01])', date):
         raise HTTPException(status_code=400, detail="Incorrect format.")
+    conn, cur = connect_db()
+    try:
+        cur.execute("""
+
+            SELECT 
+                card_info.info.name,
+                card_info.info.set,
+                card_info.sets.set_full,
+                card_info.info.id,
+                date
+                usd,
+                usd_foil,
+                euro,
+                euro_foil,
+                tix 
+            FROM card_data
+            JOIN card_info.info
+                ON card_data.set = card_info.info.set
+                AND card_data.id = card_info.info.id
+            JOIN card_info.sets
+                ON card_data.set = card_info.sets.set
+            WHERE
+                date = %s
+
+        """, (date,))
+    except DatetimeFieldOverflow as e:
+        # Placeholder, this is if the date isn't valid.
+        return Exception("helpo")
+    resp = cur.fetchall()
+    conn.close()
+    if resp:
+        return parse_data_for_response(resp)
     else:
-        conn, cur = connect_db()
-        try:
-            cur.execute("""
-
-                SELECT 
-                    card_info.info.name,
-                    card_info.info.set,
-                    card_info.sets.set_full,
-                    card_info.info.id,
-                    date
-                    usd,
-                    usd_foil,
-                    euro,
-                    euro_foil,
-                    tix 
-                FROM card_data
-                JOIN card_info.info
-                    ON card_data.set = card_info.info.set
-                    AND card_data.id = card_info.info.id
-                JOIN card_info.sets
-                    ON card_data.set = card_info.sets.set
-                WHERE
-                    date = %s
-
-            """, (date,))
-        except DatetimeFieldOverflow as e:
-            # Placeholder, this is if the date isn't valid.
-            return Exception("helpo")
-        resp = cur.fetchall()
-        conn.close()
-        if resp:
-            return parse_data_for_response(resp)
-        else:
-            raise HTTPException(status_code=404, detail=f"There is no price data for {date}")
+        raise HTTPException(status_code=404, detail=f"There is no price data for {date}")
 
 @price_router.get("/{set}/{id}", description="Get the price data for one card. Last 25 results only.")
 async def get_single_card_data(set: str, id: str, max: Optional[int] = 25):
@@ -105,7 +98,6 @@ async def get_single_card_data(set: str, id: str, max: Optional[int] = 25):
                 "id": result[0]['id'],
                 'data': []
             }
-        # price_data_single_card["price_history"] = []
         for data in result:
             price_data_single_card['data'].append(
                 {
@@ -124,9 +116,9 @@ async def get_single_card_data(set: str, id: str, max: Optional[int] = 25):
 
 # Return the searched card + avg sale data. 
 # * daily_card_sales
-@sale_router.get("/recent/{set}/{id}", description="Get the most recent sales from this card. Max 25")
-async def recent_card_sales_set_id(tcg_id:str, response: Response):
-    searched_card = check_card_exists(tcg_id=tcg_id)
+@sale_router.get("/recent/{set}/{col_num}", description="Get the most recent sales from this card. Max 25")
+async def recent_card_sales_set_id(set:str, col_num:str, response: Response):
+    searched_card = check_card_exists(set=set, col_num=col_num)
     if searched_card:
         conn, cur = connect_db()
 
@@ -150,7 +142,7 @@ async def recent_card_sales_set_id(tcg_id:str, response: Response):
             ORDER BY
                 order_date desc
             LIMIT 25
-        """, (tcg_id,))
+        """, (set,col_num,))
         
         recieved_sale_data = cur.fetchall()
         searched_card['sale_data'] = recieved_sale_data
@@ -191,7 +183,6 @@ async def get_tcg_sales(set: str, col_num:str):
         """, (set,col_num,)
         )
         results = cur.fetchall()
-        # return results
         conn.close()
         if results:
             resp = {

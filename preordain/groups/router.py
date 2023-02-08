@@ -4,16 +4,20 @@ from preordain.groups.models import CardGroups
 from preordain.utils.connections import connect_db
 import logging
 
-router = APIRouter(
-    prefix="/groups",
-    tags=["Card Groups"],
-)
-
+user_groups = APIRouter()
+admin_groups = APIRouter()
 log = logging.getLogger()
 
-@router.get("/", status_code=200)
-async def get_group_names(use: Optional[bool]):
-    if use:
+@user_groups.get("/", status_code=200)
+async def get_group_names(in_use: Optional[bool] = True):
+    """
+        Returns the lists of groups
+        Default returns only groups in use
+        ```python
+        in_use: bool
+        ```
+    """
+    if in_use:
         query = """
         SELECT 
             DISTINCT(group_in_use) AS "group",
@@ -39,10 +43,11 @@ async def get_group_names(use: Optional[bool]):
     conn, cur = connect_db()
     cur.execute(query)
     group_data = cur.fetchall()
+    conn.close()
     if group_data:
         return group_data
 
-@router.post("/add/")
+@admin_groups.post("/add/")
 async def add_card_groups_with_set_id(card_group: CardGroups):
     text_resp = ''
 
@@ -80,7 +85,7 @@ async def add_card_groups_with_set_id(card_group: CardGroups):
 
     return text_resp
 
-@router.delete("/remove/groups")
+@admin_groups.delete("/remove/")
 async def remove_card_groups_with_set_id(card_group: CardGroups):
     
     conn, cur = connect_db()
