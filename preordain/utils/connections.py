@@ -14,7 +14,7 @@ def connect_db():
     db_info = dict(
         zip (   
             ('host','user', 'password', 'dbname'), 
-            (str(config.DB_HOST), str(config.USER), str(config.PASSWORD), str(config.DB_NAME))
+            (str(config.DB_HOST), str(config.DB_USER), str(config.DB_PASS), str(config.DB_NAME))
             )
         )
     log.debug(f"Connecting to database: {db_info['dbname']}")
