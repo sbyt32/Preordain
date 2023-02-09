@@ -3,7 +3,7 @@ name: Run PyTest
 on: [push]
 jobs:
   testing:
-    runs-on: ${{matrix.host}}
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: ["windows-latest", "macos-latest", "ubuntu-latest"]
