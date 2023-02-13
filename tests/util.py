@@ -3,7 +3,8 @@
 from typing import Union
 import json
 
-def get_sample_data(folder:str):
-    with open(f'tests/{folder}/sample_data.json') as f:
-        data:Union[dict, list] = json.load(f)
+
+def get_sample_data(folder: str):
+    with open(f"tests/{folder}/sample_data.json") as f:
+        data: Union[dict, list] = json.load(f)
     return data

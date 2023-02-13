@@ -8,16 +8,44 @@ import logging
 log = logging.getLogger()
 
 router = APIRouter()
+
+
 @router.get(
-    path="/", description="Return your entire inventory.",
-    response_model=BaseResponse[InventoryData])
+    path="/",
+    description="Return your entire inventory.",
+    responses={
+        200: {
+            "model": BaseResponse[InventoryData],
+            "description": "Retrieve your inventory.",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "resp": "price_data",
+                        "status": 200,
+                        "data": [
+                            {
+                                "name": "Thalia, Guardian of Thraben",
+                                "set": "Innistrad: Crimson Vow",
+                                "quantity": 2,
+                                "condition": "NM",
+                                "variant": "Normal",
+                                "avg_cost": 2,
+                            }
+                        ],
+                    }
+                }
+            },
+        },
+    },
+)
 
 # Return your entire inventory
 # * retrieve_inventory
 async def get_inventory(response: Response):
     conn, cur = connect_db()
 
-    cur.execute("""
+    cur.execute(
+        """
         SELECT
             info.name as name,
             set.set_full as set,
@@ -50,105 +78,119 @@ async def get_inventory(response: Response):
             set.set_full,
             inventory.card_condition,
             inventory.card_variant
-    """)
-    data = cur.fetchall()
-    response.status_code=status.HTTP_200_OK
+    """
+    )
+    inventory = cur.fetchall()
     conn.close()
-    return BaseResponse[InventoryData](data=data, status=response.status_code, resp='retrieve_inventory')
-
-@router.post("/add")
-async def add_to_inventory(inventory: ModifyInventory):
-    current_date = arrow.utcnow().date()
-    # ? If you have the set and collector number, but not the TCG_ID, it will pull that.
-    if inventory.set and inventory.col_num and not inventory.tcg_id:
-        resp = send_response("GET", f'https://api.scryfall.com/cards/{inventory.set.lower()}/{inventory.col_num.lower()}')
-        if inventory.card_variant == "Etched":
-            inventory.tcg_id = resp['tcgplayer_etched_id']
-        else:
-            inventory.tcg_id = str(resp['tcgplayer_id'])
-        
-    if inventory.tcg_id:
-        conn, cur = connect_db()
-
-        cur.execute("""
-            SELECT 
-                EXISTS (
-                    SELECT 1 
-                    FROM inventory
-                    WHERE tcg_id        = %s 
-                    AND card_condition  = %s 
-                    AND card_variant    = %s 
-                    AND buy_price       = %s
-                    AND add_date        = %s
-                )
-            """, (      
-                    inventory.tcg_id,
-                    inventory.condition,
-                    inventory.card_variant,
-                    inventory.buy_price,
-                    current_date
-                )
+    if inventory:
+        response.status_code = status.HTTP_200_OK
+        # return data
+        return BaseResponse[InventoryData](
+            status=response.status_code, resp="retrieve_inventory", data=inventory
         )
+    response.status_code = status.HTTP_404_NOT_FOUND
+    return BaseResponse(
+        resp="error_request",
+        status=response.status_code,
+        info={"message": "There are no cards in the database!"},
+    )
 
-        if cur.fetchone()['exists']:
-            cur.execute("""
-                UPDATE inventory
-                SET qty = inventory.qty + %s
-                WHERE tcg_id = %s
-                AND card_condition = %s
-                AND card_variant = %s
-                AND buy_price = %s
-                AND add_date = %s
-                """, (
-                    inventory.qty,
-                    inventory.tcg_id,
-                    inventory.condition,
-                    inventory.card_variant,
-                    inventory.buy_price,
-                    current_date
-                    )
-            )
-        else:
-            cur.execute("""
-                INSERT INTO inventory
-                VALUES (
-                    %s,
-                    %s,
-                    %s,
-                    %s,
-                    %s,
-                    %s
-                )
-                """, (
-                    current_date,
-                    inventory.tcg_id,
-                    inventory.qty,
-                    inventory.buy_price,
-                    inventory.condition,
-                    inventory.card_variant
-                    )
-            )
 
-        cur.execute("""
-            SELECT * FROM inventory 
-            WHERE 
-                tcg_id = %s 
-                AND card_condition = %s 
-                AND card_variant = %s
-                AND buy_price = %s
-                AND add_date = %s
-            """, (
-                inventory.tcg_id, 
-                inventory.condition, 
-                inventory.card_variant,
-                inventory.buy_price,
-                current_date
-                )
-        )
-        inventory_check = cur.fetchone()
-        conn.commit()
-        return inventory_check
+# ! Disabled for now
+# @router.post("/add")
+# async def add_to_inventory(inventory: ModifyInventory):
+#     current_date = arrow.utcnow().date()
+#     # ? If you have the set and collector number, but not the TCG_ID, it will pull that.
+#     if inventory.set and inventory.col_num and not inventory.tcg_id:
+#         resp = send_response("GET", f'https://api.scryfall.com/cards/{inventory.set.lower()}/{inventory.col_num.lower()}')
+#         if inventory.card_variant == "Etched":
+#             inventory.tcg_id = resp['tcgplayer_etched_id']
+#         else:
+#             inventory.tcg_id = str(resp['tcgplayer_id'])
 
-@router.delete('/delete')
+#     if inventory.tcg_id:
+#         conn, cur = connect_db()
+
+#         cur.execute("""
+#             SELECT
+#                 EXISTS (
+#                     SELECT 1
+#                     FROM inventory
+#                     WHERE tcg_id        = %s
+#                     AND card_condition  = %s
+#                     AND card_variant    = %s
+#                     AND buy_price       = %s
+#                     AND add_date        = %s
+#                 )
+#             """, (
+#                     inventory.tcg_id,
+#                     inventory.condition,
+#                     inventory.card_variant,
+#                     inventory.buy_price,
+#                     current_date
+#                 )
+#         )
+
+#         if cur.fetchone()['exists']:
+#             cur.execute("""
+#                 UPDATE inventory
+#                 SET qty = inventory.qty + %s
+#                 WHERE tcg_id = %s
+#                 AND card_condition = %s
+#                 AND card_variant = %s
+#                 AND buy_price = %s
+#                 AND add_date = %s
+#                 """, (
+#                     inventory.qty,
+#                     inventory.tcg_id,
+#                     inventory.condition,
+#                     inventory.card_variant,
+#                     inventory.buy_price,
+#                     current_date
+#                     )
+#             )
+#         else:
+#             cur.execute("""
+#                 INSERT INTO inventory
+#                 VALUES (
+#                     %s,
+#                     %s,
+#                     %s,
+#                     %s,
+#                     %s,
+#                     %s
+#                 )
+#                 """, (
+#                     current_date,
+#                     inventory.tcg_id,
+#                     inventory.qty,
+#                     inventory.buy_price,
+#                     inventory.condition,
+#                     inventory.card_variant
+#                     )
+#             )
+
+#         cur.execute("""
+#             SELECT * FROM inventory
+#             WHERE
+#                 tcg_id = %s
+#                 AND card_condition = %s
+#                 AND card_variant = %s
+#                 AND buy_price = %s
+#                 AND add_date = %s
+#             """, (
+#                 inventory.tcg_id,
+#                 inventory.condition,
+#                 inventory.card_variant,
+#                 inventory.buy_price,
+#                 current_date
+#                 )
+#         )
+#         inventory_check = cur.fetchone()
+#         conn.commit()
+#         return inventory_check
+
+
+@router.delete("/delete")
 async def remove_from_inventory():
     pass

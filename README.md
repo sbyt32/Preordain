@@ -6,7 +6,7 @@ This project contains a group of Python scripts that will allow the user to crea
 
 Start the API with...
 ``` 
-    hypercorn preordain.api:app
+    hypercorn preordain.main:app
 ```
 Written documentation is a WIP. Location is currently [here](docs/api_functions.md). More functions will be added and documented over time.
 
@@ -20,7 +20,6 @@ Written documentation is a WIP. Location is currently [here](docs/api_functions.
     - [`set_up.py`](#set_uppy)
       - [`cfg_setup()`](#cfg_setup)
       - [`set_up_db()`](#set_up_db)
-    - [`api.py`](#apipy)
     - [`fetch_card_data.py`](#fetch_card_datapy)
     - [`logging_details.py`](#logging_detailspy)
     - [Testing (WIP)](#testing-wip)
