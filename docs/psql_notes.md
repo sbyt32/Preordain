@@ -238,3 +238,81 @@ SELECT
 ```postgresql
 select * from card_info.info where lower(card_info.info.name) LIKE lower('%Thalia%');
 ```
+
+### ugliest sql command on the market, gets average cost change
+```postgresql
+        SELECT 
+            info.name,
+            info.set,
+            info.id,
+            DATE_TRUNC('day', order_date) AS day, 
+            COUNT("order_date") AS "number_of_sales",
+            (SUM(buy_price * qty) / COUNT("order_date"))::numeric(10,2) as "avg_cost",
+            CASE WHEN 
+                LAG (
+                    (SUM(buy_price * qty) / COUNT("order_date"))::numeric(10,2), 1) 
+                    OVER 
+                    (ORDER BY DATE_TRUNC('day',order_date)) 
+                            is NULL THEN 0     
+            ELSE 
+                ROUND ( 
+                    100.0 * 
+                        (
+                        (SUM(buy_price * qty) / COUNT("order_date"))::numeric(10,2) - LAG((SUM(buy_price * qty) / COUNT("order_date"))::numeric(10,2),1)
+                        OVER 
+                        (ORDER BY DATE_TRUNC('day',order_date))
+                        )
+                        / 
+                        LAG((SUM(buy_price * qty) / COUNT("order_date"))::numeric(10,2),1) 
+                        OVER 
+                        (ORDER BY DATE_TRUNC('day',order_date)),2) 
+            END || '%%' 
+            AS daily_delta
+        FROM 
+            card_data_tcg
+        JOIN card_info.info AS info
+            ON info.tcg_id = card_data_tcg.tcg_id
+        WHERE info.set = 'vow'
+            AND info.id = '38'
+            AND condition = 'Near Mint'
+            AND variant = 'Normal'
+        GROUP BY 
+            DATE_TRUNC('day', order_date), info.name, info.set,info.id
+        ORDER BY 
+            day ASC
+        LIMIT 62
+```
+above but get sale cnt
+```postgresql
+        SELECT 
+            info.name,
+            info.set,
+            info.id,
+            DATE_TRUNC('day', order_date) AS day, 
+            COUNT("order_date") AS "number_of_sales",
+            (SUM(buy_price * qty) / COUNT("order_date"))::numeric(10,2) as "avg_cost",
+            CASE WHEN 
+                LAG(COUNT("order_date"),1) OVER (ORDER BY DATE_TRUNC('day',order_date)) is NULL THEN 0     
+            ELSE 
+                ROUND ( 
+                    100.0 * (
+                        COUNT("order_date") - LAG(COUNT("order_date"),1)
+                        OVER (ORDER BY DATE_TRUNC('day',order_date))
+                    ) / LAG(COUNT("order_date"),1) 
+                        OVER (ORDER BY DATE_TRUNC('day',order_date)),2) 
+            END || '%%' 
+            AS daily_delta
+        FROM 
+            card_data_tcg
+        JOIN card_info.info AS info
+            ON info.tcg_id = card_data_tcg.tcg_id
+        WHERE info.set = %s
+            AND info.id = %s
+            AND condition = 'Near Mint'
+            AND variant = 'Normal'
+        GROUP BY 
+            DATE_TRUNC('day', order_date), info.name, info.set,info.id
+        ORDER BY 
+            day ASC
+        LIMIT 62
+```

@@ -8,14 +8,13 @@ playground.py
 .old
 
 # Configuration folder
-config_files/
-# Configuration folder, but for tests
-config_files_2/
+set_up_2.py
+
 
 # pytest --cov=tests/ files
 .coverage
 cov_annotate
 
 # Environment
-.env
-.vscode/settings.json
+*.env
+!example.env

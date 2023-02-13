@@ -1,0 +1,8 @@
+arrow
+hypercorn
+psycopg[binary]
+fastapi
+python-dateutil
+requests
+httpx
+python-dotenv

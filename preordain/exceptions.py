@@ -1,11 +1,12 @@
 import logging
 from fastapi import Request, FastAPI
 from fastapi.responses import JSONResponse
+
 app = FastAPI()
 log = logging.getLogger()
 
 
-# TODO: make an exception that mimics the Scryfall API response for the root error 
+# TODO: make an exception that mimics the Scryfall API response for the root error
 """
 {
   "object": "error",
@@ -15,11 +16,13 @@ log = logging.getLogger()
 }
 """
 
+
 # Failed Token
 class TokenError(Exception):
-    def __init__(self, token:str):
+    def __init__(self, token: str):
         self.token = token
         log.error(f"Recieved incorrect or no {self.token}_token")
+
 
 @app.exception_handler(TokenError)
 async def token_exception_handler(request: Request, exc: TokenError):
@@ -29,20 +32,18 @@ async def token_exception_handler(request: Request, exc: TokenError):
             "resp": "error",
             "status": 403,
             "message": f"{exc.token}_token was not given or was incorrect. This error has been logged.",
-        }
+        },
     )
+
 
 class BadResponseException(Exception):
     def __init__(self, error):
         self.error = error
 
+
 @app.exception_handler(BadResponseException)
 async def bad_response_exception_handler(request: Request, exc: BadResponseException):
     return JSONResponse(
         status_code=400,
-        content={
-            "resp": "error",
-            "status": 400,
-            "message": f"{exc.error}"
-        }
+        content={"resp": "error", "status": 400, "message": f"{exc.error}"},
     )
