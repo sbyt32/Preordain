@@ -1,5 +1,5 @@
 from fastapi.testclient import TestClient
-
+import pytest
 
 def test_search_single(client: TestClient):
     data = {
@@ -26,3 +26,14 @@ def test_search_single(client: TestClient):
     response = client.get("/search/thalia")
     assert response.status_code == 200
     assert response.json() == data
+
+def test_over_50_char(client: TestClient):
+    search_query = 'A' * 51
+    print(type(search_query))
+    with pytest.raises(Exception):
+        client.get(f"/search/{search_query}")
+
+
+# def test_under_50_char(client: TestClient):
+#     search_query = ''
+#     response = client.get("/search/thalia")

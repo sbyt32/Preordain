@@ -5,13 +5,18 @@ from preordain.utils.connections import connect_db
 from fastapi import APIRouter, Response, status
 from preordain.information.utils import parse_data_for_response
 from preordain.information.models import CardInformation
+# from preordain.search.models import SearchQuery
 from preordain.models import BaseResponse
 
 search_router = APIRouter()
 
-
 @search_router.get("/{query}")
 async def search_for_card(query: str, response: Response):
+    if len(query) >= 50:
+        raise Exception("Hey maybe don't so much")
+    if len(query) <= 0:
+        raise Exception("Maybe like, search for a card")
+
     conn, cur = connect_db()
     cur.execute(
         """
