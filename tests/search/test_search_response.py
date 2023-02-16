@@ -1,3 +1,4 @@
+from pydantic import ValidationError
 from fastapi.testclient import TestClient
 import pytest
 
@@ -29,11 +30,11 @@ def test_search_single(client: TestClient):
 
 def test_over_50_char(client: TestClient):
     search_query = 'A' * 51
-    print(type(search_query))
     with pytest.raises(Exception):
         client.get(f"/search/{search_query}")
 
 
-# def test_under_50_char(client: TestClient):
-#     search_query = ''
-#     response = client.get("/search/thalia")
+def test_under_50_char(client: TestClient):
+    search_query = ''
+    with pytest.raises(ValueError):
+        client.get(f"/search/{search_query}")

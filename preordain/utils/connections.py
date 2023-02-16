@@ -22,10 +22,13 @@ def connect_db():
             ),
         )
     )
-    log.debug(f"Connecting to database: {db_info['dbname']}")
     conn_info = psycopg.conninfo.make_conninfo(**db_info)
 
-    conn = psycopg.connect(conn_info, row_factory=dict_row)
+    log.debug(f"Connecting to database: {db_info['dbname']}")
+    try:
+        conn = psycopg.connect(conn_info, row_factory=dict_row)
+    except psycopg.OperationalError as e:
+        raise Exception(e)
     cur = conn.cursor()
 
     return conn, cur
