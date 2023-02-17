@@ -1,10 +1,10 @@
-from fastapi import APIRouter, HTTPException, Response, status
+from fastapi import APIRouter, Response, status
 from preordain.utils.connections import connect_db
 from preordain.sales.utils import check_card_exists, process_tcgp_data
 from preordain.sales.models import SaleData, DailySales
 from preordain.models import BaseResponse
+from preordain.exceptions import NotFound
 import logging
-import re
 
 log = logging.getLogger()
 
@@ -81,13 +81,7 @@ async def recent_card_sales_set_id(set: str, col_num: str, response: Response):
                 status=response.status_code,
                 data=process_tcgp_data(data),
             )
-        response.status_code = status.HTTP_404_NOT_FOUND
-        return BaseResponse(
-            resp="no_results",
-            status=response.status_code,
-            info={"message": "No Results Found!"},
-        )
-
+        raise NotFound
 
 @sale_router.get(
     "/daily/{set}/{col_num}", responses={200: {"model": BaseResponse[DailySales]}}
@@ -95,12 +89,7 @@ async def recent_card_sales_set_id(set: str, col_num: str, response: Response):
 async def get_daily_sales_tcg(set: str, col_num: str, response: Response):
     searched_card = check_card_exists(set=set, col_num=col_num)
     if not searched_card:
-        response.status_code = status.HTTP_404_NOT_FOUND
-        return BaseResponse(
-            resp="no_results",
-            status=response.status_code,
-            info={"message": "No Results Found!"},
-        )
+        raise NotFound
     conn, cur = connect_db()
     cur.execute(
         """
@@ -173,3 +162,5 @@ async def get_daily_sales_tcg(set: str, col_num: str, response: Response):
         return BaseResponse[DailySales](
             resp="daily_card_sales", status=response.status_code, data=[resp]
         )
+    raise NotFound
+

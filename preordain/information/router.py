@@ -1,13 +1,11 @@
 import logging
-
 log = logging.getLogger()
 from preordain.utils.connections import connect_db, send_response
 from fastapi import APIRouter, Response, status
-from fastapi.exceptions import HTTPException
 from preordain.information.utils import parse_data_for_response
 from preordain.information.models import CardInformation
 from preordain.models import BaseResponse
-
+from preordain.exceptions import NotFound
 
 user_router = APIRouter(
     responses={
@@ -89,12 +87,7 @@ async def read_items(response: Response):
             status=response.status_code,
             data=parse_data_for_response(data),
         )
-    response.status_code = status.HTTP_404_NOT_FOUND
-    return BaseResponse(
-        resp="error_request",
-        status=response.status_code,
-        info={"message": "There are no cards in the database!"},
-    )
+    raise NotFound
 
 
 @user_router.get(
@@ -148,12 +141,8 @@ async def search_by_set_collector_num(set: str, col_num: str, response: Response
             status=response.status_code,
             data=parse_data_for_response(data),
         )
-    response.status_code = status.HTTP_404_NOT_FOUND
-    return BaseResponse(
-        resp="error_request",
-        status=response.status_code,
-        info={"message": "There are no cards in the database!"},
-    )
+    raise NotFound
+
 
 
 @user_router.get("/{group}", description="Filter for cards by their groups.")
@@ -222,12 +211,8 @@ async def find_by_group(group: str, response: Response):
             resp="card_info",
             status=response.status_code,
         )
-    response.status_code = status.HTTP_404_NOT_FOUND
-    return BaseResponse(
-        resp="error_request",
-        status=response.status_code,
-        info={"message": "There are no cards in the database!"},
-    )
+    raise NotFound
+
 
 
 @admin_router.post("/add/{set}/{coll_num}")
@@ -238,7 +223,7 @@ async def add_card_to_track(set: str, coll_num: str):
     try:
         if resp["object"] != "list":
             log.error("Not a card!")
-            raise HTTPException(status_code=404, detail="This is not a card!")
+            raise NotFound
 
     except KeyError as e:
         # ? What does this look like, again?

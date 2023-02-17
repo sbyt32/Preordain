@@ -1,5 +1,5 @@
 from fastapi import Header
-from preordain.exceptions import TokenError
+from preordain.exceptions import BadToken
 from preordain import config
 import logging
 
@@ -11,16 +11,16 @@ log = logging.getLogger()
 # ? All routes.
 async def select_access(access: str):
     if access != str(config.SEC_TOKEN):
-        raise TokenError("access")
+        raise BadToken(token="SEC")
 
 
 # ? Admin route.
 async def write_access(write_access: str = Header()):
     if write_access != str(config.WRITE_TOKEN):
-        raise TokenError("write")
+        raise BadToken(token="WRITE")
 
 
 # ?  Price route.
 async def price_access(price_access: str = Header()):
     if price_access != str(config.PRICE_TOKEN):
-        raise TokenError("price")
+        raise BadToken(token="PRICE")

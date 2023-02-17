@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, Response, status
 from preordain.utils.connections import connect_db, send_response
 from preordain.inventory.models import ModifyInventory, InventoryData
 from preordain.models import BaseResponse
+from preordain.exceptions import NotFound
 import arrow
 import logging
 
@@ -88,12 +89,8 @@ async def get_inventory(response: Response):
         return BaseResponse[InventoryData](
             status=response.status_code, resp="retrieve_inventory", data=inventory
         )
-    response.status_code = status.HTTP_404_NOT_FOUND
-    return BaseResponse(
-        resp="error_request",
-        status=response.status_code,
-        info={"message": "There are no cards in the database!"},
-    )
+    raise NotFound
+
 
 
 # ! Disabled for now
@@ -191,6 +188,6 @@ async def get_inventory(response: Response):
 #         return inventory_check
 
 
-@router.delete("/delete")
-async def remove_from_inventory():
-    pass
+# @router.delete("/delete")
+# async def remove_from_inventory():
+#     pass

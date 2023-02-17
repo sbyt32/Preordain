@@ -1,13 +1,11 @@
-import datetime
-from preordain.information.models import CardInformation
 from preordain.information.utils import parse_data_for_response
 from preordain.models import BaseResponse, RespStrings
-from tests.util import get_sample_data
 
 from fastapi.testclient import TestClient
 
 
 def test_info_root(client: TestClient):
+    from tests.util import get_sample_data
     data = get_sample_data("information")
 
     response = client.get("/card/")
@@ -24,6 +22,7 @@ def test_info_root(client: TestClient):
 
 
 def test_info_groups(client: TestClient):
+    from preordain.information.models import CardInformation
     response = client.get("/card/dnt")
     data = [
         {

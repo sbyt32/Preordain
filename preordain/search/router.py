@@ -2,21 +2,17 @@ import logging
 
 log = logging.getLogger()
 from preordain.utils.connections import connect_db
-from fastapi import APIRouter, Response, status
+from fastapi import APIRouter, Response, status, Depends
 from preordain.information.utils import parse_data_for_response
 from preordain.information.models import CardInformation
-# from preordain.search.models import SearchQuery
+from preordain.search.models import SearchQuery
 from preordain.models import BaseResponse
-
+from preordain.exceptions import NotFound
 search_router = APIRouter()
 
 @search_router.get("/{query}")
-async def search_for_card(query: str, response: Response):
-    if len(query) >= 50:
-        raise Exception("Hey maybe don't so much")
-    if len(query) <= 0:
-        raise Exception("Maybe like, search for a card")
-
+# * https://github.com/tiangolo/fastapi/issues/1974
+async def search_for_card(response: Response, query: SearchQuery = Depends()):
     conn, cur = connect_db()
     cur.execute(
         """
@@ -50,7 +46,7 @@ async def search_for_card(query: str, response: Response):
         ON price.id = info.id AND price.set = info.set AND price.date = info.maxDate
         WHERE LOWER(info.name) ILIKE %s
     """,
-        ("%{}%".format(query),),
+        ("%{}%".format(query.query),),
     )
     data = cur.fetchall()
     conn.close()
@@ -61,9 +57,4 @@ async def search_for_card(query: str, response: Response):
             resp="search_query",
             status=response.status_code,
         )
-    response.status_code = status.HTTP_404_NOT_FOUND
-    return BaseResponse(
-        resp="no_results",
-        status=response.status_code,
-        info={"message": "No results found", "query": query},
-    )
+    raise NotFound

@@ -48,9 +48,11 @@ class CardPricesSingle(BaseModel):
 
 class RespStrings(str, Enum):
     # ! Error
+    invalid_token = "invalid_token"
     error_request = "error_request"  # * For any Errors  | 400
     no_results = "no_results"  # * No results      | 404
     root_error = "root_error"  # * Access root     | 403
+    validation_error = "validation_error" # * validation_error | 422 
     # * card/...
     card_info = "card_info"  # * /card/...
     # * search/{query}

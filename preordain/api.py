@@ -1,8 +1,9 @@
 import os
 from fastapi import Response, status, Depends, APIRouter
+from fastapi.exceptions import RequestValidationError
 from preordain.dependencies import select_access, write_access
 from preordain.models import BaseResponse
-
+from .exceptions import RootException
 from preordain.groups.router import admin_groups as groups_admin_router
 from preordain.groups.router import user_groups as groups_user_router
 from preordain.price.router import price_router
@@ -83,21 +84,4 @@ api_router.include_router(
 
 @api_router.get("/", tags=["Test Connection"])
 async def root(response: Response):
-    if os.path.exists(".env"):
-        response.status_code = status.HTTP_400_BAD_REQUEST
-        return {
-            "resp": "root_error",
-            "status": response.status_code,
-            "info": {
-                "message": "The request failed due to being at root. If you're just testing if it works, yeah it works."
-            },
-        }
-    else:
-        response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-        return {
-            "resp": "root_error",
-            "status": response.status_code,
-            "info": {
-                "message": "Configuration file improperly configured. Script will not function."
-            },
-        }
+    raise RootException

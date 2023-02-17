@@ -5,6 +5,7 @@ from preordain.price.utils import parse_data_for_response, parse_data_single_car
 from preordain.utils.connections import connect_db
 from preordain.price.models import PriceDataMultiple, PriceDataSingle
 from preordain.models import BaseResponse
+from preordain.exceptions import NotFound
 import logging
 import re
 
@@ -89,13 +90,7 @@ async def get_single_day_data(date: str, response: Response):
             status=response.status_code,
             data=parse_data_for_response(data),
         )
-    response.status_code = status.HTTP_404_NOT_FOUND
-    return BaseResponse(
-        resp="no_results",
-        status=response.status_code,
-        info={"message": "No Results Found!"},
-    )
-
+    raise NotFound
 
 @price_router.get(
     "/{set}/{id}",
@@ -209,9 +204,4 @@ async def get_single_card_data(
             status=response.status_code,
             data=parse_data_single_card(data),
         )
-    response.status_code = status.HTTP_404_NOT_FOUND
-    return BaseResponse(
-        resp="no_results",
-        status=response.status_code,
-        info={"message": "No Results Found!"},
-    )
+    raise NotFound
