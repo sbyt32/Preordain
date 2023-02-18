@@ -11,8 +11,7 @@ from psycopg.rows import dict_row
 from typing import Union
 
 log_setup()
-log = logging.getLogger()
-log.setLevel(logging.DEBUG)
+log = logging.getLogger(__name__)
 
 
 class BaseSetup:

@@ -1,4 +1,3 @@
-import os
 from fastapi import Depends, APIRouter
 from preordain.dependencies import select_token, write_token
 from preordain.models import BaseResponse

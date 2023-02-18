@@ -14,8 +14,7 @@ app.include_router(api_router)
 log_setup()
 import logging
 
-log = logging.getLogger()
-log.setLevel(logging.DEBUG)
+log = logging.getLogger(__name__)
 # ? I really don't like this out in the open, but I'm leaving it here for testing.
 # origins = [
 #     "http://localhost.tiangolo.com",
