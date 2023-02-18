@@ -22,7 +22,7 @@ jobs:
           pip install --user -r requirements-base.txt
           pip install --user -r requirements-dev.txt
       - name: Linting with Black
-        run: psf/black@stable
+        run: black
       - name: Test with pytest
         env:
           PROJECT: Preordain
