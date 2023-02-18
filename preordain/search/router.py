@@ -6,7 +6,6 @@ from fastapi import APIRouter, Response, status, Depends
 from preordain.search.utils import parse_data_for_response
 from preordain.search.models import SearchInformation
 from preordain.search.models import SearchQuery
-from preordain.models import BaseResponse
 from preordain.exceptions import NotFound
 search_router = APIRouter()
 
@@ -56,5 +55,5 @@ async def search_for_card(response: Response, query: SearchQuery = Depends()):
             data=parse_data_for_response(data),
             status=response.status_code,
         )
-    # response.status_code = 
+    response.status_code = status.HTTP_404_NOT_FOUND
     raise NotFound

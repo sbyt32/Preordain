@@ -1,5 +1,4 @@
 from preordain.exceptions import PreordainException
-from pydantic.errors import PydanticValueError
 import logging
 import os
 from fastapi import Request,status
