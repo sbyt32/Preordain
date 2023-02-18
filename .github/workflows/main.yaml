@@ -22,7 +22,7 @@ jobs:
           pip install --user -r requirements-base.txt
           pip install --user -r requirements-dev.txt
       - name: Linting with Black
-        run: black
+        run: black preordain/; black tests/
       - name: Test with pytest
         env:
           PROJECT: Preordain
@@ -35,4 +35,3 @@ jobs:
           TCG_SALES: "2022-12-14 05:59:07.360573+00:00"
         run: |
           pytest --cov=tests/
-
