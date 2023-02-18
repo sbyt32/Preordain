@@ -1,6 +1,13 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from preordain.exceptions import InvalidToken, token_exception_handler, RootException, root_exception_handler, NotFound, not_found_exception_handler
+from preordain.exceptions import (
+    InvalidToken,
+    token_exception_handler,
+    RootException,
+    root_exception_handler,
+    NotFound,
+    not_found_exception_handler,
+)
 from preordain.search.exceptions import InvalidSearchQuery, invalid_search_handler
 from preordain.logging_details import log_setup
 from preordain.config import PROJECT

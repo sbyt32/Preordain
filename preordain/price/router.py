@@ -12,6 +12,7 @@ log = logging.getLogger()
 
 price_router = APIRouter()
 
+
 @price_router.get(
     "/{date}",
     description="Get the price data for the a certain day. YYYY-MM-DD format.",
@@ -30,7 +31,7 @@ async def get_single_day_data(date: str, response: Response):
         cur.execute(
             """
 
-            SELECT 
+            SELECT
                 card_info.info.name,
                 card_info.info.set,
                 card_info.sets.set_full,
@@ -40,7 +41,7 @@ async def get_single_day_data(date: str, response: Response):
                 usd_foil,
                 euro,
                 euro_foil,
-                tix 
+                tix
             FROM card_data
             JOIN card_info.info
                 ON card_data.set = card_info.info.set
@@ -60,9 +61,12 @@ async def get_single_day_data(date: str, response: Response):
     conn.close()
     if data:
         response.status_code = status.HTTP_200_OK
-        return PriceDataMultiple(status=response.status_code,data=parse_data_for_response(data))
+        return PriceDataMultiple(
+            status=response.status_code, data=parse_data_for_response(data)
+        )
     response.status_code = status.HTTP_404_NOT_FOUND
     raise NotFound
+
 
 @price_router.get(
     "/{set}/{id}",
@@ -84,9 +88,9 @@ async def get_single_card_data(
 
     conn, cur = connect_db()
     cur.execute(
-        """ 
-        
-        SELECT 
+        """
+
+        SELECT
             card_info.info.name,
             card_info.sets.set,
             card_info.sets.set_full,
@@ -108,9 +112,9 @@ async def get_single_card_data(
             AND card_data.id = card_info.info.id
         JOIN card_info.sets
             ON card_data.set = card_info.sets.set
-        JOIN 
+        JOIN
             (
-                SELECT 
+                SELECT
                     date as dt,
                     usd as usd_ct,
                     lag(usd, 1) over (order by date(date)) as usd_yesterday,
@@ -140,6 +144,8 @@ async def get_single_card_data(
 
     if data:
         response.status_code = status.HTTP_200_OK
-        return PriceDataSingle(status=response.status_code,data=parse_data_single_card(data))
+        return PriceDataSingle(
+            status=response.status_code, data=parse_data_single_card(data)
+        )
     response.status_code = status.HTTP_404_NOT_FOUND
     raise NotFound

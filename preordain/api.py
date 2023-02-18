@@ -44,7 +44,7 @@ api_router = APIRouter(
                     }
                 }
             },
-        }
+        },
     }
 )
 
@@ -53,7 +53,12 @@ api_router.include_router(
     info_user_router,
     prefix="/card",
     tags=["Card Information, etc"],
-    responses={200: {"model": CardInformation, "description": "Return the groups that the data is associated with."}},
+    responses={
+        200: {
+            "model": CardInformation,
+            "description": "Return the groups that the data is associated with.",
+        }
+    },
 )
 api_router.include_router(
     search_router,
@@ -66,17 +71,21 @@ api_router.include_router(
     prefix="/inventory",
     tags=["Inventory Management"],
     dependencies=[Depends(select_token)],
-    responses={200: {'model': InventoryResponse}},
+    responses={200: {"model": InventoryResponse}},
 )
 api_router.include_router(
     price_router,
     prefix="/price",
     tags=["Get Prices (from Scryfall)"],
-    responses={200: {'model': Union[PriceDataSingle, PriceDataMultiple]}}
+    responses={200: {"model": Union[PriceDataSingle, PriceDataMultiple]}},
 )
 api_router.include_router(
-    sales_router, prefix="/sales", tags=["Get Sales (From TCGPlayer)",
-    ], responses={200: {'model': CardSaleResponse}}
+    sales_router,
+    prefix="/sales",
+    tags=[
+        "Get Sales (From TCGPlayer)",
+    ],
+    responses={200: {"model": CardSaleResponse}},
 )
 api_router.include_router(
     groups_user_router,

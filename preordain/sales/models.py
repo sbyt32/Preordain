@@ -15,24 +15,24 @@ class RecentSaleData(BaseModel):
     class Config:
         use_enum_values = True
         schema_extra = {
-        "example": {
-            "resp": "price_data",
-            "status": 200,
-            "data": [
-                {
-                    "order_date": "2022-12-14T05:28:33.496000+00:00",
-                    "condition": "NM",
-                    "variant": "Normal",
-                    "quantity": 1,
-                    "buy_price": 0.81,
-                    "ship_price": 0,
-                }
-            ],
-        }
+            "example": {
+                "resp": "price_data",
+                "status": 200,
+                "data": [
+                    {
+                        "order_date": "2022-12-14T05:28:33.496000+00:00",
+                        "condition": "NM",
+                        "variant": "Normal",
+                        "quantity": 1,
+                        "buy_price": 0.81,
+                        "ship_price": 0,
+                    }
+                ],
+            }
         }
 
+
 class DailySaleData(BaseModel):
-    
     day: datetime.date
     sales: int
     avg_cost: float
@@ -47,13 +47,15 @@ class DailySaleData(BaseModel):
                     "name": "Ancient Grudge",
                     "set": "MM3",
                     "id": "88",
-                    "sales": [{
-                        "day": '2022-12-14T00:00:00+00:00',
-                        "sales": 7,
-                        "avg_cost": 17.2,
-                        "day_change": "12.34%",
-                    }],
-                }
+                    "sales": [
+                        {
+                            "day": "2022-12-14T00:00:00+00:00",
+                            "sales": 7,
+                            "avg_cost": 17.2,
+                            "day_change": "12.34%",
+                        }
+                    ],
+                },
             }
         }
 
@@ -67,6 +69,7 @@ class DailySales(BaseModel):
     class Config:
         extra = Extra.forbid
 
+
 class CardSaleResponse(BaseResponse):
     resp: RespStrings
-    data:dict[str, str] = DailySales
+    data: dict[str, str] = DailySales

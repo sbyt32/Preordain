@@ -41,12 +41,12 @@ async def get_inventory(response: Response):
         JOIN card_info.sets as set
             ON info.set = set.set
         JOIN (
-            SELECT 
+            SELECT
                 inventory.tcg_id,
                 SUM (inventory.qty * inventory.buy_price)::numeric AS total_qty,
                 inventory.card_condition,
                 inventory.card_variant
-            FROM inventory 
+            FROM inventory
             GROUP BY
                 inventory.tcg_id,
                 inventory.card_condition,
@@ -68,7 +68,6 @@ async def get_inventory(response: Response):
         response.status_code = status.HTTP_200_OK
         return InventoryResponse(status=response.status_code, data=inventory).dict()
     raise NotFound
-
 
 
 # ! Disabled for now

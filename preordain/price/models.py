@@ -10,10 +10,11 @@ class PriceData(BaseModel):
     set_full: str
     id: str
     date: Optional[datetime.date]
-    prices: Union[CardPrices,CardPricesSingle]
+    prices: Union[CardPrices, CardPricesSingle]
+
 
 class PriceDataMultiple(BaseResponse):
-    resp =  RespStrings.price_data
+    resp = RespStrings.price_data
     data: list[dict[PriceData]] = PriceData
 
     class Config:
@@ -41,7 +42,7 @@ class PriceDataMultiple(BaseResponse):
 
 
 class PriceDataSingle(BaseResponse):
-    resp =  RespStrings.price_data
+    resp = RespStrings.price_data
     data: list[dict[PriceData]] = PriceData
 
     class Config:
@@ -74,4 +75,3 @@ class PriceDataSingle(BaseResponse):
                 ],
             }
         }
-

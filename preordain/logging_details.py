@@ -22,11 +22,12 @@ LOG_FORMAT_DEBUG = "%(asctime)s | %(levelname)-8s | %(pathname)-40s | %(funcName
 log_file_info = f"logs/{local.format('MMM_DD_YY').lower()}.log"
 
 all_log_levels: dict[str, int] = {
-    "debug" : logging.DEBUG,
-    "warning" : logging.WARNING,
-    "info" : logging.INFO,
-    "error" : logging.ERROR,
+    "debug": logging.DEBUG,
+    "warning": logging.WARNING,
+    "info": logging.INFO,
+    "error": logging.ERROR,
 }
+
 
 def log_setup():
     log_level = all_log_levels.get(LOG_LEVEL.lower(), all_log_levels["warning"])
@@ -70,7 +71,7 @@ def log_setup():
             "level": log_level,
             "propogate": True,
             "handlers": ["console", "file_info", "file_debug", "file_error"],
-        }
+        },
     }
 
     logging.config.dictConfig(log_config)

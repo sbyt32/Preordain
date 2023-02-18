@@ -7,7 +7,9 @@ from preordain.search.utils import parse_data_for_response
 from preordain.search.models import SearchInformation
 from preordain.search.models import SearchQuery
 from preordain.exceptions import NotFound
+
 search_router = APIRouter()
+
 
 @search_router.get("/{query}")
 # * https://github.com/tiangolo/fastapi/issues/1974
@@ -15,7 +17,7 @@ async def search_for_card(response: Response, query: SearchQuery = Depends()):
     conn, cur = connect_db()
     cur.execute(
         """
-        SELECT 
+        SELECT
             info.name,
             info.set,
             info.set_full,
@@ -28,8 +30,8 @@ async def search_for_card(response: Response, query: SearchQuery = Depends()):
             price.tix
         FROM card_data price
         JOIN (
-            SELECT 
-                info.name, 
+            SELECT
+                info.name,
                 info.set,
                 sets.set_full,
                 info.id,

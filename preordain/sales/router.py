@@ -1,6 +1,10 @@
 from fastapi import APIRouter, Response, status
 from preordain.utils.connections import connect_db
-from preordain.sales.utils import check_card_exists, process_tcgp_data, process_tcgp_data_single
+from preordain.sales.utils import (
+    check_card_exists,
+    process_tcgp_data,
+    process_tcgp_data_single,
+)
 from preordain.sales.models import RecentSaleData, DailySales, CardSaleResponse
 from preordain.models import RespStrings
 from preordain.exceptions import NotFound
@@ -29,7 +33,7 @@ async def recent_card_sales_set_id(set: str, col_num: str, response: Response):
 
         cur.execute(
             """
-            SELECT 
+            SELECT
                 card_info.info.name,
                 card_info.info.id,
                 card_info.info.set,
@@ -39,13 +43,13 @@ async def recent_card_sales_set_id(set: str, col_num: str, response: Response):
                 qty "quantity",
                 buy_price,
                 ship_price
-            FROM 
+            FROM
                 card_data_tcg
             JOIN card_info.info
                 ON card_data_tcg.tcg_id = card_info.info.tcg_id
             JOIN card_info.sets
                 ON card_info.info.set = card_info.sets.set
-            WHERE 
+            WHERE
                 card_info.info.set = %s
                 AND card_info.info.id = %s
             ORDER BY
@@ -61,14 +65,19 @@ async def recent_card_sales_set_id(set: str, col_num: str, response: Response):
         data = cur.fetchall()
         if data:
             response.status_code = status.HTTP_200_OK
-            return CardSaleResponse(status=response.status_code, data=process_tcgp_data(data), resp=RespStrings.recent_card_sales)
+            return CardSaleResponse(
+                status=response.status_code,
+                data=process_tcgp_data(data),
+                resp=RespStrings.recent_card_sales,
+            )
         raise NotFound
 
-@sales_router.get(
-    "/daily/{set}/{col_num}", responses={200: {"model": CardSaleResponse}},
-    description="We only return Near Mint, non-foil data."
-)
 
+@sales_router.get(
+    "/daily/{set}/{col_num}",
+    responses={200: {"model": CardSaleResponse}},
+    description="We only return Near Mint, non-foil data.",
+)
 async def get_daily_sales_tcg(set: str, col_num: str, response: Response):
     searched_card = check_card_exists(set=set, col_num=col_num)
     if not searched_card:
@@ -76,34 +85,34 @@ async def get_daily_sales_tcg(set: str, col_num: str, response: Response):
     conn, cur = connect_db()
     cur.execute(
         """
-        SELECT 
+        SELECT
             info.name,
             info.set,
             info.id,
-            DATE_TRUNC('day', order_date) AS day, 
+            DATE_TRUNC('day', order_date) AS day,
             COUNT("order_date") AS "number_of_sales",
             (SUM(buy_price * qty) / COUNT("order_date"))::numeric(10,2) as "avg_cost",
-            CASE WHEN 
+            CASE WHEN
                 LAG (
-                    (SUM(buy_price * qty) / COUNT("order_date"))::numeric(10,2), 1) 
-                    OVER 
-                    (ORDER BY DATE_TRUNC('day',order_date)) 
-                            is NULL THEN 0     
-            ELSE 
-                ROUND ( 
-                    100.0 * 
+                    (SUM(buy_price * qty) / COUNT("order_date"))::numeric(10,2), 1)
+                    OVER
+                    (ORDER BY DATE_TRUNC('day',order_date))
+                            is NULL THEN 0
+            ELSE
+                ROUND (
+                    100.0 *
                         (
                         (SUM(buy_price * qty) / COUNT("order_date"))::numeric(10,2) - LAG((SUM(buy_price * qty) / COUNT("order_date"))::numeric(10,2),1)
-                        OVER 
+                        OVER
                         (ORDER BY DATE_TRUNC('day',order_date))
                         )
-                        / 
-                        LAG((SUM(buy_price * qty) / COUNT("order_date"))::numeric(10,2),1) 
-                        OVER 
-                        (ORDER BY DATE_TRUNC('day',order_date)),2) 
-            END || '%%' 
+                        /
+                        LAG((SUM(buy_price * qty) / COUNT("order_date"))::numeric(10,2),1)
+                        OVER
+                        (ORDER BY DATE_TRUNC('day',order_date)),2)
+            END || '%%'
             AS daily_delta
-        FROM 
+        FROM
             card_data_tcg
         JOIN card_info.info AS info
             ON info.tcg_id = card_data_tcg.tcg_id
@@ -111,9 +120,9 @@ async def get_daily_sales_tcg(set: str, col_num: str, response: Response):
             AND info.id = %s
             AND condition = 'Near Mint'
             AND variant = 'Normal'
-        GROUP BY 
+        GROUP BY
             DATE_TRUNC('day', order_date), info.name, info.set,info.id
-        ORDER BY 
+        ORDER BY
             day DESC
         LIMIT 62
     """,
@@ -126,5 +135,9 @@ async def get_daily_sales_tcg(set: str, col_num: str, response: Response):
     conn.close()
     if data:
         response.status_code = status.HTTP_200_OK
-        return CardSaleResponse(resp=RespStrings.daily_card_sales, status=response.status_code, data=process_tcgp_data_single(data))
+        return CardSaleResponse(
+            resp=RespStrings.daily_card_sales,
+            status=response.status_code,
+            data=process_tcgp_data_single(data),
+        )
     raise NotFound

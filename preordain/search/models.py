@@ -4,6 +4,7 @@ from preordain.models import CardPrices, BaseResponse, RespStrings
 from pydantic import validator, BaseModel
 from preordain.search.exceptions import InvalidSearchQuery
 
+
 class SearchQuery(BaseModel):
     def __init__(self, **data) -> None:
         super().__init__(**data)
@@ -23,8 +24,9 @@ class CardInfoData(BaseModel):
     last_updated: datetime.date
     prices: CardPrices
 
+
 class SearchInformation(BaseResponse):
-    resp: RespStrings = 'search_query'
+    resp: RespStrings = "search_query"
     data: list[dict[str, CardInfoData]] = CardInfoData
 
     class Config:
@@ -44,7 +46,7 @@ class SearchInformation(BaseResponse):
                         "euro": 12.34,
                         "euro_foil": 12.34,
                         "tix": 12.34,
-                }
+                    },
                 },
             }
         }

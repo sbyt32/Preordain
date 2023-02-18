@@ -1,4 +1,5 @@
 import logging
+
 log = logging.getLogger()
 from preordain.utils.connections import connect_db, send_response
 from fastapi import APIRouter, Response, status
@@ -9,13 +10,14 @@ from preordain.exceptions import NotFound
 user_router = APIRouter()
 admin_router = APIRouter()
 
+
 # Return all cards
 @user_router.get("/", description="Return all cards that are being tracked.")
 async def read_items(response: Response):
     conn, cur = connect_db()
     cur.execute(
         """
-        SELECT 
+        SELECT
             info.name,
             info.set,
             info.set_full,
@@ -28,8 +30,8 @@ async def read_items(response: Response):
             price.tix
         FROM card_data price
         JOIN (
-            SELECT 
-                info.name, 
+            SELECT
+                info.name,
                 info.set,
                 sets.set_full,
                 info.id,
@@ -49,7 +51,9 @@ async def read_items(response: Response):
     conn.close()
     if data:
         response.status_code = status.HTTP_200_OK
-        return CardInformation(status=response.status_code, data=parse_data_for_response(data))
+        return CardInformation(
+            status=response.status_code, data=parse_data_for_response(data)
+        )
     raise NotFound
 
 
@@ -60,8 +64,8 @@ async def read_items(response: Response):
 async def search_by_set_collector_num(set: str, col_num: str, response: Response):
     conn, cur = connect_db()
     cur.execute(
-        """ 
-        SELECT 
+        """
+        SELECT
             info.name,
             info.set,
             info.set_full,
@@ -74,8 +78,8 @@ async def search_by_set_collector_num(set: str, col_num: str, response: Response
             price.tix
         FROM card_data price
         JOIN (
-            SELECT 
-                info.name, 
+            SELECT
+                info.name,
                 info.set,
                 sets.set_full,
                 info.id,
@@ -99,16 +103,19 @@ async def search_by_set_collector_num(set: str, col_num: str, response: Response
     conn.close()
     if data:
         response.status_code = status.HTTP_200_OK
-        return CardInformation(status=response.status_code, data=parse_data_for_response(data))
+        return CardInformation(
+            status=response.status_code, data=parse_data_for_response(data)
+        )
     raise NotFound
+
 
 @user_router.get("/{group}", description="Filter for cards by their groups.")
 async def find_by_group(group: str, response: Response):
     conn, cur = connect_db()
     cur.execute(
-        """ 
-        
-        SELECT   
+        """
+
+        SELECT
             DISTINCT ON (info.name, info.id) "name",
             info.set,
             sets.set_full,
@@ -122,7 +129,7 @@ async def find_by_group(group: str, response: Response):
         FROM card_info.info AS "info"
         JOIN card_info.sets AS "sets"
             ON info.set = sets.set
-        JOIN 
+        JOIN
             (
                 SELECT
                     prices.date,
@@ -133,15 +140,15 @@ async def find_by_group(group: str, response: Response):
                     prices.euro,
                     prices.euro_foil,
                     prices.tix
-                FROM 
+                FROM
                     card_data as "prices"
             ) AS "prices"
         ON prices.set = info.set
         AND prices.id = info.id
         WHERE %s = ANY (info.groups)
-        ORDER BY 
-            info.name, 
-            info.id, 
+        ORDER BY
+            info.name,
+            info.id,
             prices.date DESC
 
         """,
@@ -150,7 +157,7 @@ async def find_by_group(group: str, response: Response):
     data = cur.fetchall()
     cur.execute(
         """
-        SELECT 
+        SELECT
             groups.group_name,
             groups.description
         FROM card_info.groups AS groups
@@ -162,12 +169,11 @@ async def find_by_group(group: str, response: Response):
     conn.close()
     if data:
         response.status_code = status.HTTP_200_OK
-        return CardInformation(info=info,
-        status=response.status_code,
-        data=parse_data_for_response(data))
+        return CardInformation(
+            info=info, status=response.status_code, data=parse_data_for_response(data)
+        )
 
     raise NotFound
-
 
 
 # @admin_router.post("/add/{set}/{coll_num}")

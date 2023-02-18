@@ -25,6 +25,7 @@ class ModifyInventory(BaseModel):
     condition: CardConditions
     card_variant: CardVariants
 
+
 class InventoryResponse(BaseResponse):
     resp = RespStrings.retrieve_inventory
     data: dict[str, str] = InventoryData
@@ -32,7 +33,7 @@ class InventoryResponse(BaseResponse):
     class Config:
         schema_extra = {
             "example": {
-                "resp": 'retrieve_inventory',
+                "resp": "retrieve_inventory",
                 "status": 200,
                 "data": [
                     {

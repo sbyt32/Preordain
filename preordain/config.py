@@ -1,13 +1,14 @@
-from starlette.config import Config,environ
+from starlette.config import Config, environ
 from starlette.datastructures import Secret
 import logging
 import sys
+
 log = logging.getLogger()
 
 """
     A way to read the .env file
 """
-try: 
+try:
     config = Config(".env")
     PROJECT = config("PROJECT", cast=str, default="Preordain")
     DB_EXISTS = config("DB_EXISTS", cast=bool)
@@ -15,9 +16,9 @@ try:
     DB_USER = config("DB_USER", cast=Secret)
     DB_PASS = config("DB_PASS", cast=Secret)
     DB_NAME = config("DB_NAME", cast=Secret)
-    LOG_LEVEL = config("LOG_LEVEL", default='warning', cast=str)
+    LOG_LEVEL = config("LOG_LEVEL", default="warning", cast=str)
 
-    TCG_SALES = config("TCG_SALES", cast=str)  
+    TCG_SALES = config("TCG_SALES", cast=str)
     # ? So, it's first a string, then needs to be cast as a datetime
 
     SEC_TOKEN = config("SEC_TOKEN", cast=Secret)
@@ -28,6 +29,6 @@ try:
     if TESTING:
         DB_NAME = Secret("test_" + str(DB_NAME))
 except KeyError as e:
-    if not environ.get('TESTING'):
+    if not environ.get("TESTING"):
         log.critical(e)
         sys.exit(1)
