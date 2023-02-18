@@ -1,5 +1,5 @@
 
-name: Run PyTest
+name: Run PyTest & Lint
 on: [push]
 jobs:
   testing:
@@ -21,10 +21,13 @@ jobs:
           python -m pip install --upgrade pip
           pip install --user -r requirements-base.txt
           pip install --user -r requirements-dev.txt
+      - name: Linting with Black
+        run: psf/black@stable
       - name: Test with pytest
         env:
           PROJECT: Preordain
           DB_EXISTS: true
+          TESTING: true
           DB_HOST: ${{ secrets.DB_HOST }}
           DB_USER: ${{ secrets.DB_USER }}
           DB_PASS: ${{ secrets.DB_PASS }}
@@ -32,3 +35,5 @@ jobs:
           TCG_SALES: "2022-12-14 05:59:07.360573+00:00"
         run: |
           pytest --cov=tests/
+  format:
+
