@@ -2,7 +2,6 @@ import pytest
 from fastapi.testclient import TestClient
 from starlette.config import environ
 
-environ["TESTING"] = "True"
 environ["SEC_TOKEN"] = "testing"
 environ["WRITE_TOKEN"] = "testing"
 environ["PRICE_TOKEN"] = "testing"

@@ -23,13 +23,12 @@ jobs:
           pip install --user -r requirements-dev.txt
       - name: Test with pytest
         env:
-          DB_EXISTS: true
-          TESTING: true
           PROJECT: Preordain
+          DB_EXISTS: true
           DB_HOST: ${{ secrets.DB_HOST }}
-          TCG_SALES: "2022-12-14 05:59:07.360573+00:00"
           DB_USER: ${{ secrets.DB_USER }}
           DB_PASS: ${{ secrets.DB_PASS }}
           DB_NAME: ${{ secrets.DB_NAME }}
+          TCG_SALES: "2022-12-14 05:59:07.360573+00:00"
         run: |
           pytest --cov=tests/

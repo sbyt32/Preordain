@@ -1,4 +1,3 @@
-
 from preordain.models import RespStrings
 from fastapi.testclient import TestClient
 
@@ -11,7 +10,8 @@ def test_info_root(client: TestClient):
 
     assert response.status_code == 200
     response = response.json()
-    assert response['resp'] == RespStrings.card_info
+    assert response["resp"] == RespStrings.card_info
+
 
 # def test_info_root_fail(client:TestClient):
 
@@ -22,7 +22,7 @@ def test_info_groups(client: TestClient):
     assert response.status_code == 200
     response = response.json()
 
-    assert response['resp'] == RespStrings.card_info
+    assert response["resp"] == RespStrings.card_info
 
 
 def test_info_single(client: TestClient):
@@ -30,6 +30,5 @@ def test_info_single(client: TestClient):
 
     assert response.status_code == 200
     response = response.json()
-    assert response['resp'] == RespStrings.card_info
-    assert response['status'] == 200
-
+    assert response["resp"] == RespStrings.card_info
+    assert response["status"] == 200
