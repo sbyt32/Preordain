@@ -1,6 +1,4 @@
-from pydantic import ValidationError
 from fastapi.testclient import TestClient
-import pytest
 
 def test_search_single(client: TestClient):
     data = {"resp": "search_query"}
@@ -11,9 +9,10 @@ def test_search_single(client: TestClient):
 
 def test_over_50_char(client: TestClient):
     from preordain.search.exceptions import InvalidSearchQuery
-    search_query = 'A' * 51
 
+    search_query = 'A' * 51
     response = client.get(f"/search/{search_query}")
+
     assert response.status_code == InvalidSearchQuery.status_code
     response = response.json()
     assert response['info'] == InvalidSearchQuery.info

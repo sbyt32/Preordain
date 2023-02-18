@@ -4,43 +4,10 @@ from preordain.utils.connections import connect_db, send_response
 from fastapi import APIRouter, Response, status
 from preordain.information.utils import parse_data_for_response
 from preordain.information.models import CardInformation
-from preordain.models import BaseResponse
 from preordain.exceptions import NotFound
 
-user_router = APIRouter(
-    responses={
-        200: {
-            "model": BaseResponse[CardInformation],
-            "description": "Return the groups that the data is associated with.",
-            "content": {
-                "application/json": {
-                    "example": {
-                        "resp": "card_info",
-                        "status": 200,
-                        "data": [
-                            {
-                                "name": "Ancient Grudge",
-                                "set": "MM3",
-                                "set_full": "Modern Masters 2017",
-                                "id": "88",
-                                "last_updated": "2023-02-05",
-                                "prices": {
-                                    "usd": 12.34,
-                                    "usd_foil": 12.34,
-                                    "euro": 12.34,
-                                    "euro_foil": 12.34,
-                                    "tix": 12.34,
-                                },
-                            }
-                        ],
-                    }
-                }
-            },
-        },
-    }
-)
+user_router = APIRouter()
 admin_router = APIRouter()
-
 
 # Return all cards
 @user_router.get("/", description="Return all cards that are being tracked.")
@@ -82,11 +49,7 @@ async def read_items(response: Response):
     conn.close()
     if data:
         response.status_code = status.HTTP_200_OK
-        return BaseResponse(
-            resp="card_info",
-            status=response.status_code,
-            data=parse_data_for_response(data),
-        )
+        return CardInformation(status=response.status_code, data=parse_data_for_response(data))
     raise NotFound
 
 
@@ -136,14 +99,8 @@ async def search_by_set_collector_num(set: str, col_num: str, response: Response
     conn.close()
     if data:
         response.status_code = status.HTTP_200_OK
-        return BaseResponse[CardInformation](
-            resp="card_info",
-            status=response.status_code,
-            data=parse_data_for_response(data),
-        )
+        return CardInformation(status=response.status_code, data=parse_data_for_response(data))
     raise NotFound
-
-
 
 @user_router.get("/{group}", description="Filter for cards by their groups.")
 async def find_by_group(group: str, response: Response):
@@ -205,98 +162,96 @@ async def find_by_group(group: str, response: Response):
     conn.close()
     if data:
         response.status_code = status.HTTP_200_OK
-        return BaseResponse[CardInformation](
-            info=info,
-            data=parse_data_for_response(data),
-            resp="card_info",
-            status=response.status_code,
-        )
+        return CardInformation(info=info,
+        status=response.status_code,
+        data=parse_data_for_response(data))
+
     raise NotFound
 
 
 
-@admin_router.post("/add/{set}/{coll_num}")
-async def add_card_to_track(set: str, coll_num: str):
-    resp = send_response(
-        "GET", f"https://api.scryfall.com/cards/search?q=set:{set}+cn:{coll_num}"
-    )
-    try:
-        if resp["object"] != "list":
-            log.error("Not a card!")
-            raise NotFound
+# @admin_router.post("/add/{set}/{coll_num}")
+# async def add_card_to_track(set: str, coll_num: str):
+#     resp = send_response(
+#         "GET", f"https://api.scryfall.com/cards/search?q=set:{set}+cn:{coll_num}"
+#     )
+#     try:
+#         if resp["object"] != "list":
+#             log.error("Not a card!")
+#             raise NotFound
 
-    except KeyError as e:
-        # ? What does this look like, again?
-        log.error(f"KeyError:{e}")
+#     except KeyError as e:
+#         # ? What does this look like, again?
+#         log.error(f"KeyError:{e}")
 
-    else:
-        if resp["total_cards"] != 1:
-            error_msg = f"Recieved list with more than 1. Set:{set}, ID:{coll_num}"
-            log.error(error_msg)
-            return error_msg
+#     else:
+#         if resp["total_cards"] != 1:
+#             error_msg = f"Recieved list with more than 1. Set:{set}, ID:{coll_num}"
+#             log.error(error_msg)
+#             return error_msg
 
-        resp = resp["data"][0]
-        conn, cur = connect_db()
-        cur.execute(
-            "SELECT * from card_info.info where id = %s AND set= %s",
-            (resp["collector_number"], resp["set"]),
-        )
-        if (
-            not cur.fetchall()
-        ):  # * Run this section if no results (empty lists are False)
-            if "tcgplayer_etched_id" in resp:
-                tcg_etched_id = resp["tcgplayer_etched_id"]
-            else:
-                tcg_etched_id = None
+#         resp = resp["data"][0]
+#         conn, cur = connect_db()
+#         cur.execute(
+#             "SELECT * from card_info.info where id = %s AND set= %s",
+#             (resp["collector_number"], resp["set"]),
+#         )
+#         if (
+#             not cur.fetchall()
+#         ):  # * Run this section if no results (empty lists are False)
+#             if "tcgplayer_etched_id" in resp:
+#                 tcg_etched_id = resp["tcgplayer_etched_id"]
+#             else:
+#                 tcg_etched_id = None
 
-            add_info_to_postgres = """
-                    INSERT INTO card_info.info (name, set, id, uri, tcg_id, tcg_id_etch, new_search)
+#             add_info_to_postgres = """
+#                     INSERT INTO card_info.info (name, set, id, uri, tcg_id, tcg_id_etch, new_search)
 
-                    VALUES (%s,%s,%s,%s,%s,%s,%s)
-                    """
-            # ? Uncomment below in production.
-            cur.execute(
-                add_info_to_postgres,
-                (
-                    resp["name"],
-                    resp["set"],
-                    resp["collector_number"],
-                    resp["id"],
-                    resp["tcgplayer_id"],
-                    tcg_etched_id,
-                    True,
-                ),
-            )
-            conn.commit()
+#                     VALUES (%s,%s,%s,%s,%s,%s,%s)
+#                     """
+#             # ? Uncomment below in production.
+#             cur.execute(
+#                 add_info_to_postgres,
+#                 (
+#                     resp["name"],
+#                     resp["set"],
+#                     resp["collector_number"],
+#                     resp["id"],
+#                     resp["tcgplayer_id"],
+#                     tcg_etched_id,
+#                     True,
+#                 ),
+#             )
+#             conn.commit()
 
-            log.info(f'Now tracking: {resp["name"]} from {resp["set_name"]}')
-            return f'Now tracking: {resp["name"]} from {resp["set_name"]}'
+#             log.info(f'Now tracking: {resp["name"]} from {resp["set_name"]}')
+#             return f'Now tracking: {resp["name"]} from {resp["set_name"]}'
 
-        else:
-            log.info(f'Already tracking: {resp["name"]} from {resp["set_name"]}')
-            return f'Already tracking: {resp["name"]} from {resp["set_name"]}'
+#         else:
+#             log.info(f'Already tracking: {resp["name"]} from {resp["set_name"]}')
+#             return f'Already tracking: {resp["name"]} from {resp["set_name"]}'
 
 
-@admin_router.delete("/remove/{set}/{coll_num}")
-async def remove_card_from_database(set: str, coll_num: str):
-    conn, cur = connect_db()
+# @admin_router.delete("/remove/{set}/{coll_num}")
+# async def remove_card_from_database(set: str, coll_num: str):
+#     conn, cur = connect_db()
 
-    cur.execute(
-        "SELECT name, id, set from card_info.info where id = %s AND set = %s",
-        (coll_num, set),
-    )
+#     cur.execute(
+#         "SELECT name, id, set from card_info.info where id = %s AND set = %s",
+#         (coll_num, set),
+#     )
 
-    fetched_card = cur.fetchone()
-    if fetched_card:
-        text_resp = f"Deleting: {fetched_card['name']} (Set: {fetched_card['set']}, Collector Num: {fetched_card['id']})"
-        log.info(text_resp)
-        cur.execute(
-            "DELETE FROM card_info.info WHERE id = %s AND set = %s", (coll_num, set)
-        )
-        conn.commit()
+#     fetched_card = cur.fetchone()
+#     if fetched_card:
+#         text_resp = f"Deleting: {fetched_card['name']} (Set: {fetched_card['set']}, Collector Num: {fetched_card['id']})"
+#         log.info(text_resp)
+#         cur.execute(
+#             "DELETE FROM card_info.info WHERE id = %s AND set = %s", (coll_num, set)
+#         )
+#         conn.commit()
 
-    else:
-        text_resp = f"Failed to delete, does not exist on DB (Set: {set}, Collector Num: {coll_num})"
-        log.error(text_resp)
+#     else:
+#         text_resp = f"Failed to delete, does not exist on DB (Set: {set}, Collector Num: {coll_num})"
+#         log.error(text_resp)
 
-    return text_resp
+#     return text_resp

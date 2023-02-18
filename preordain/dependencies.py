@@ -1,26 +1,22 @@
 from fastapi import Header
-from preordain.exceptions import BadToken
+from preordain.exceptions import InvalidToken
 from preordain import config
-import logging
-
-log = logging.getLogger()
-
 #  = Header() makes it so it has to pass through a header rather than a string
 
 
 # ? All routes.
-async def select_access(access: str):
+async def select_token(access: str):
     if access != str(config.SEC_TOKEN):
-        raise BadToken(token="SEC")
+        raise InvalidToken(token="ACCESS")
 
 
 # ? Admin route.
-async def write_access(write_access: str = Header()):
-    if write_access != str(config.WRITE_TOKEN):
-        raise BadToken(token="WRITE")
+async def write_token(write: str = Header()):
+    if write != str(config.WRITE_TOKEN):
+        raise InvalidToken(token="WRITE")
 
 
 # ?  Price route.
-async def price_access(price_access: str = Header()):
-    if price_access != str(config.PRICE_TOKEN):
-        raise BadToken(token="PRICE")
+async def price_token(price: str = Header()):
+    if price != str(config.PRICE_TOKEN):
+        raise InvalidToken(token="PRICE")

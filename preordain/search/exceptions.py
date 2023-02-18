@@ -1,7 +1,8 @@
 from preordain.exceptions import PreordainException
+from pydantic.errors import PydanticValueError
 import logging
 import os
-from fastapi import Request, FastAPI, status
+from fastapi import Request,status
 from fastapi.responses import JSONResponse
 from preordain.models import BaseResponse
 log = logging.getLogger()

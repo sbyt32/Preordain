@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, Response, status
 from preordain.utils.connections import connect_db, send_response
-from preordain.inventory.models import ModifyInventory, InventoryData
+from preordain.inventory.models import ModifyInventory, InventoryResponse
 from preordain.models import BaseResponse
 from preordain.exceptions import NotFound
 import arrow
@@ -16,32 +16,13 @@ router = APIRouter()
     description="Return your entire inventory.",
     responses={
         200: {
-            "model": BaseResponse[InventoryData],
+            "model": InventoryResponse,
             "description": "Retrieve your inventory.",
-            "content": {
-                "application/json": {
-                    "example": {
-                        "resp": "price_data",
-                        "status": 200,
-                        "data": [
-                            {
-                                "name": "Thalia, Guardian of Thraben",
-                                "set": "Innistrad: Crimson Vow",
-                                "quantity": 2,
-                                "condition": "NM",
-                                "variant": "Normal",
-                                "avg_cost": 2,
-                            }
-                        ],
-                    }
-                }
-            },
         },
     },
 )
 
 # Return your entire inventory
-# * retrieve_inventory
 async def get_inventory(response: Response):
     conn, cur = connect_db()
 
@@ -85,10 +66,7 @@ async def get_inventory(response: Response):
     conn.close()
     if inventory:
         response.status_code = status.HTTP_200_OK
-        # return data
-        return BaseResponse[InventoryData](
-            status=response.status_code, resp="retrieve_inventory", data=inventory
-        )
+        return InventoryResponse(status=response.status_code, data=inventory).dict()
     raise NotFound
 
 

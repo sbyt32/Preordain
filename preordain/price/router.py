@@ -4,7 +4,6 @@ from typing import Optional
 from preordain.price.utils import parse_data_for_response, parse_data_single_card
 from preordain.utils.connections import connect_db
 from preordain.price.models import PriceDataMultiple, PriceDataSingle
-from preordain.models import BaseResponse
 from preordain.exceptions import NotFound
 import logging
 import re
@@ -13,37 +12,13 @@ log = logging.getLogger()
 
 price_router = APIRouter()
 
-
 @price_router.get(
     "/{date}",
     description="Get the price data for the a certain day. YYYY-MM-DD format.",
     responses={
         200: {
-            "model": BaseResponse[PriceDataMultiple],
-            "description": "Return the the price data for the specified day.",
-            "content": {
-                "application/json": {
-                    "example": {
-                        "resp": "price_data",
-                        "status": 200,
-                        "data": [
-                            {
-                                "name": "Ancient Grudge",
-                                "set": "MM3",
-                                "set_full": "Modern Masters 2017",
-                                "id": "88",
-                                "prices": {
-                                    "usd": 12.34,
-                                    "usd_foil": 12.34,
-                                    "euro": 12.34,
-                                    "euro_foil": 12.34,
-                                    "tix": 12.34,
-                                },
-                            }
-                        ],
-                    }
-                }
-            },
+            "model": PriceDataMultiple,
+            "description": "OK Request",
         },
     },
 )
@@ -85,11 +60,8 @@ async def get_single_day_data(date: str, response: Response):
     conn.close()
     if data:
         response.status_code = status.HTTP_200_OK
-        return BaseResponse[PriceDataMultiple](
-            resp="price_data",
-            status=response.status_code,
-            data=parse_data_for_response(data),
-        )
+        return PriceDataMultiple(status=response.status_code,data=parse_data_for_response(data))
+    response.status_code = status.HTTP_404_NOT_FOUND
     raise NotFound
 
 @price_router.get(
@@ -97,39 +69,8 @@ async def get_single_day_data(date: str, response: Response):
     description="Get the price data for one card. Last 25 results only.",
     responses={
         200: {
-            "model": BaseResponse[PriceDataMultiple],
-            "description": "Return the the price data for the specified day.",
-            "content": {
-                "application/json": {
-                    "example": {
-                        "resp": "price_data",
-                        "status": 200,
-                        "data": [
-                            {
-                                "name": "Ancient Grudge",
-                                "set": "MM3",
-                                "set_full": "Modern Masters 2017",
-                                "id": "88",
-                                "prices": [
-                                    {
-                                        "date": "2023-02-05",
-                                        "usd": 12.34,
-                                        "usd_change": "10.00%",
-                                        "usd_foil": 12.34,
-                                        "usd_foil_change": "10.00%",
-                                        "euro": 12.34,
-                                        "euro_change": "10.00%",
-                                        "euro_foil": 12.34,
-                                        "euro_foil_change": "10.00%",
-                                        "tix": 12.34,
-                                        "tix_change": "10.00%",
-                                    }
-                                ],
-                            }
-                        ],
-                    }
-                }
-            },
+            "model": PriceDataSingle,
+            "description": "OK Request",
         },
     },
 )
@@ -199,9 +140,6 @@ async def get_single_card_data(
 
     if data:
         response.status_code = status.HTTP_200_OK
-        return BaseResponse[PriceDataSingle](
-            resp="price_data",
-            status=response.status_code,
-            data=parse_data_single_card(data),
-        )
+        return PriceDataSingle(status=response.status_code,data=parse_data_single_card(data))
+    response.status_code = status.HTTP_404_NOT_FOUND
     raise NotFound

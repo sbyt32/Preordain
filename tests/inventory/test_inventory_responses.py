@@ -15,14 +15,17 @@ def test_inventory_root_fail(client: TestClient):
 
 
 def test_inventory_root_bad_token(client: TestClient):
-    from preordain.exceptions import BadToken
+    from preordain.exceptions import InvalidToken
 
-    token = 'HELLO_BAD_TOKEN'
-    response = client.get(f"/inventory/?access={token}")
-    assert response.status_code == BadToken.status_code
+    token = 'access'
+    token_value = 'HELLO_BAD_TOKEN'
+    invalid_example = InvalidToken(token)
+    
+    response = client.get(f"/inventory/?{token}={token_value}")
+    assert response.status_code == invalid_example.status_code
     response = response.json()
-    # assert response['info'] == BadToken.info
-    assert response['resp'] == BadToken.resp
+    assert response['info'] == invalid_example.info
+    assert response['resp'] == invalid_example.resp
 
 
 def test_inventory_bad_validation():

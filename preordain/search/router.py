@@ -3,8 +3,8 @@ import logging
 log = logging.getLogger()
 from preordain.utils.connections import connect_db
 from fastapi import APIRouter, Response, status, Depends
-from preordain.information.utils import parse_data_for_response
-from preordain.information.models import CardInformation
+from preordain.search.utils import parse_data_for_response
+from preordain.search.models import SearchInformation
 from preordain.search.models import SearchQuery
 from preordain.models import BaseResponse
 from preordain.exceptions import NotFound
@@ -52,9 +52,9 @@ async def search_for_card(response: Response, query: SearchQuery = Depends()):
     conn.close()
     if data:
         response.status_code = status.HTTP_200_OK
-        return BaseResponse[CardInformation](
+        return SearchInformation(
             data=parse_data_for_response(data),
-            resp="search_query",
             status=response.status_code,
         )
+    # response.status_code = 
     raise NotFound
