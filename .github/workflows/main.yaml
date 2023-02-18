@@ -35,5 +35,4 @@ jobs:
           TCG_SALES: "2022-12-14 05:59:07.360573+00:00"
         run: |
           pytest --cov=tests/
-  format:
 
