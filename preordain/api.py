@@ -1,6 +1,6 @@
 from fastapi import Depends, APIRouter
 from preordain.dependencies import select_token, write_token
-from preordain.models import BaseResponse
+from preordain.models import BaseError, RespStrings
 from preordain.exceptions import RootException
 from preordain.groups.router import admin_groups as groups_admin_router
 from preordain.groups.router import user_groups as groups_user_router
@@ -20,12 +20,12 @@ from typing import Union
 api_router = APIRouter(
     responses={
         404: {
-            "model": BaseResponse,
+            "model": BaseError,
             "description": "Not Found",
             "content": {
                 "application/json": {
                     "example": {
-                        "resp": "no_results",
+                        "resp": RespStrings.no_results,
                         "status": 404,
                         "info": {"message": "No Results Found!"},
                     }
@@ -33,12 +33,12 @@ api_router = APIRouter(
             },
         },
         400: {
-            "model": BaseResponse,
+            "model": BaseError,
             "description": "Bad Request",
             "content": {
                 "application/json": {
                     "example": {
-                        "resp": "error_request",
+                        "resp": RespStrings.error_request,
                         "status": 400,
                         "info": {"message": "Unable to process Request"},
                     }

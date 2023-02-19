@@ -5,7 +5,7 @@ from preordain.sales.utils import (
     process_tcgp_data,
     process_tcgp_data_single,
 )
-from preordain.sales.models import RecentSaleData, DailySales, CardSaleResponse
+from preordain.sales.models import CardSaleResponse
 from preordain.models import RespStrings
 from preordain.exceptions import NotFound
 import logging

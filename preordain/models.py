@@ -78,9 +78,6 @@ class BaseResponse(GenericModel, Generic[ResponseDataTypes]):
         if self.data == None:
             del self.data
 
-    # class Config:
-    #     use_enum_values = True
-
     resp: RespStrings
     status: int
     info: Optional[dict]
@@ -97,9 +94,10 @@ class BaseResponse(GenericModel, Generic[ResponseDataTypes]):
 
 
 class BaseError(GenericModel):
-    resp: str
+    resp: RespStrings
     status: int
-    info: dict[str, str] = {"message": "{msg}"}
+    info: dict[str, str] = {"message": "undefined error"}
 
     class Config:
+        fields = {"__module__": {"exclude": True}, "__doc__": {"exclude": True}}
         use_enum_values = True

@@ -3,7 +3,7 @@ import logging
 import os
 from fastapi import Request, status
 from fastapi.responses import JSONResponse
-from preordain.models import BaseResponse
+from preordain.models import BaseError
 
 log = logging.getLogger()
 
@@ -20,7 +20,5 @@ async def invalid_search_handler(request: Request, exc: InvalidSearchQuery):
     log.warning(exc.info["message"])
     return JSONResponse(
         status_code=exc.status_code,
-        content=BaseResponse(
-            resp=exc.resp, status=exc.status_code, info=exc.info
-        ).dict(),
+        content=BaseError(resp=exc.resp, status=exc.status_code, info=exc.info).dict(),
     )
