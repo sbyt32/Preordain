@@ -2,25 +2,22 @@ import logging
 
 log = logging.getLogger()
 from preordain.utils.connections import connect_db
-from fastapi import APIRouter, Response, status
-from preordain.information.utils import parse_data_for_response
-from preordain.information.models import CardInformation
-# from preordain.search.models import SearchQuery
-from preordain.models import BaseResponse
+from fastapi import APIRouter, Response, status, Depends
+from preordain.search.utils import parse_data_for_response
+from preordain.search.models import SearchInformation
+from preordain.search.models import SearchQuery
+from preordain.exceptions import NotFound
 
 search_router = APIRouter()
 
-@search_router.get("/{query}")
-async def search_for_card(query: str, response: Response):
-    if len(query) >= 50:
-        raise Exception("Hey maybe don't so much")
-    if len(query) <= 0:
-        raise Exception("Maybe like, search for a card")
 
+@search_router.get("/{query}")
+# * https://github.com/tiangolo/fastapi/issues/1974
+async def search_for_card(response: Response, query: SearchQuery = Depends()):
     conn, cur = connect_db()
     cur.execute(
         """
-        SELECT 
+        SELECT
             info.name,
             info.set,
             info.set_full,
@@ -33,8 +30,8 @@ async def search_for_card(query: str, response: Response):
             price.tix
         FROM card_data price
         JOIN (
-            SELECT 
-                info.name, 
+            SELECT
+                info.name,
                 info.set,
                 sets.set_full,
                 info.id,
@@ -50,20 +47,15 @@ async def search_for_card(query: str, response: Response):
         ON price.id = info.id AND price.set = info.set AND price.date = info.maxDate
         WHERE LOWER(info.name) ILIKE %s
     """,
-        ("%{}%".format(query),),
+        ("%{}%".format(query.query),),
     )
     data = cur.fetchall()
     conn.close()
     if data:
         response.status_code = status.HTTP_200_OK
-        return BaseResponse[CardInformation](
+        return SearchInformation(
             data=parse_data_for_response(data),
-            resp="search_query",
             status=response.status_code,
         )
     response.status_code = status.HTTP_404_NOT_FOUND
-    return BaseResponse(
-        resp="no_results",
-        status=response.status_code,
-        info={"message": "No results found", "query": query},
-    )
+    raise NotFound

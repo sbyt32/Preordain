@@ -1,6 +1,14 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from preordain.exceptions import TokenError, token_exception_handler
+from preordain.exceptions import (
+    InvalidToken,
+    token_exception_handler,
+    RootException,
+    root_exception_handler,
+    NotFound,
+    not_found_exception_handler,
+)
+from preordain.search.exceptions import InvalidSearchQuery, invalid_search_handler
 from preordain.logging_details import log_setup
 from preordain.config import PROJECT
 from preordain.api import api_router
@@ -9,14 +17,11 @@ from preordain.api import api_router
 
 app = FastAPI(title=PROJECT, description="PRODUCTION")
 
-
 app.include_router(api_router)
-# * Logging Information
 log_setup()
 import logging
 
-log = logging.getLogger()
-log.setLevel(logging.DEBUG)
+log = logging.getLogger(__name__)
 # ? I really don't like this out in the open, but I'm leaving it here for testing.
 # origins = [
 #     "http://localhost.tiangolo.com",
@@ -31,4 +36,8 @@ log.setLevel(logging.DEBUG)
 #     allow_headers=["*"],
 # )
 # ? Can this be done more efficently?
-app.add_exception_handler(TokenError, token_exception_handler)
+
+app.add_exception_handler(InvalidToken, token_exception_handler)
+app.add_exception_handler(RootException, root_exception_handler)
+app.add_exception_handler(InvalidSearchQuery, invalid_search_handler)
+app.add_exception_handler(NotFound, not_found_exception_handler)

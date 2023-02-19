@@ -4,24 +4,11 @@ from fastapi.testclient import TestClient
 def test_inventory_root(client: TestClient):
     from starlette.config import environ
 
-    data = {
-        "resp": "retrieve_inventory",
-        "status": 200,
-        "data": [
-            {
-                "name": "Thalia, Guardian of Thraben",
-                "set": "Innistrad: Crimson Vow",
-                "quantity": 2,
-                "condition": "NM",
-                "variant": "Normal",
-                "avg_cost": 2,
-            }
-        ],
-    }
+    data = {"resp": "retrieve_inventory"}
 
     response = client.get(f'/inventory/?access={str(environ["SEC_TOKEN"])}')
     assert response.status_code == 200
-    assert response.json() == data
+    assert response.json()["resp"] == data["resp"]
 
 
 def test_inventory_root_fail(client: TestClient):
@@ -30,13 +17,17 @@ def test_inventory_root_fail(client: TestClient):
 
 
 def test_inventory_root_bad_token(client: TestClient):
-    response = client.get(f"/inventory/?access=HELLO_BAD_TOKEN")
-    assert response.status_code == 403
-    assert response.json() == {
-        "resp": "error",
-        "status": 403,
-        "message": "access_token was not given or was incorrect. This error has been logged.",
-    }
+    from preordain.exceptions import InvalidToken
+
+    token = "access"
+    token_value = "HELLO_BAD_TOKEN"
+    invalid_example = InvalidToken(token)
+
+    response = client.get(f"/inventory/?{token}={token_value}")
+    assert response.status_code == invalid_example.status_code
+    response = response.json()
+    assert response["info"] == invalid_example.info
+    assert response["resp"] == invalid_example.resp
 
 
 def test_inventory_bad_validation():

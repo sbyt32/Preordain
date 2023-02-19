@@ -22,10 +22,13 @@ def connect_db():
             ),
         )
     )
-    log.debug(f"Connecting to database: {db_info['dbname']}")
     conn_info = psycopg.conninfo.make_conninfo(**db_info)
 
-    conn = psycopg.connect(conn_info, row_factory=dict_row)
+    log.debug(f"Connecting to database: {db_info['dbname']}")
+    try:
+        conn = psycopg.connect(conn_info, row_factory=dict_row)
+    except psycopg.OperationalError as e:
+        raise Exception(e)
     cur = conn.cursor()
 
     return conn, cur
@@ -36,9 +39,8 @@ def send_response(method: str, url: str, **kwargs):
     log.debug(f"Sending a {method} to {url} with kwargs: {kwargs}")
     if not r.ok:
         # todo: Add logging issue
-        log.error(f"Request failed! Status code:{r.status_code}")
-        # return r.json()
-        # raise
+        # log.error(f"Request failed! Status code:{r.status_code}")
+        log.exception(f"Request failed! Status code:{r.status_code}")
     else:
         card_list = r.json()
         return card_list

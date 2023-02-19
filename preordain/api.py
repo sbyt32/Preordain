@@ -1,33 +1,50 @@
-import os
-from fastapi import Response, status, Depends, APIRouter
-from preordain.dependencies import select_access, write_access
-from preordain.models import BaseResponse
-
+from fastapi import Depends, APIRouter
+from preordain.dependencies import select_token, write_token
+from preordain.models import BaseError, RespStrings
+from preordain.exceptions import RootException
 from preordain.groups.router import admin_groups as groups_admin_router
 from preordain.groups.router import user_groups as groups_user_router
 from preordain.price.router import price_router
+from preordain.price.models import PriceDataMultiple, PriceDataSingle
 from preordain.information.router import admin_router as info_admin_router
 from preordain.information.router import user_router as info_user_router
 from preordain.information.models import CardInformation
 from preordain.inventory.router import router as inventory_router
-from preordain.sales.router import sale_router
+from preordain.inventory.router import InventoryResponse
+from preordain.sales.router import sales_router
+from preordain.sales.models import CardSaleResponse
 from preordain.search.router import search_router
+from preordain.search.models import SearchInformation
+from typing import Union
 
 api_router = APIRouter(
     responses={
         404: {
-            "model": BaseResponse,
+            "model": BaseError,
             "description": "Not Found",
             "content": {
                 "application/json": {
                     "example": {
-                        "resp": "no_results",
+                        "resp": RespStrings.no_results,
                         "status": 404,
                         "info": {"message": "No Results Found!"},
                     }
                 }
             },
-        }
+        },
+        400: {
+            "model": BaseError,
+            "description": "Bad Request",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "resp": RespStrings.error_request,
+                        "status": 400,
+                        "info": {"message": "Unable to process Request"},
+                    }
+                }
+            },
+        },
     }
 )
 
@@ -36,29 +53,39 @@ api_router.include_router(
     info_user_router,
     prefix="/card",
     tags=["Card Information, etc"],
-    responses={200: {"model": BaseResponse[CardInformation]}},
+    responses={
+        200: {
+            "model": CardInformation,
+            "description": "Return the groups that the data is associated with.",
+        }
+    },
 )
 api_router.include_router(
     search_router,
     prefix="/search",
     tags=["Search for a card"],
-    responses={200: {"model": BaseResponse[CardInformation]}},
+    responses={200: {"model": SearchInformation}},
 )
 api_router.include_router(
     inventory_router,
     prefix="/inventory",
     tags=["Inventory Management"],
-    dependencies=[Depends(select_access)],
-    # responses={200: {'model': BaseResponse[InventoryData]}}
+    dependencies=[Depends(select_token)],
+    responses={200: {"model": InventoryResponse}},
 )
 api_router.include_router(
     price_router,
     prefix="/price",
     tags=["Get Prices (from Scryfall)"],
-    # responses={200: {'model': BaseResponse}}
+    responses={200: {"model": Union[PriceDataSingle, PriceDataMultiple]}},
 )
 api_router.include_router(
-    sale_router, prefix="/sales", tags=["Get Sales (From TCGPlayer)"]
+    sales_router,
+    prefix="/sales",
+    tags=[
+        "Get Sales (From TCGPlayer)",
+    ],
+    responses={200: {"model": CardSaleResponse}},
 )
 api_router.include_router(
     groups_user_router,
@@ -66,38 +93,21 @@ api_router.include_router(
     tags=["Card Groups"],
 )
 
-# # * Admin Panel
-api_router.include_router(
-    groups_admin_router,
-    prefix="/groups",
-    tags=["Card Groups"],
-    dependencies=[Depends(write_access)],
-)
-api_router.include_router(
-    info_admin_router,
-    prefix="/admin",
-    tags=["Admin Panel"],
-    dependencies=[Depends(write_access)],
-)
+# # # * Admin Panel
+# api_router.include_router(
+#     groups_admin_router,
+#     prefix="/groups",
+#     tags=["Card Groups"],
+#     dependencies=[Depends(write_access)],
+# )
+# api_router.include_router(
+#     info_admin_router,
+#     prefix="/admin",
+#     tags=["Admin Panel"],
+#     dependencies=[Depends(write_access)],
+# )
 
 
 @api_router.get("/", tags=["Test Connection"])
-async def root(response: Response):
-    if os.path.exists(".env"):
-        response.status_code = status.HTTP_400_BAD_REQUEST
-        return {
-            "resp": "root_error",
-            "status": response.status_code,
-            "info": {
-                "message": "The request failed due to being at root. If you're just testing if it works, yeah it works."
-            },
-        }
-    else:
-        response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-        return {
-            "resp": "root_error",
-            "status": response.status_code,
-            "info": {
-                "message": "Configuration file improperly configured. Script will not function."
-            },
-        }
+async def root():
+    raise RootException

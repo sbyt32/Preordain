@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends, Response, status
 from preordain.utils.connections import connect_db, send_response
-from preordain.inventory.models import ModifyInventory, InventoryData
+from preordain.inventory.models import ModifyInventory, InventoryResponse
 from preordain.models import BaseResponse
+from preordain.exceptions import NotFound
 import arrow
 import logging
 
@@ -15,32 +16,13 @@ router = APIRouter()
     description="Return your entire inventory.",
     responses={
         200: {
-            "model": BaseResponse[InventoryData],
+            "model": InventoryResponse,
             "description": "Retrieve your inventory.",
-            "content": {
-                "application/json": {
-                    "example": {
-                        "resp": "price_data",
-                        "status": 200,
-                        "data": [
-                            {
-                                "name": "Thalia, Guardian of Thraben",
-                                "set": "Innistrad: Crimson Vow",
-                                "quantity": 2,
-                                "condition": "NM",
-                                "variant": "Normal",
-                                "avg_cost": 2,
-                            }
-                        ],
-                    }
-                }
-            },
         },
     },
 )
 
 # Return your entire inventory
-# * retrieve_inventory
 async def get_inventory(response: Response):
     conn, cur = connect_db()
 
@@ -59,12 +41,12 @@ async def get_inventory(response: Response):
         JOIN card_info.sets as set
             ON info.set = set.set
         JOIN (
-            SELECT 
+            SELECT
                 inventory.tcg_id,
                 SUM (inventory.qty * inventory.buy_price)::numeric AS total_qty,
                 inventory.card_condition,
                 inventory.card_variant
-            FROM inventory 
+            FROM inventory
             GROUP BY
                 inventory.tcg_id,
                 inventory.card_condition,
@@ -84,16 +66,8 @@ async def get_inventory(response: Response):
     conn.close()
     if inventory:
         response.status_code = status.HTTP_200_OK
-        # return data
-        return BaseResponse[InventoryData](
-            status=response.status_code, resp="retrieve_inventory", data=inventory
-        )
-    response.status_code = status.HTTP_404_NOT_FOUND
-    return BaseResponse(
-        resp="error_request",
-        status=response.status_code,
-        info={"message": "There are no cards in the database!"},
-    )
+        return InventoryResponse(status=response.status_code, data=inventory).dict()
+    raise NotFound
 
 
 # ! Disabled for now
@@ -191,6 +165,6 @@ async def get_inventory(response: Response):
 #         return inventory_check
 
 
-@router.delete("/delete")
-async def remove_from_inventory():
-    pass
+# @router.delete("/delete")
+# async def remove_from_inventory():
+#     pass
