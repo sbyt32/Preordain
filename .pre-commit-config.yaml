@@ -10,3 +10,7 @@ repos:
     rev: 23.1.0
     hooks:
     -   id: black
+        args:
+            - preordain/
+            - tests/
+            - --extend-exclude=preordain/static/preordain
