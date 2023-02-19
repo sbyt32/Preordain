@@ -16,7 +16,11 @@ from preordain.logging_details import log_setup
 from preordain.config import PROJECT
 from preordain.api import api_router
 
-# from starlette.routing import Mount
+
+app = FastAPI(title=PROJECT, description="PRODUCTION")
+
+app.include_router(api_router)
+# * Logging Information
 log_setup()
 
 log = logging.getLogger(__name__)
@@ -29,10 +33,7 @@ routes = [
     ),
 ]
 app = FastAPI(title=PROJECT, description="PRODUCTION", routes=routes)
-app.include_router(api_router)
 
-
-# app.mount("/static", StaticFiles(directory="preordain/static/preordain/dist/", html=True), name="static" )
 # ? I really don't like this out in the open, but I'm leaving it here for testing.
 # origins = [
 #     "http://localhost.tiangolo.com",
@@ -52,5 +53,3 @@ app.add_exception_handler(InvalidToken, token_exception_handler)
 app.add_exception_handler(RootException, root_exception_handler)
 app.add_exception_handler(InvalidSearchQuery, invalid_search_handler)
 app.add_exception_handler(NotFound, not_found_exception_handler)
-
-# app.moun
