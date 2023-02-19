@@ -16,23 +16,19 @@ from preordain.logging_details import log_setup
 from preordain.config import PROJECT
 from preordain.api import api_router
 
-
-app = FastAPI(title=PROJECT, description="PRODUCTION")
-
-app.include_router(api_router)
 # * Logging Information
 log_setup()
 
 log = logging.getLogger(__name__)
 routes = [
-    Mount("/api", app=api_router, name="API"),
     Mount(
         "/static",
-        app=StaticFiles(directory="static/preordain", html=True),
+        app=StaticFiles(directory="preordain/static/preordain/dist", html=True),
         name="static",
     ),
 ]
 app = FastAPI(title=PROJECT, description="PRODUCTION", routes=routes)
+app.include_router(api_router, prefix="/api")
 
 # ? I really don't like this out in the open, but I'm leaving it here for testing.
 # origins = [

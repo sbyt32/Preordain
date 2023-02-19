@@ -5,7 +5,7 @@ from fastapi.testclient import TestClient
 
 
 def test_connect(client: TestClient):
-    response = client.get("/groups/?in_use=true")
+    response = client.get("/api/groups/?in_use=true")
 
     assert response.status_code == 200
     response = response.json()
@@ -15,7 +15,7 @@ def test_connect(client: TestClient):
 
 
 def test_inventory_all_groups(client: TestClient):
-    response = client.get("/groups/?in_use=false")
+    response = client.get("/api/groups/?in_use=false")
 
     assert response.status_code == 200
     response = response.json()
