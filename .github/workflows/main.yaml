@@ -21,6 +21,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install --user -r requirements-base.txt
           pip install --user -r requirements-dev.txt
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
       - name: Build site
         run: |
           cd preordain/static/preordain
