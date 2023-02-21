@@ -26,10 +26,10 @@ jobs:
         with:
           node-version: 16
       - name: Build site
+        working-directory: preordain/static/preordain/
         run: |
-          cd preordain/static/preordain
           npm install
-          npm run dev
+          npm run build
       - name: Test with pytest
         env:
           PROJECT: Preordain
