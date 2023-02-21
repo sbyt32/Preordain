@@ -3,6 +3,7 @@ from psycopg.rows import dict_row
 import requests
 import logging
 from preordain import config
+from typing import Union
 
 log = logging.getLogger()
 
@@ -34,7 +35,7 @@ def connect_db():
     return conn, cur
 
 
-def send_response(method: str, url: str, **kwargs):
+def send_response(method: str, url: str, **kwargs) -> Union[list, dict, None]:
     r = requests.request(method, url, **kwargs)
     log.debug(f"Sending a {method} to {url} with kwargs: {kwargs}")
     if not r.ok:
@@ -42,5 +43,5 @@ def send_response(method: str, url: str, **kwargs):
         # log.error(f"Request failed! Status code:{r.status_code}")
         log.exception(f"Request failed! Status code:{r.status_code}")
     else:
-        card_list = r.json()
-        return card_list
+        response: Union[list, dict] = r.json()
+        return response

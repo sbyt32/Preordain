@@ -22,27 +22,24 @@ log_setup()
 log = logging.getLogger(__name__)
 routes = [
     Mount(
-        "/static",
+        "/dash",
         app=StaticFiles(directory="preordain/static/preordain/dist", html=True),
-        name="static",
+        name="dashboard",
     ),
 ]
 app = FastAPI(title=PROJECT, description="PRODUCTION", routes=routes)
 app.include_router(api_router, prefix="/api")
 
 # ? I really don't like this out in the open, but I'm leaving it here for testing.
-# origins = [
-#     "http://localhost.tiangolo.com",
-#     "*"
-# ]
+origins = ["http://localhost.tiangolo.com", "*"]
 
-# app.add_middleware(
-#     CORSMiddleware,
-#     allow_origins=origins,
-#     allow_credentials=True,
-#     allow_methods=["*"],
-#     allow_headers=["*"],
-# )
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 # ? Can this be done more efficently?
 
 app.add_exception_handler(InvalidToken, token_exception_handler)

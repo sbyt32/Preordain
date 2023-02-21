@@ -43,7 +43,7 @@ class PriceDataMultiple(BaseResponse):
 
 class PriceDataSingle(BaseResponse):
     resp = RespStrings.price_data
-    data: list[dict[PriceData]] = PriceData
+    data: dict[PriceData] = PriceData
 
     class Config:
         schema_extra = {

@@ -115,22 +115,22 @@ async def get_single_card_data(
         JOIN
             (
                 SELECT
-                    date as dt,
-                    usd as usd_ct,
-                    lag(usd, 1) over (order by date(date)) as usd_yesterday,
-                    usd_foil as usd_foil_ct,
-                    lag(usd_foil, 1) over (order by date(date)) as usd_foil_yesterday,
-                    euro as euro_ct,
-                    lag(euro, 1) over (order by date(date)) as euro_yesterday,
-                    euro_foil as euro_foil_ct,
-                    lag(euro_foil, 1) over (order by date(date)) as euro_foil_yesterday,
-                    tix as tix_ct,
-                    lag(tix, 1) over (order by date(date)) as tix_yesterday
+                    date AS dt,
+                    usd AS usd_ct,
+                    lag(usd, 1) over (order by date(date)) AS usd_yesterday,
+                    usd_foil AS usd_foil_ct,
+                    lag(usd_foil, 1) over (order by date(date)) AS usd_foil_yesterday,
+                    euro AS euro_ct,
+                    lag(euro, 1) over (order by date(date)) AS euro_yesterday,
+                    euro_foil AS euro_foil_ct,
+                    lag(euro_foil, 1) over (order by date(date)) AS euro_foil_yesterday,
+                    tix AS tix_ct,
+                    lag(tix, 1) over (order by date(date)) AS tix_yesterday
                 FROM card_data
                 WHERE
                 card_data.set = %s AND card_data.id = %s
                 GROUP BY date, usd, usd_foil, euro, euro_foil, tix ORDER BY date DESC
-            ) as change
+            ) AS change
         ON change.dt = card_data.date
         WHERE
             card_data.set = %s AND card_data.id = %s

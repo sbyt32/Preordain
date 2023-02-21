@@ -1,7 +1,8 @@
 import arrow
 import logging
 import logging.config
-from preordain.config import LOG_LEVEL
+
+# from preordain.config import LOG_LEVEL
 
 local = arrow.utcnow().format("YYYY-MM-DD")
 
@@ -21,16 +22,16 @@ LOG_FORMAT_DEBUG = "%(asctime)s | %(levelname)-8s | %(pathname)-40s | %(funcName
 
 log_file_info = f"logs/{local.format('MMM_DD_YY').lower()}.log"
 
-all_log_levels: dict[str, int] = {
-    "debug": logging.DEBUG,
-    "warning": logging.WARNING,
-    "info": logging.INFO,
-    "error": logging.ERROR,
-}
+# all_log_levels: dict[str, int] = {
+#     "debug": logging.DEBUG,
+#     "warning": logging.WARNING,
+#     "info": logging.INFO,
+#     "error": logging.ERROR,
+# }
 
 
 def log_setup():
-    log_level = all_log_levels.get(LOG_LEVEL.lower(), all_log_levels["warning"])
+    # log_level = all_log_levels.get(LOG_LEVEL.lower(), all_log_levels["warning"])
 
     log_config = {
         "name": LOGGER_NAME,
@@ -68,7 +69,7 @@ def log_setup():
             },
         },
         "root": {
-            "level": log_level,
+            "level": logging.WARNING,
             "propogate": True,
             "handlers": ["console", "file_info", "file_debug", "file_error"],
         },
