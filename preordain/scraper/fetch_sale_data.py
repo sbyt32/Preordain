@@ -1,11 +1,11 @@
-import time
+from time import sleep
 import hashlib
 import json
 import logging
 import psycopg
 import datetime
 from preordain import config
-from scripts.update_config import update_config
+from preordain.scraper.util import EnvVars, timer
 from preordain.utils.connections import connect_db, send_response
 from dateutil.parser import isoparse
 
@@ -17,9 +17,7 @@ def _get_next_data(card_id: str, offset_value: int):
     # Check the notes for the structure of the Payload.
     payload = {
         "listingType": "All",
-        "languages": [
-            1
-        ],  # We really only support about English at the moment, opt-in language support maybe later?
+        "languages": [1],
         "offset": offset_value,
         "limit": 25,
     }
@@ -31,13 +29,12 @@ def _get_next_data(card_id: str, offset_value: int):
     return send_response("POST", url, json=payload, headers=headers)
 
 
+@timer
 def fetch_tcg_prices():
     # Define some stuff we will use later
     stop_future_looping = (
         "UPDATE card_info.info SET new_search = false WHERE tcg_id = %s"
     )
-
-    start = time.perf_counter()  # ? Used for timing the length to parse everything
 
     conn, cur = connect_db()
     cur.execute("SELECT tcg_id, name, new_search FROM card_info.info'")
@@ -108,7 +105,7 @@ def fetch_tcg_prices():
                                 f"Duplicate data for card {card_name}, approx. # {offset_value} - {offset_value + 25}, merging ID {order_id}"
                             )
                             tx1.connection.execute(
-                                """                            
+                                """
                                 UPDATE card_data_tcg
                                 SET qty = card_data_tcg.qty + %s
                                 WHERE order_id = %s
@@ -131,19 +128,11 @@ def fetch_tcg_prices():
                 ):  # ? Originally, it also contained  '...or keep_adding_cards == False:' Not sure if needed
                     offset_value += 25
                     resp = _get_next_data(card_id, offset_value)
-                    time.sleep(0.5)
+                    sleep(0.5)
                 else:
                     tx1.connection.execute(stop_future_looping, (card_id,))
                     keep_adding_cards = False
 
     conn.close()
     # * After parsing, update the records to show the data.
-    update_config(
-        "database",
-        "UPDATES",
-        "tcg_sales",
-        str(datetime.datetime.now(datetime.timezone.utc)),
-    )
-    log.debug(
-        f"Elapsed time: {time.perf_counter() - start}"
-    )  # ? Sends length to parse to debug
+    EnvVars().update_env("TCG_SALES", str(datetime.datetime.now(datetime.timezone.utc)))

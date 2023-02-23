@@ -1,13 +1,16 @@
-from preordain.utils.connections import connect_db, send_response
-from scripts.update_config import update_config
-import arrow
 import datetime
 import logging
 from time import sleep
 
+import arrow
+
+from preordain.scraper.util import EnvVars, timer
+from preordain.utils.connections import connect_db, send_response
+
 log = logging.getLogger()
 
 
+@timer
 def query_price():
     conn, cur = connect_db()
 
@@ -16,10 +19,10 @@ def query_price():
 
     log.debug(f"Parsing {len(records)} cards.")
     for uri in records:
-        r = send_response("GET", f"https://api.scryfall.com/cards/{uri[0]}")
+        r = send_response("GET", f"https://api.scryfall.com/cards/{uri['uri']}")
         sleep(0.2)
         insert_values = """
-            INSERT INTO card_data (set, id, date, usd, usd_foil, euro, euro_foil, tix) 
+            INSERT INTO card_data (set, id, date, usd, usd_foil, euro, euro_foil, tix)
 
             VALUES (%s,%s,%s,%s,%s,%s,%s,%s)
 
@@ -43,9 +46,6 @@ def query_price():
     conn.commit()
     conn.close()
     log.debug(f"Parsed all {len(records)} cards")
-    update_config(
-        "database",
-        "UPDATES",
-        "price_fetch",
-        str(datetime.datetime.now(datetime.timezone.utc)),
+    EnvVars().update_env(
+        "PRICE_FETCH", str(datetime.datetime.now(datetime.timezone.utc))
     )

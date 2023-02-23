@@ -11,29 +11,29 @@
         2, // = Lightly Played (LP)
         3, // = Moderately Played (MP)
         4, // = Heavily Played (HP)
-        5, // = Damaged (DMG) 
-        6, // = Unopened (SEAL) 
+        5, // = Damaged (DMG)
+        6, // = Unopened (SEAL)
     ],
 
     "languages": [
-        1, // = English   
-        2, // = Chinese (Simplified) 
-        3, // = Chinese (Traditional) 
-        4, // = French   
-        5, // = German   
-        6, // = Italian   
-        7, // = Japanese   
-        8, // = Korean  
-        9, // = Portuguese   
-        10, // = Russian   
-        11, // = Spanish   
+        1, // = English
+        2, // = Chinese (Simplified)
+        3, // = Chinese (Traditional)
+        4, // = French
+        5, // = German
+        6, // = Italian
+        7, // = Japanese
+        8, // = Korean
+        9, // = Portuguese
+        10, // = Russian
+        11, // = Spanish
     ],
     "listingType": "All",
-    // Listing Type: 
+    // Listing Type:
         // "All"                    = Shows all listings
         // "ListingWithPhotos"      = Shows only listings with photos
         // "ListingWithoutPhotos"   = Shows only listings without photos
-    "limit": 25, // 1-25 0 returns 10, 
+    "limit": 25, // 1-25 0 returns 10,
     "offset":0, // Self Explanatory
 }
 ```
@@ -44,7 +44,7 @@
 {
 	"previousPage": "Yes",
 	"nextPage": "",
-	"resultCount": 11, 
+	"resultCount": 11,
 	"totalResults": 1786,
 	"data": [
 		{
@@ -54,7 +54,7 @@
 			"quantity": 1,                              // Quantity
 			"title": "Ragavan, Nimble Pilferer",        // Card Name
 			"listingType": "ListingWithoutPhotos",      // Does the listing have a Photo?
-			"customListingId": "",                      // Idunno 
+			"customListingId": "",                      // Idunno
 			"purchasePrice": 66.99,                     // Price it was sold for, not including Tax
 			"shippingPrice": 0.0,                       // Shipping price
 			"orderDate": "2022-09-22T02:31:47.62+00:00" // Order Date, using ISO 8601
@@ -74,4 +74,3 @@
 	]
 }
 ```
-

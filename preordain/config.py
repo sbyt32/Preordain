@@ -19,6 +19,7 @@ try:
     LOG_LEVEL = config("LOG_LEVEL", default="warning", cast=str)
 
     TCG_SALES = config("TCG_SALES", cast=str)
+    PRICE_FETCH = config("PRICE_FETCH", cast=str)
     # ? So, it's first a string, then needs to be cast as a datetime
 
     SEC_TOKEN = config("SEC_TOKEN", cast=Secret)
@@ -28,6 +29,7 @@ try:
     TESTING = config("TESTING", cast=bool)
     if TESTING:
         DB_NAME = Secret("test_" + str(DB_NAME))
+
 except KeyError as e:
     if not environ.get("TESTING"):
         log.critical(e)
