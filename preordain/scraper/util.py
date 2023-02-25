@@ -13,10 +13,9 @@ class EnvVars:
     def __init__(self) -> None:
         self.env_data = dotenv_values(".env")
 
-    def write_env(self):
+    def _write_env(self):
         with open(".env", "w") as env_file:
             for k, v in self.env_data.items():
-                print(f"{str(k)}={str(v)}\n")
                 env_file.write(f"{str(k)}={str(v)}\n")
         env_file.close()
 
@@ -25,7 +24,7 @@ class EnvVars:
         This one updates an existing variable, then calls the write_env to update.
         """
         self.env_data[var] = new_val
-        self.write_env()
+        self._write_env()
 
     def get_env(self) -> None:
         return self.env_data
@@ -75,15 +74,3 @@ def check_date_to_update(
         return True
     return False
     # * If all else fails, I want it return an error, but still have it continue
-
-
-def timer(func):
-    def inner(*args, **kwargs):
-        start = time.perf_counter()  # ? Used for timing the length to parse everything
-
-        func(*args, **kwargs)
-        log.debug(
-            f"Elapsed time: {time.perf_counter() - start}"
-        )  # ? Sends length to parse to debug
-
-    return inner
