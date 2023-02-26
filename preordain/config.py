@@ -16,10 +16,8 @@ try:
     DB_USER = config("DB_USER", cast=Secret)
     DB_PASS = config("DB_PASS", cast=Secret)
     DB_NAME = config("DB_NAME", cast=Secret)
-    LOG_LEVEL = config("LOG_LEVEL", default="warning", cast=str)
 
     TCG_SALES = config("TCG_SALES", cast=str)
-    PRICE_FETCH = config("PRICE_FETCH", cast=str)
     # ? So, it's first a string, then needs to be cast as a datetime
 
     SEC_TOKEN = config("SEC_TOKEN", cast=Secret)
