@@ -1,11 +1,37 @@
 import re
 import datetime
+import time
 from dateutil.parser import isoparse
-from typing import Optional
+from typing import Optional, Union
+from dotenv import dotenv_values
+import logging
+
+log = logging.getLogger()
+
+
+class EnvVars:
+    def __init__(self) -> None:
+        self.env_data = dotenv_values(".env")
+
+    def _write_env(self):
+        with open(".env", "w") as env_file:
+            for k, v in self.env_data.items():
+                env_file.write(f"{str(k)}={str(v)}\n")
+        env_file.close()
+
+    def update_env(self, var: str, new_val: Union[str, bool]):
+        """
+        This one updates an existing variable, then calls the write_env to update.
+        """
+        self.env_data[var] = new_val
+        self._write_env()
+
+    def get_env(self) -> None:
+        return self.env_data
 
 
 def _regex_check(date: str):
-    # Check if both dates match the correct format. Raise an exception if not.
+    "Check if both dates match the correct format. Raise an exception if not."
     pattern = (
         r"[0-9]{4}-[0-9]{2}-[0-9]{2}.*[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{1,6}?\+[\d:]{5}"
     )
