@@ -25,6 +25,8 @@
     "vite": "^4.1.0"
   },
   "dependencies": {
+    "chart.js": "^4.2.1",
+    "keyrune": "^3.12.1",
     "svelte-router-spa": "^6.0.3"
   }
 }

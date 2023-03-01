@@ -2,3 +2,12 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+    .component-theme {
+        @apply text-gray-200 bg-gray-800 shadow-xl border border-gray-200 hover:bg-gray-700 rounded-lg
+    };
+    .empty-space {
+        @apply from-gray-800 to-gray-700 bg-gradient-to-b hover:from-gray-700 hover:to-gray-500 text-center
+    }
+}
