@@ -35,29 +35,62 @@
         }
         return resp
     }
+
+    function parseCurrency(price:number | string, currency:string) {
+        if (typeof price == "string") {
+            return price
+        }
+
+        if (currency.toLowerCase().includes("usd")) {
+            let stuff = new Intl.NumberFormat("en-US", {style: 'currency', currency: 'USD'}).format(price)
+            return stuff
+        } else if (currency.toLowerCase().includes("euro")) {
+            let stuff = new Intl.NumberFormat("de-DE", {style: 'currency', currency: 'EUR'}).format(price)
+            return stuff
+        } else if (currency.toLowerCase().includes("tix")) {
+            if (!price === null) {
+                return `${price} TIX`
+            }
+            return `0 TIX`
+        }
+    }
+
+    function parseRow(value: string | number, header: string) {
+        if (header === "Name") {
+            return  `<th scope="row" class="px-6 py-4 font-medium text-gray-900 dark:text-white">
+                        ${value}
+                    </th>`
+        } else {
+            return `<td class="px-6 py-4">
+                        ${parseCurrency(value, header)}
+            </td>`
+        }
+    }
 </script>
 
-<div class="relative overflow-x-auto max-h-[70%] rounded-lg">
-    <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-            <tr>
-                {#each header as titles}
+    <!-- max-h-[{((1/4)*100).toFixed(0)}%] -->
+<!-- <div class="relative"> -->
+    <div class="shadow-md overflow-y-auto overflow-x-hidden sm:rounded-lg max-h-[25%]">
+        <table class="w-full text-sm text-left table">
+            <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                <tr>
+                    {#each header as titles}
                     <th scope="col" class="px-6 py-3">
                         {titles}
                     </th>
+                    {/each}
+
+                </tr>
+            </thead>
+            <tbody>
+                {#each ParseData(data) as card_data}
+                <tr class="bg-white text-gray-200 dark:bg-gray-800 dark:border-gray-700">
+                        {#each header as data_type}
+                                {@html parseRow(card_data[data_type], data_type)}
+                        {/each}
+                </tr>
                 {/each}
-            </tr>
-        </thead>
-        <tbody>
-            {#each ParseData(data) as card_data}
-            <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                {#each header as data_type}
-                    <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                        {card_data[data_type]}
-                    </th>
-                {/each}
-            </tr>
-            {/each}
-        </tbody>
-    </table>
-</div>
+            </tbody>
+        </table>
+    </div>
+<!-- </div> -->

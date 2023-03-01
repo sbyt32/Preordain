@@ -25,8 +25,8 @@ try:
     PRICE_TOKEN = config("PRICE_TOKEN", cast=Secret)
 
     TESTING = config("TESTING", cast=bool)
-    if TESTING:
-        DB_NAME = Secret("test_" + str(DB_NAME))
+    # if TESTING:
+    #     DB_NAME = Secret("test_" + str(DB_NAME))
 
 except KeyError as e:
     if not environ.get("TESTING"):
