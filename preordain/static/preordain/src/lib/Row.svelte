@@ -6,9 +6,9 @@
 <div class="row-span-1">
     <div class="container p-2">
         <span class="inline-grid grid-cols-4 w-full"> <!-- Keep the w-full-->
-            <span style="grid-column: span {row_span} / span {row_span}" class="shadow-2xl">
+            <span style="grid-column: span {row_span} / span {row_span}" class="shadow-2xl h-[218px]">
                 <slot name="Component">
-                    <p class="component-theme empty-space h-[218px]">
+                    <p class="component-theme empty-space h-full">
                         Place Component Here!
                     </p>
                 </slot>

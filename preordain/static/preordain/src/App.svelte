@@ -3,6 +3,7 @@
     import Table from './lib/Table.svelte';
     import Row from './lib/Row.svelte';
     import Header from './lib/Header.svelte';
+    import PriceGraph from './lib/charts/PriceGraph.svelte';
 </script>
 
 
@@ -23,16 +24,18 @@
                     <Table/>
                 </svelte:fragment>
             </Row>
+            <Row>
+                <svelte:fragment slot="Component">
+                    <PriceGraph/>
+                </svelte:fragment>
+            </Row>
 
             <Row>
             <svelte:fragment slot="Component">
             </svelte:fragment>
             </Row>
 
-            <Row>
-                <svelte:fragment slot="Component">
-                </svelte:fragment>
-            </Row>
+
         </div>
     </div>
 
