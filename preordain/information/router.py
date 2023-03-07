@@ -4,7 +4,7 @@ log = logging.getLogger()
 from preordain.utils.connections import connect_db, send_response
 from fastapi import APIRouter, Response, status
 from preordain.information.utils import parse_data_for_response
-from preordain.information.models import CardInformation
+from preordain.information.models import CardInformation, CardPurchaseLink
 from preordain.exceptions import NotFound
 
 user_router = APIRouter()
@@ -174,6 +174,23 @@ async def find_by_group(group: str, response: Response):
         )
 
     raise NotFound
+
+
+@user_router.get("/buylinks/{set}/{col_num}")
+async def get_purchase_links(set: str, col_num: str, response: Response):
+    # Update later
+    conn, cur = connect_db()
+    resp = cur.execute(
+        "SELECT tcg_id FROM card_info.info WHERE set = %s AND id = %s",
+        (
+            set,
+            col_num,
+        ),
+    )
+    if resp:
+        response.status_code = status.HTTP_200_OK
+        return CardPurchaseLink(status=response.status_code, data=resp.fetchone())
+    pass
 
 
 # @admin_router.post("/add/{set}/{coll_num}")

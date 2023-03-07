@@ -8,7 +8,9 @@
 </script>
 <div class="bg-gray-500 w-full border-b-2 border-black/20 shadow-lg p-1">
     <div class="grid grid-cols-6">
-        <div class="">a</div>
+        <div class="text-center place-self-center text-white">
+            Preordain (Testing)
+        </div>
 
         <div class="col-span-4" id="Searchbar">
             <form class="items-center">

@@ -5,7 +5,7 @@ from preordain.exceptions import RootException
 from preordain.groups.router import admin_groups as groups_admin_router
 from preordain.groups.router import user_groups as groups_user_router
 from preordain.price.router import price_router
-from preordain.price.models import PriceDataMultiple, PriceDataSingle
+from preordain.price.models import PriceDataMultiple, PriceDataSingle, PriceChange
 from preordain.information.router import admin_router as info_admin_router
 from preordain.information.router import user_router as info_user_router
 from preordain.information.models import CardInformation
@@ -77,7 +77,7 @@ api_router.include_router(
     price_router,
     prefix="/price",
     tags=["Get Prices (from Scryfall)"],
-    responses={200: {"model": Union[PriceDataSingle, PriceDataMultiple]}},
+    responses={200: {"model": Union[PriceDataSingle, PriceDataMultiple, PriceChange]}},
 )
 api_router.include_router(
     sales_router,

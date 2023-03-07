@@ -1,10 +1,13 @@
 <script lang="ts">
     // @ts-nocheck
     import { Line } from "svelte-chartjs"
-    import { data } from "./test_data";
+    import {parsePriceData} from "./data"
     import 'chart.js/auto';
-    export const options = {
-        maintainAspectRatio: false,
+    import { database } from "../../fetch_data";
+    import { CurrentCard } from "../../assets/functions";
+    export let col_span:number | string = 3
+
+    $: options = {
         responsive: true,
         plugins: {
             tooltip: {
@@ -29,7 +32,7 @@
             },
             title: {
                 display: true,
-                text: 'Price History'
+                text: `Price History for ${$CurrentCard.card}`
             },
             legend: {
                 display: true,
@@ -54,11 +57,17 @@
             }
         }
     }
+
+    $: db_data = database(`http://127.0.0.1:8000/api/price/${$CurrentCard.set_name}/${$CurrentCard.id}?max=25`)
 </script>
 
-<div class="component-theme text-white shadow-lg h-full w-full">
-        <Line
-        data={data}
-        options={options}
-        />
-</div>
+{#key CurrentCard}
+    {#await db_data then data}
+        <span style="grid-column: span {col_span} / span {col_span}" class="shadow-2xl w-full h-full row-span-2">
+            <Line
+            data={parsePriceData(data)}
+            options={options}
+            />
+        </span>
+    {/await}
+{/key}

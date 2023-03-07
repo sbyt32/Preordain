@@ -4,37 +4,27 @@
     import Row from './lib/Row.svelte';
     import Header from './lib/Header.svelte';
     import PriceGraph from './lib/charts/PriceGraph.svelte';
+    import Changes from './lib/Changes.svelte';
 </script>
 
 
 
-<main class="h-full">
+<main>
     <Header/>
     <div class="container mx-auto">
-
-        <div class="grid grid-cols-1 grid-rows-4 content-evenly">
-            <Row row_span=3>
+        <div class="grid grid-cols-4 grid-rows-4 h-2/3">
+            <Row>
                 <svelte:fragment slot="Component">
-                    <CardDash/>
-                </svelte:fragment>
-            </Row>
-
-            <Row row_span=4>
-                <svelte:fragment slot="Component">
-                    <Table/>
+                    <CardDash col_span=3/>
+                    <Changes col_span=1/>
+                    <Table col_span=3/>
                 </svelte:fragment>
             </Row>
             <Row>
                 <svelte:fragment slot="Component">
-                    <PriceGraph/>
+                    <PriceGraph col_span=3/>
                 </svelte:fragment>
             </Row>
-
-            <Row>
-            <svelte:fragment slot="Component">
-            </svelte:fragment>
-            </Row>
-
 
         </div>
     </div>

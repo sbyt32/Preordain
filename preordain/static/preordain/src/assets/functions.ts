@@ -18,4 +18,23 @@ export function parseCurrency(price:number | string, currency:string) {
     }
 }
 
-export const CurrentCard = writable({set_name: "vow", id: "38"})
+// Check percentage
+export function parsePercentage(percent:string) {
+    if (percent == null) {
+        return ""
+    }
+    let change = parseFloat(percent)
+    let classes = "text-white text-right"
+    let emoji = "🤷‍♂️"
+    if (change > 0) {
+        emoji = "📈 "
+        classes = "text-emerald-500 text-right"
+    } else if (change < 0) {
+        emoji = "📉 "
+        classes = "text-rose-500 text-right"
+    }
+    return `<p class=${classes}>${emoji}${percent}</p>`
+}
+
+// Store
+export const CurrentCard = writable({set_name: "vow", id: "38", card: "Thalia, Guardian of Thraben"})
