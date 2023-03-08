@@ -2,15 +2,12 @@ import logging
 from time import sleep
 import arrow
 
-# from preordain.scraper.util import EnvVars, timer
-from preordain.utils.timer import timer
-from preordain.utils.connections import connect_db, send_response
-from preordain.scraper.models import CardDataTable
+from .connections import connect_db, send_response
+from .models import CardDataTable
 
 # python -m preordain.scraper.price_scrape
 
 
-@timer
 def fetch_prices_from_scryfall() -> None:
     log = logging.getLogger()
     conn, cur = connect_db()

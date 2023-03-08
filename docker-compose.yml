@@ -18,27 +18,33 @@ services:
       - db # will not start until db is live
 
   db:
-    # postgres w cron support
     env_file: .env
     image: postgres:${PG_VERSION:-15.2}
     healthcheck:
       # run healthcheck on container start to determine if it is healthy
-      test: [ "CMD-SHELL", "pg_isready -d ${DB_NAME:-price_copy}" ]
+      test: [ "CMD-SHELL", "pg_isready -d ${DB_NAME:-postgres} -U postgres" ]
       interval: 10s
       timeout: 5s
       retries: 5
     restart: always
     volumes:
       - ./db/scripts:/docker-entrypoint-initdb.d # run scripts on startup (BIND MOUNT)
-      # - ./db/cron:/etc/cron.d # run cron jobs on startup (BIND MOUNT)
+
 
       # Database data persistence
+
       # persist data in /db/data folder (BIND MOUNT)
       - ./db/data:/var/lib/postgresql/data
+
       # persist data in postgres_data volume (VOLUME) (must be uncommented at top level!)
-      # - postgres_data:/var/lib/postgresql/data 
+      # - postgres_data:/var/lib/postgresql/data
+
     environment:
+      DB_HOST: db
+      DB_USER: postgres
       POSTGRES_PASSWORD: ${DB_PASS:-postgres}
+    ports:
+      - "5432:5432"
 
   pgadmin:
     env_file: .env
@@ -55,12 +61,13 @@ services:
   api:
     env_file: .env
     build:
-      context: ./preordain
-      dockerfile: Dockerfile
       args:
         API_PORT: ${API_PORT:-8000}
-    restart: always
+    # restart: always
+    environment:
+      DB_HOST: db
+      DB_USER: postgres
     ports:
-      - ${API_PORT:-8000}:80 # expose port to host (0.0.0.0:80)
+      - ${API_PORT:-8000}:8000 # expose port to host (0.0.0.0:80)
     depends_on:
       - db # will not start until db is live

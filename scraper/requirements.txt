@@ -3,3 +3,4 @@ psycopg[binary]
 requests
 python-dateutil
 python-dotenv
+pydantic

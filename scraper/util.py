@@ -44,6 +44,11 @@ def _regex_check(date: str):
     )
 
 
+def get_tcg_data():
+    tcg_data = dotenv_values(".env")
+    return tcg_data.get("TCG_SALES", None)
+
+
 def check_date_to_update(
     last_update: str,
     update_freq: datetime.timedelta,

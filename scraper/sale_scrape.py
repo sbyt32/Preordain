@@ -3,18 +3,17 @@ import json
 import logging
 import psycopg
 import datetime
-from preordain.logging_details import log_setup
-from preordain import config
-from preordain.scraper.models import CardDataTCGTable
-from preordain.utils.connections import connect_db, send_response
-from preordain.scraper.util import EnvVars
+from .models import CardDataTCGTable
+from .connections import connect_db, send_response
+from .util import EnvVars, get_tcg_data
 from dateutil.parser import isoparse
 from typing import Union
 from time import sleep
 
 
 def fetch_sales_from_tcgplayer() -> None:
-    log_setup()
+    TCG_SALES = get_tcg_data()
+
     log = logging.getLogger(__name__)
     log.setLevel(logging.DEBUG)
     stop_future_looping = (
@@ -89,9 +88,8 @@ def fetch_sales_from_tcgplayer() -> None:
                     except psycopg.errors.UniqueViolation:
                         if (
                             duplicate_merge
-                            or config.TCG_SALES == "None"
-                            or isoparse(sale_data["orderDate"])
-                            > isoparse(config.TCG_SALES)
+                            or TCG_SALES == "None"
+                            or isoparse(sale_data["orderDate"]) > isoparse(TCG_SALES)
                         ):
                             log.warning(
                                 f"Duplicate data for card {card_name}, approx. # {offset} - {offset + 25}, merging ID {order_id}"

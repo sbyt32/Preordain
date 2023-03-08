@@ -1,9 +1,11 @@
 from starlette.config import Config, environ
 from starlette.datastructures import Secret
+from .logging_details import log_setup
 import logging
 import sys
 
-log = logging.getLogger()
+log_setup()
+log = logging.getLogger("preordain")
 
 """
     A way to read the .env file
