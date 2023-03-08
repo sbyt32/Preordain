@@ -6,3 +6,5 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: psf/black@23.1.0
+        with:
+          options: "preordain/ tests/ --extend-exclude preordain/static/preordain"

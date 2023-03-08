@@ -3,16 +3,15 @@ from fastapi.testclient import TestClient
 
 def test_inventory_root(client: TestClient):
     from starlette.config import environ
+    from preordain.models import RespStrings
 
-    data = {"resp": "retrieve_inventory"}
-
-    response = client.get(f'/inventory/?access={str(environ["SEC_TOKEN"])}')
+    response = client.get(f'/api/inventory/?access={str(environ["SEC_TOKEN"])}')
     assert response.status_code == 200
-    assert response.json()["resp"] == data["resp"]
+    assert response.json()["resp"] == RespStrings.retrieve_inventory
 
 
 def test_inventory_root_fail(client: TestClient):
-    response = client.get(f"/inventory/")
+    response = client.get(f"/api/inventory/")
     assert response.status_code == 422
 
 
@@ -23,7 +22,7 @@ def test_inventory_root_bad_token(client: TestClient):
     token_value = "HELLO_BAD_TOKEN"
     invalid_example = InvalidToken(token)
 
-    response = client.get(f"/inventory/?{token}={token_value}")
+    response = client.get(f"/api/inventory/?{token}={token_value}")
     assert response.status_code == invalid_example.status_code
     response = response.json()
     assert response["info"] == invalid_example.info

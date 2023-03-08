@@ -1,7 +1,8 @@
 import datetime
 from pydantic import BaseModel
-from typing import Optional, Union
+from typing import Optional, Union, Any
 from preordain.models import CardPrices, CardPricesSingle, BaseResponse, RespStrings
+from enum import Enum
 
 
 class PriceData(BaseModel):
@@ -43,7 +44,7 @@ class PriceDataMultiple(BaseResponse):
 
 class PriceDataSingle(BaseResponse):
     resp = RespStrings.price_data
-    data: list[dict[PriceData]] = PriceData
+    data: dict[PriceData] = PriceData
 
     class Config:
         schema_extra = {
@@ -75,3 +76,29 @@ class PriceDataSingle(BaseResponse):
                 ],
             }
         }
+
+
+class PriceChangePercent(BaseModel):
+    name: str
+    set: str
+    set_full: str
+    id: str
+    date: datetime.date
+    usd: float
+    usd_change: Optional[str] = "0.00%"
+
+
+class PriceChange(BaseResponse):
+    resp = RespStrings.price_data
+    status = 200
+    data: list[dict[PriceChangePercent]] = PriceChangePercent
+
+
+class GrowthDirections(str, Enum):
+    ASC = "ASC"
+    DESC = "DESC"
+
+
+class GrowthCurrency(str, Enum):
+    pass
+    # USD, Euro, TIX

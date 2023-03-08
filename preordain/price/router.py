@@ -3,7 +3,12 @@ from psycopg.errors import DatetimeFieldOverflow
 from typing import Optional
 from preordain.price.utils import parse_data_for_response, parse_data_single_card
 from preordain.utils.connections import connect_db
-from preordain.price.models import PriceDataMultiple, PriceDataSingle
+from preordain.price.models import (
+    PriceDataMultiple,
+    PriceDataSingle,
+    PriceChange,
+    GrowthDirections,
+)
 from preordain.exceptions import NotFound
 import logging
 import re
@@ -89,7 +94,6 @@ async def get_single_card_data(
     conn, cur = connect_db()
     cur.execute(
         """
-
         SELECT
             card_info.info.name,
             card_info.sets.set,
@@ -115,22 +119,22 @@ async def get_single_card_data(
         JOIN
             (
                 SELECT
-                    date as dt,
-                    usd as usd_ct,
-                    lag(usd, 1) over (order by date(date)) as usd_yesterday,
-                    usd_foil as usd_foil_ct,
-                    lag(usd_foil, 1) over (order by date(date)) as usd_foil_yesterday,
-                    euro as euro_ct,
-                    lag(euro, 1) over (order by date(date)) as euro_yesterday,
-                    euro_foil as euro_foil_ct,
-                    lag(euro_foil, 1) over (order by date(date)) as euro_foil_yesterday,
-                    tix as tix_ct,
-                    lag(tix, 1) over (order by date(date)) as tix_yesterday
+                    date AS dt,
+                    usd AS usd_ct,
+                    lag(usd, 1) over (order by date(date)) AS usd_yesterday,
+                    usd_foil AS usd_foil_ct,
+                    lag(usd_foil, 1) over (order by date(date)) AS usd_foil_yesterday,
+                    euro AS euro_ct,
+                    lag(euro, 1) over (order by date(date)) AS euro_yesterday,
+                    euro_foil AS euro_foil_ct,
+                    lag(euro_foil, 1) over (order by date(date)) AS euro_foil_yesterday,
+                    tix AS tix_ct,
+                    lag(tix, 1) over (order by date(date)) AS tix_yesterday
                 FROM card_data
                 WHERE
                 card_data.set = %s AND card_data.id = %s
                 GROUP BY date, usd, usd_foil, euro, euro_foil, tix ORDER BY date DESC
-            ) as change
+            ) AS change
         ON change.dt = card_data.date
         WHERE
             card_data.set = %s AND card_data.id = %s
@@ -149,3 +153,54 @@ async def get_single_card_data(
         )
     response.status_code = status.HTTP_404_NOT_FOUND
     raise NotFound
+
+
+@price_router.get("/changes/{growth}/")
+async def get_biggest_gains(
+    response: Response, growth: GrowthDirections = GrowthDirections.DESC
+):
+    grow = "DESC"
+    # Extremely inefficent. Passing ASC or DESC into Psycopg keeps throwing Psycopg Syntax Errors
+    if growth.value == "ASC":
+        grow = "ASC"
+    query = """
+        SELECT
+            card_info.info.name,
+            card_info.sets.set,
+            card_info.sets.set_full,
+            card_info.info.id,
+            date,
+            usd,
+            ROUND ( 100.0 * (change.usd_ct::numeric - change.usd_yesterday::numeric) / change.usd_yesterday::numeric, 2) || '%' AS usd_change
+        FROM card_data
+        JOIN card_info.info
+            ON card_data.set = card_info.info.set
+            AND card_data.id = card_info.info.id
+        JOIN card_info.sets
+            ON card_data.set = card_info.sets.set
+        JOIN
+            (
+                SELECT
+                    date AS dt,
+                    set,
+                    id,
+                    usd AS usd_ct,
+                    lag(usd, 1) over (partition by set, id order by date(date)) AS usd_yesterday
+                FROM card_data
+                GROUP BY set, id, date, usd ORDER BY date DESC
+            ) AS change
+        ON change.dt = card_data.date
+        AND change.set = card_data.set
+        AND change.id = card_data.id
+        WHERE not usd IS NULL
+        ORDER BY date DESC, %s ( 100.0 * (change.usd_ct::numeric - change.usd_yesterday::numeric) / change.usd_yesterday::numeric, 2) %s
+        LIMIT 10
+        """
+    conn, cur = connect_db()
+    cur.execute(query)
+    info = cur.fetchall()
+    if info:
+        response.status_code = status.HTTP_200_OK
+        return PriceChange(status=response.status_code, data=info)
+    response.status_code = status.HTTP_404_NOT_FOUND
+    return NotFound

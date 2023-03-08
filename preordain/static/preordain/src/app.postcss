@@ -1,0 +1,41 @@
+/* Write your global styles here, in PostCSS syntax */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+    .component-theme {
+        @apply text-gray-200 bg-gray-800 shadow-xl border border-gray-200 rounded-lg
+    };
+    .empty-space {
+        @apply from-gray-800 to-gray-700 bg-gradient-to-b hover:from-gray-700 hover:to-gray-500 text-center
+    }
+
+}
+
+@layer utilities {
+    .scrollbar::-webkit-scrollbar {
+        width: .75rem;
+        border-color: black;
+    }
+    .scrollbar::-webkit-scrollbar-track {
+        @apply bg-gradient-to-b from-gray-700 to-gray-500
+    }
+
+    /* .scrollbar::-webkit-scrollbar-thumb {
+        @apply
+                transition-all
+                ease-in
+                delay-75
+
+                bg-gradient-to-b
+                from-indigo-600/80
+                via-indigo-500/80
+                to-purple-600/80
+    } */
+    .scrollbar::-webkit-scrollbar-thumb {
+        @apply
+        border-gray-200
+        bg-gray-800
+    }
+}

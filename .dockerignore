@@ -1,0 +1,26 @@
+# Local Notes & Files to test stuff out
+playground.py
+tests.md
+
+# Old files, can be reworked
+.old
+
+# pytest --cov=tests/ files
+.coverage
+cov_annotate
+
+# Environment
+
+# Docker stuff!
+Dockerfile*
+docker-compose*
+
+# NPM stuff
+node_modules
+npm-debug.log
+
+# Generic stuff
+.git
+.gitignore
+README.md
+*.in

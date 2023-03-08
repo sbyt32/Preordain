@@ -4,5 +4,10 @@
     ],
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
-    "python.analysis.typeCheckingMode": "off"
+    "python.analysis.typeCheckingMode": "off",
+    "python.formatting.blackArgs": [
+        "preordain/",
+        "tests/",
+        "--extend-exclude, preordain/static/preordain"
+    ],
 }

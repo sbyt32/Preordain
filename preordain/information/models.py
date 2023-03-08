@@ -41,3 +41,12 @@ class CardInformation(BaseResponse):
             }
         }
         use_enum_values = True
+
+
+class CardTCGID(BaseModel):
+    tcg_id: str
+
+
+class CardPurchaseLink(BaseResponse):
+    resp = RespStrings.card_info
+    data: list[dict[str, CardTCGID]] = CardTCGID
