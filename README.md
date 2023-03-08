@@ -13,6 +13,9 @@ Start the API with...
 Written documentation is a WIP. Location is currently [here](docs/api_functions.md). More functions will be added and documented over time.
 
 
+Check out the dashboard @ localhost:8000/docs
+![image](https://user-images.githubusercontent.com/73682114/223646534-da46b06e-622b-41b7-8ec9-ffc54898556e.png)
+
 ------------
 
 
