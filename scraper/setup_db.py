@@ -5,14 +5,11 @@ import psycopg
 import requests
 import secrets
 from dotenv import dotenv_values
-from preordain.logging_details import log_setup
 from psycopg import sql
 from psycopg.rows import dict_row
 from typing import Union
 
-log_setup()
 log = logging.getLogger(__name__)
-
 
 class BaseSetup:
     def __init__(self, env_data: dict[str, Union[str, None]]) -> None:
@@ -125,10 +122,10 @@ class SetUp(BaseSetup):
 
 class DatabaseSetup(BaseSetup):
     def __init__(self) -> None:
-        log_setup()
         if not os.path.exists(".env"):
             raise FileNotFoundError(".env file missing.")
         self.env_data = dotenv_values(".env")
+        self.env_data["DB_HOST"] = os.environ.get("DB_HOST")
 
     def create_db_then_connect_db(self):
         if self.env_data["DB_EXISTS"] == "true":
@@ -307,6 +304,8 @@ if __name__ == "__main__":
     set_up = SetUp()
     if set_up.check_path():
         set_up.env_setup()
+
+
     if set_up.env_data["DB_EXISTS"] == "false":
         db = DatabaseSetup()
         db.create_db_then_connect_db()

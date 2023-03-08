@@ -1,0 +1,3 @@
+# Place the path to the directory in the commands
+@daily python -m /app.price_scrape
+@weekly python -m /app.sale_scrape
