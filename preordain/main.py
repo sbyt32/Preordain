@@ -13,7 +13,7 @@ from preordain.exceptions import (
 )
 from preordain.search.exceptions import InvalidSearchQuery, invalid_search_handler
 from preordain.logging_details import log_setup
-from preordain.config import PROJECT
+from preordain.config import PROJECT, TESTING
 from preordain.api import api_router
 
 # * Logging Information
@@ -27,7 +27,12 @@ routes = [
         name="dashboard",
     ),
 ]
-app = FastAPI(title=PROJECT, description="PRODUCTION", routes=routes)
+if TESTING:
+    desc = "TESTING"
+else:
+    desc = "PROD-ISH"
+
+app = FastAPI(title=PROJECT, description=desc, routes=routes)
 app.include_router(api_router, prefix="/api")
 
 # ? I really don't like this out in the open, but I'm leaving it here for testing.

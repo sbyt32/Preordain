@@ -84,8 +84,10 @@ class PriceChangePercent(BaseModel):
     set_full: str
     id: str
     date: datetime.date
-    usd: float
-    usd_change: Optional[str] = "0.00%"
+    usd: Optional[float]
+    usd_change: Optional[str]
+    euro: Optional[float]
+    euro_change: Optional[str]
 
 
 class PriceChange(BaseResponse):
@@ -100,5 +102,6 @@ class GrowthDirections(str, Enum):
 
 
 class GrowthCurrency(str, Enum):
-    pass
+    USD = "USD"
+    Euro = "Euro"
     # USD, Euro, TIX

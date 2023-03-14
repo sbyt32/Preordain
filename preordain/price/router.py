@@ -1,13 +1,18 @@
 from fastapi import APIRouter, HTTPException, Response, status
 from psycopg.errors import DatetimeFieldOverflow
 from typing import Optional
-from preordain.price.utils import parse_data_for_response, parse_data_single_card
+from preordain.price.utils import (
+    parse_data_for_response,
+    parse_data_single_card,
+    process_sorting,
+)
 from preordain.utils.connections import connect_db
 from preordain.price.models import (
     PriceDataMultiple,
     PriceDataSingle,
     PriceChange,
     GrowthDirections,
+    GrowthCurrency,
 )
 from preordain.exceptions import NotFound
 import logging
@@ -155,47 +160,16 @@ async def get_single_card_data(
     raise NotFound
 
 
-@price_router.get("/changes/{growth}/")
+@price_router.get("/changes/{growth}/{currency}/")
 async def get_biggest_gains(
-    response: Response, growth: GrowthDirections = GrowthDirections.DESC
+    response: Response,
+    currency: GrowthCurrency = str(GrowthCurrency.USD),
+    growth: GrowthDirections = str(GrowthDirections.DESC),
 ):
-    grow = "DESC"
     # Extremely inefficent. Passing ASC or DESC into Psycopg keeps throwing Psycopg Syntax Errors
-    if growth.value == "ASC":
-        grow = "ASC"
-    query = """
-        SELECT
-            card_info.info.name,
-            card_info.sets.set,
-            card_info.sets.set_full,
-            card_info.info.id,
-            date,
-            usd,
-            ROUND ( 100.0 * (change.usd_ct::numeric - change.usd_yesterday::numeric) / change.usd_yesterday::numeric, 2) || '%' AS usd_change
-        FROM card_data
-        JOIN card_info.info
-            ON card_data.set = card_info.info.set
-            AND card_data.id = card_info.info.id
-        JOIN card_info.sets
-            ON card_data.set = card_info.sets.set
-        JOIN
-            (
-                SELECT
-                    date AS dt,
-                    set,
-                    id,
-                    usd AS usd_ct,
-                    lag(usd, 1) over (partition by set, id order by date(date)) AS usd_yesterday
-                FROM card_data
-                GROUP BY set, id, date, usd ORDER BY date DESC
-            ) AS change
-        ON change.dt = card_data.date
-        AND change.set = card_data.set
-        AND change.id = card_data.id
-        WHERE not usd IS NULL
-        ORDER BY date DESC, %s ( 100.0 * (change.usd_ct::numeric - change.usd_yesterday::numeric) / change.usd_yesterday::numeric, 2) %s
-        LIMIT 10
-        """
+    # * https://stackoverflow.com/questions/32137628/specifying-sorting-direction-in-psycopg2-by-parameter
+    query = process_sorting(currency.lower(), growth.lower())
+
     conn, cur = connect_db()
     cur.execute(query)
     info = cur.fetchall()

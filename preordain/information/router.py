@@ -1,7 +1,7 @@
 import logging
 
 log = logging.getLogger()
-from preordain.utils.connections import connect_db, send_response
+from preordain.utils.connections import connect_db
 from fastapi import APIRouter, Response, status
 from preordain.information.utils import parse_data_for_response
 from preordain.information.models import CardInformation, CardPurchaseLink
@@ -191,68 +191,6 @@ async def get_purchase_links(set: str, col_num: str, response: Response):
         response.status_code = status.HTTP_200_OK
         return CardPurchaseLink(status=response.status_code, data=resp.fetchone())
     pass
-
-
-# @admin_router.post("/add/{set}/{coll_num}")
-# async def add_card_to_track(set: str, coll_num: str):
-#     resp = send_response(
-#         "GET", f"https://api.scryfall.com/cards/search?q=set:{set}+cn:{coll_num}"
-#     )
-#     try:
-#         if resp["object"] != "list":
-#             log.error("Not a card!")
-#             raise NotFound
-
-#     except KeyError as e:
-#         # ? What does this look like, again?
-#         log.error(f"KeyError:{e}")
-
-#     else:
-#         if resp["total_cards"] != 1:
-#             error_msg = f"Recieved list with more than 1. Set:{set}, ID:{coll_num}"
-#             log.error(error_msg)
-#             return error_msg
-
-#         resp = resp["data"][0]
-#         conn, cur = connect_db()
-#         cur.execute(
-#             "SELECT * from card_info.info where id = %s AND set= %s",
-#             (resp["collector_number"], resp["set"]),
-#         )
-#         if (
-#             not cur.fetchall()
-#         ):  # * Run this section if no results (empty lists are False)
-#             if "tcgplayer_etched_id" in resp:
-#                 tcg_etched_id = resp["tcgplayer_etched_id"]
-#             else:
-#                 tcg_etched_id = None
-
-#             add_info_to_postgres = """
-#                     INSERT INTO card_info.info (name, set, id, uri, tcg_id, tcg_id_etch, new_search)
-
-#                     VALUES (%s,%s,%s,%s,%s,%s,%s)
-#                     """
-#             # ? Uncomment below in production.
-#             cur.execute(
-#                 add_info_to_postgres,
-#                 (
-#                     resp["name"],
-#                     resp["set"],
-#                     resp["collector_number"],
-#                     resp["id"],
-#                     resp["tcgplayer_id"],
-#                     tcg_etched_id,
-#                     True,
-#                 ),
-#             )
-#             conn.commit()
-
-#             log.info(f'Now tracking: {resp["name"]} from {resp["set_name"]}')
-#             return f'Now tracking: {resp["name"]} from {resp["set_name"]}'
-
-#         else:
-#             log.info(f'Already tracking: {resp["name"]} from {resp["set_name"]}')
-#             return f'Already tracking: {resp["name"]} from {resp["set_name"]}'
 
 
 # @admin_router.delete("/remove/{set}/{coll_num}")

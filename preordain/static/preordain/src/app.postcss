@@ -1,5 +1,32 @@
 /* Write your global styles here, in PostCSS syntax */
 @tailwind base;
+
+:root {
+    font-family: 'Source Sans Pro', Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    font-weight: 300;
+
+    color-scheme: light dark;
+    color: rgba(255, 255, 255, 0.87);
+    background-color: #242424;
+
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-text-size-adjust: 100%;
+}
+
+main {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    place-items: center;
+    position:  relative;
+    min-width: 320px;
+    /* max-height: 100vh; */
+}
+
 @tailwind components;
 @tailwind utilities;
 
@@ -37,5 +64,14 @@
         @apply
         border-gray-200
         bg-gray-800
+    }
+}
+
+@media (prefers-color-scheme: light) {
+    :root {
+      @apply text-black
+    }
+    body {
+      @apply bg-slate-200 from-slate-200 via-slate-200 to-indigo-200 bg-gradient-to-b
     }
 }

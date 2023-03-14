@@ -6,7 +6,6 @@ from preordain.groups.router import admin_groups as groups_admin_router
 from preordain.groups.router import user_groups as groups_user_router
 from preordain.price.router import price_router
 from preordain.price.models import PriceDataMultiple, PriceDataSingle, PriceChange
-from preordain.information.router import admin_router as info_admin_router
 from preordain.information.router import user_router as info_user_router
 from preordain.information.models import CardInformation
 from preordain.inventory.router import router as inventory_router
@@ -15,6 +14,8 @@ from preordain.sales.router import sales_router
 from preordain.sales.models import CardSaleResponse
 from preordain.search.router import search_router
 from preordain.search.models import SearchInformation
+from preordain.trackers.router import router as tracker_router
+
 from typing import Union
 
 api_router = APIRouter(
@@ -91,6 +92,12 @@ api_router.include_router(
     groups_user_router,
     prefix="/groups",
     tags=["Card Groups"],
+)
+api_router.include_router(
+    tracker_router,
+    prefix="/tracker",
+    tags=["Update Data (needs token)"],
+    dependencies=[Depends(write_token)],
 )
 
 # # # * Admin Panel

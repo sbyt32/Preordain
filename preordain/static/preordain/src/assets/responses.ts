@@ -5,7 +5,7 @@ export interface BaseResponse {
     data? : [{}] | {}
 }
 
-interface PriceData {
+export interface PriceData {
     usd: number,
     usd_foil: number,
     euro: number,

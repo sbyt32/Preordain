@@ -3,23 +3,31 @@ import { database } from "../fetch_data"
 import { parsePercentage } from "../assets/functions";
 export let col_span: string | number = 1
 
-$: current = "DESC"
+$: current = {currency: "USD", direction: "DESC"}
+
 let selectedClasses = "inline-block p-4 text-blue-600 bg-gray-100 rounded-t-lg active dark:bg-gray-800 dark:text-blue-500"
 let allClasses = "inline-block p-4 rounded-t-lg hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-300"
+
+const tabs = [
+    {currency: "USD", direction: "DESC"},
+    {currency: "USD", direction: "ASC"},
+    {currency: "Euro", direction: "DESC"},
+    {currency: "Euro", direction: "ASC"},
+]
 </script>
 
 <span style="grid-column: span {col_span} / span {col_span}" class="shadow-2xl h-full component-theme row-span-2">
-    <ul class="flex flex-wrap text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:border-gray-700 dark:text-gray-400">
-        <li class="mr-2">
-            <button class="{current === 'DESC' ? selectedClasses: allClasses}"  on:click={() => current = "DESC"}>
-                Gains
+    <div class="text-center text-base font-medium  border-b-4 border-b-gray-700">
+        Top Gains / Losses
+    </div>
+    <ul class="flex flex-row text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:border-gray-700 dark:text-gray-400">
+        {#each tabs as tab}
+        <li class="mr-2  not-last:border-r-2 dark:border-r-gray-700">
+            <button class="{current === tab ? selectedClasses: allClasses}" on:click={() => current = tab}>
+                {tab.currency} ({tab.direction})
             </button>
         </li>
-        <li class="mr-2">
-            <button class="{current === 'ASC' ? selectedClasses: allClasses}" on:click={() => current = "ASC"}>
-                Losses
-            </button>
-        </li>
+        {/each}
     </ul>
 
     <table>
@@ -34,7 +42,7 @@ let allClasses = "inline-block p-4 rounded-t-lg hover:text-gray-600 hover:bg-gra
         </thead>
         <tbody class="block bg-white text-gray-200 dark:bg-gray-800 rounded-lg px-2">
             {#key current}
-                {#await database(`http://localhost:8000/api/price/changes/${current}/`)}
+                {#await database(`http://localhost:8000/api/price/changes/${current.direction}/${current.currency}/`)}
                 <tr class="table w-full table-fixed dark:border-gray-700 border-b text-sm">
                     <td>
                         Loading...
@@ -51,7 +59,7 @@ let allClasses = "inline-block p-4 rounded-t-lg hover:text-gray-600 hover:bg-gra
                             <i class="ss text-xl ss-{change.set}"></i>
                         </td>
                         <td class="text-right">
-                            {@html parsePercentage(change.usd_change)}
+                            {@html parsePercentage('usd_change' in change ? change.usd_change : change.euro_change )}
                         </td>
                     </tr>
                     {/each}

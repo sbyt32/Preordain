@@ -63,11 +63,11 @@
 
 {#key CurrentCard}
     {#await db_data then data}
-        <span style="grid-column: span {col_span} / span {col_span}" class="shadow-2xl w-full h-full row-span-2">
+        <div style="grid-column: span {col_span} / span {col_span}" class="shadow-2xl w-full row-span-2 component-theme">
             <Line
             data={parsePriceData(data)}
             options={options}
             />
-        </span>
+        </div>
     {/await}
 {/key}
