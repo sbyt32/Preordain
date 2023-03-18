@@ -36,7 +36,7 @@ export function parsePriceData(price_data:GetPriceSingle) {
         },
     ]
 
-    for (let i = 0; i < items.prices.length; i++) {
+    for (let i = 0; i < items.prices.reverse().length; i++) {
             labels.push(items.prices[i].date);
             datasets[0].data.push(items.prices[i].usd)
             datasets[1].data.push(items.prices[i].usd_foil)

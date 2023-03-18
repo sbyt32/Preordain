@@ -11,7 +11,6 @@
 
 </script>
 
-
 {#await handleSubmit(params.query) then results}
 <div class="flex flex-col">
     <h1 class="py-5">
@@ -25,14 +24,12 @@
                         <th scope="col" class="px-6 py-3 text-left">
                             Name
                         </th>
-                    {#each header.filter(word => word != "name") as titles}
                         <th scope="col" class="px-6 py-3 text-right">
-                            {titles}
+                            Set
                         </th>
-                    {/each}
                     {#each priceHeaders as price}
                         <th scope="col" class="px-6 py-3 text-right">
-                            {price}
+                            {price.replace("_"," ")}
                         </th>
                     {/each}
                         <th scope="col" class="px-6 py-3 text-center">
@@ -43,21 +40,20 @@
 
             <tbody class="bg-white text-gray-200 dark:bg-gray-800">
                 {#each results as result}
-                    <tr class="text-left not-last:border-b-2 border-gray-700 py-2">
+                    <tr class="text-left not-last:border-b-2 border-gray-700 py-3 hover:bg-gray-700">
 
                         <th scope="row" class="px-4 py-2 font-medium text-gray-900 dark:text-white text-left">
                             {result.name}
                         </th>
 
-                        {#each header.filter(word => word != "name") as field}
-                            <td class="px-4 py-2 whitespace-preline text-right">
-                                {result[field]}
-                            </td>
-                        {/each}
+                        <td class="px-6 py-2 white text-right">
+                                {result.set_full}
+                            <i class="ss text-xl ml-4 ss-{result.set.toLowerCase()}"></i>
+                        </td>
 
                         {#each priceHeaders as price}
 
-                            <td class="px-4 py-2 whitespace-preline text-right">
+                            <td class="px-6 py-2 whitespace-preline text-right" style="font-variant-numeric: tabular-nums">
                                 {parseCurrency(Number(result.prices[price]), price)}
                             </td>
 

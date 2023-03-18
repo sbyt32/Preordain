@@ -2,7 +2,6 @@
     import { push } from 'svelte-spa-router';
 
 
-    // const submit = () => dispatch('submit');
 
     function onKeyPress(e: KeyboardEvent, str: string) {
         if (e.code === 'Enter') push(`#/search/${str}`);
@@ -15,7 +14,9 @@
     <div class="grid grid-cols-6">
 
         <div class="text-center place-self-center text-white">
-            Preordain (Testing)
+            <button on:click={() => push('/')}>
+                Preordain (Testing)
+            </button>
         </div>
 
         <div class="col-span-4" id="Searchbar">

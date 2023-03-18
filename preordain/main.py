@@ -36,7 +36,7 @@ app = FastAPI(title=PROJECT, description=desc, routes=routes)
 app.include_router(api_router, prefix="/api")
 
 # ? I really don't like this out in the open, but I'm leaving it here for testing.
-origins = ["http://localhost.tiangolo.com", "*"]
+origins = ["*"]
 
 app.add_middleware(
     CORSMiddleware,

@@ -9,6 +9,7 @@
 
     $: options = {
         responsive: true,
+        color: "#ffffff",
         plugins: {
             tooltip: {
                 callbacks: {
@@ -32,11 +33,12 @@
             },
             title: {
                 display: true,
-                text: `Price History for ${$CurrentCard.card}`
+                text: `Price History for ${$CurrentCard.card}`,
+                color: `#ffffff`
             },
             legend: {
                 display: true,
-                position: "right"
+                position: "top"
             }
         },
         interaction: {

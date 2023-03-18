@@ -47,7 +47,7 @@
             return
         }
         else {
-            return `<td class="px-6 py-4 whitespace-preline text-center">
+            return `<td class="px-6 py-4 whitespace-preline text-center" style="font-variant-numeric: tabular-nums">
                         ${parseCurrency(value, header)}
             </td>`
         }

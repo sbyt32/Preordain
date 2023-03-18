@@ -4,29 +4,12 @@
 </script>
 
 <script lang="ts">
-    import { parseCurrency, CurrentCard } from "../assets/functions"
+    import { parseCurrency, CurrentCard, parsePercentage } from "../assets/functions"
     import { database } from "../fetch_data";
     export let col_span:number | string = 3
 
     $: updateData = database(`http://127.0.0.1:8000/api/price/${$CurrentCard.set_name}/${$CurrentCard.id}?max=1`)
     $: buyButtons = database(`http://127.0.0.1:8000/api/card/buylinks/${$CurrentCard.set_name}/${$CurrentCard.id}`)
-
-    function parsePercentage(percent:string) {
-        if (percent == null) {
-            return ""
-        }
-        let change = parseFloat(percent)
-        let classes = "text-black"
-        let emoji = " "
-        if (change > 0) {
-            emoji = "📈 "
-            classes = "text-emerald-500"
-        } else if (change < 0) {
-            emoji = "📉 "
-            classes = "text-rose-500"
-        }
-        return `<p class=${classes}>${emoji}${percent}</p>`
-    }
 
 </script>
 {#key CurrentCard}
@@ -55,10 +38,10 @@
 
                 {#each price_values as price}
                     <div class="col-span-1 text-center text-white text-lg">
-                        <p>
+                        <p style="font-variant-numeric: tabular-nums">
                             {parseCurrency(prices.data.prices[0][price], price)}
                         </p>
-                        {@html parsePercentage(parsePercentage(prices.data.prices[0][`${price}_change`]))}
+                        {@html parsePercentage(prices.data.prices[0][`${price}_change`])}
                     </div>
                 {/each}
                 <!-- Button Placeholder -->
