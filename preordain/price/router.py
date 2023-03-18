@@ -60,6 +60,7 @@ async def get_single_day_data(date: str, response: Response):
                 ON card_data.set = card_info.sets.set
             WHERE
                 date = %s
+            LIMIT 20
 
         """,
             (date,),

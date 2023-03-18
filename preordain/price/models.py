@@ -85,9 +85,9 @@ class PriceChangePercent(BaseModel):
     id: str
     date: datetime.date
     usd: Optional[float]
-    usd_change: Optional[str]
+    usd_change: Optional[int]
     euro: Optional[float]
-    euro_change: Optional[str]
+    euro_change: Optional[int]
 
 
 class PriceChange(BaseResponse):

@@ -114,29 +114,19 @@ def process_sorting(currency: str, order: str):
                     card_info.info.id,
                     date,
                     usd,
-                    ROUND ( 100.0 * (change.usd_ct::numeric - change.usd_yesterday::numeric) / change.usd_yesterday::numeric, 2) || '%' AS usd_change
+                    ROUND ( 100.0 * 
+                    (usd::numeric - lag(usd, 1) over (partition by card_info.sets.set, card_info.info.id order by date(date))::numeric) 
+                    / 
+                    lag(usd, 1) over (partition by card_info.sets.set, card_info.info.id order by date(date))::numeric
+                    , 2) AS usd_change
                 FROM card_data
                 JOIN card_info.info
                     ON card_data.set = card_info.info.set
                     AND card_data.id = card_info.info.id
                 JOIN card_info.sets
                     ON card_data.set = card_info.sets.set
-                JOIN
-                    (
-                        SELECT
-                            date AS dt,
-                            set,
-                            id,
-                            usd AS usd_ct,
-                            lag(usd, 1) over (partition by set, id order by date(date)) AS usd_yesterday
-                        FROM card_data
-                        GROUP BY set, id, date, usd ORDER BY date DESC
-                    ) AS change
-                ON change.dt = card_data.date
-                AND change.set = card_data.set
-                AND change.id = card_data.id
-                WHERE not usd IS NULL
-                ORDER BY date DESC, ROUND( 100.0 * (change.usd_ct::numeric - change.usd_yesterday::numeric) / change.usd_yesterday::numeric, 2) DESC
+                WHERE NOT usd IS NULL
+                ORDER BY date DESC, usd_change DESC NULLS LAST
                 LIMIT 10
                 """
         else:
@@ -148,29 +138,19 @@ def process_sorting(currency: str, order: str):
                     card_info.info.id,
                     date,
                     usd,
-                    ROUND ( 100.0 * (change.usd_ct::numeric - change.usd_yesterday::numeric) / change.usd_yesterday::numeric, 2) || '%' AS usd_change
+                    ROUND ( 100.0 * 
+                    (usd::numeric - lag(usd, 1) over (partition by card_info.sets.set, card_info.info.id order by date(date))::numeric) 
+                    / 
+                    lag(usd, 1) over (partition by card_info.sets.set, card_info.info.id order by date(date))::numeric
+                    , 2) AS usd_change
                 FROM card_data
                 JOIN card_info.info
                     ON card_data.set = card_info.info.set
                     AND card_data.id = card_info.info.id
                 JOIN card_info.sets
                     ON card_data.set = card_info.sets.set
-                JOIN
-                    (
-                        SELECT
-                            date AS dt,
-                            set,
-                            id,
-                            usd AS usd_ct,
-                            lag(usd, 1) over (partition by set, id order by date(date)) AS usd_yesterday
-                        FROM card_data
-                        GROUP BY set, id, date, usd ORDER BY date DESC
-                    ) AS change
-                ON change.dt = card_data.date
-                AND change.set = card_data.set
-                AND change.id = card_data.id
-                WHERE not usd IS NULL
-                ORDER BY date DESC, ROUND( 100.0 * (change.usd_ct::numeric - change.usd_yesterday::numeric) / change.usd_yesterday::numeric, 2) ASC
+                WHERE NOT usd IS NULL
+                ORDER BY date DESC, usd_change ASC NULLS LAST
                 LIMIT 10
                 """
     else:
@@ -183,29 +163,19 @@ def process_sorting(currency: str, order: str):
                     card_info.info.id,
                     date,
                     euro,
-                    ROUND ( 100.0 * (change.euro_ct::numeric - change.euro_yesterday::numeric) / change.euro_yesterday::numeric, 2) || '%' AS euro_change
+                    ROUND ( 100.0 * 
+                    (euro::numeric - lag(euro, 1) over (partition by card_info.sets.set, card_info.info.id order by date(date))::numeric) 
+                    / 
+                    lag(euro, 1) over (partition by card_info.sets.set, card_info.info.id order by date(date))::numeric
+                    , 2) AS euro_change
                 FROM card_data
                 JOIN card_info.info
                     ON card_data.set = card_info.info.set
                     AND card_data.id = card_info.info.id
                 JOIN card_info.sets
                     ON card_data.set = card_info.sets.set
-                JOIN
-                    (
-                        SELECT
-                            date AS dt,
-                            set,
-                            id,
-                            euro AS euro_ct,
-                            lag(euro, 1) over (partition by set, id order by date(date)) AS euro_yesterday
-                        FROM card_data
-                        GROUP BY set, id, date, euro ORDER BY date DESC
-                    ) AS change
-                ON change.dt = card_data.date
-                AND change.set = card_data.set
-                AND change.id = card_data.id
-                WHERE not euro IS NULL
-                ORDER BY date DESC, ROUND( 100.0 * (change.euro_ct::numeric - change.euro_yesterday::numeric) / change.euro_yesterday::numeric, 2) DESC
+                WHERE NOT euro IS NULL
+                ORDER BY date DESC, euro_change DESC NULLS LAST
                 LIMIT 10
                 """
         else:
@@ -217,29 +187,19 @@ def process_sorting(currency: str, order: str):
                     card_info.info.id,
                     date,
                     euro,
-                    ROUND ( 100.0 * (change.euro_ct::numeric - change.euro_yesterday::numeric) / change.euro_yesterday::numeric, 2) || '%' AS euro_change
+                    ROUND ( 100.0 * 
+                    (euro::numeric - lag(euro, 1) over (partition by card_info.sets.set, card_info.info.id order by date(date))::numeric) 
+                    / 
+                    lag(euro, 1) over (partition by card_info.sets.set, card_info.info.id order by date(date))::numeric
+                    , 2) AS euro_changeS
                 FROM card_data
                 JOIN card_info.info
                     ON card_data.set = card_info.info.set
                     AND card_data.id = card_info.info.id
                 JOIN card_info.sets
                     ON card_data.set = card_info.sets.set
-                JOIN
-                    (
-                        SELECT
-                            date AS dt,
-                            set,
-                            id,
-                            euro AS euro_ct,
-                            lag(euro, 1) over (partition by set, id order by date(date)) AS euro_yesterday
-                        FROM card_data
-                        GROUP BY set, id, date, euro ORDER BY date DESC
-                    ) AS change
-                ON change.dt = card_data.date
-                AND change.set = card_data.set
-                AND change.id = card_data.id
-                WHERE not euro IS NULL
-                ORDER BY date DESC, ROUND( 100.0 * (change.euro_ct::numeric - change.euro_yesterday::numeric) / change.euro_yesterday::numeric, 2) ASC
+                WHERE NOT euro IS NULL
+                ORDER BY date DESC, euro_change ASC NULLS LAST
                 LIMIT 10
                 """
     return query
