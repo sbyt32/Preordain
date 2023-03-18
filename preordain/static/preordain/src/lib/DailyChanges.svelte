@@ -16,6 +16,8 @@ const tabs = [
 ]
 
 $: current = tabs[0]
+const connectURL = import.meta.env.VITE_CONNECTION;
+
 </script>
 
 <span style="grid-column: span {col_span} / span {col_span}" class="shadow-2xl h-full component-theme row-span-2">
@@ -49,7 +51,7 @@ $: current = tabs[0]
         </thead>
         <tbody class="bg-white text-gray-200 dark:bg-gray-800 rounded-lg px-2">
             {#key current}
-                {#await database(`http://localhost:8000/api/price/changes/${current.direction}/${current.currency}/`)}
+                {#await database(`${connectURL}/price/changes/${current.direction}/${current.currency}/`)}
                 <tr class="table w-full table-fixed dark:border-gray-700 border-b text-sm">
                     <td>
                         Loading...

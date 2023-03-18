@@ -2,14 +2,14 @@
     export let headers = ["USD","USD (Foil)","Euro","Euro (Foil)","TIX"]
     export let price_values = ["usd","usd_foil","euro","euro_foil", "tix"]
 </script>
-
 <script lang="ts">
+    const connectURL = import.meta.env.VITE_CONNECTION;
     import { parseCurrency, CurrentCard, parsePercentage } from "../assets/functions"
     import { database } from "../fetch_data";
     export let col_span:number | string = 3
 
-    $: updateData = database(`http://127.0.0.1:8000/api/price/${$CurrentCard.set_name}/${$CurrentCard.id}?max=1`)
-    $: buyButtons = database(`http://127.0.0.1:8000/api/card/buylinks/${$CurrentCard.set_name}/${$CurrentCard.id}`)
+    $: updateData = database(`${connectURL}/price/${$CurrentCard.set_name}/${$CurrentCard.id}?max=1`)
+    $: buyButtons = database(`${connectURL}/card/buylinks/${$CurrentCard.set_name}/${$CurrentCard.id}`)
 
 </script>
 {#key CurrentCard}

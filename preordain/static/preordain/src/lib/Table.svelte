@@ -18,6 +18,8 @@
     import { database } from "../fetch_data"
     import Error from "./Error.svelte"
     export let col_span:number | string = 4
+    const connectURL = import.meta.env.VITE_CONNECTION;
+
 
     function ParseData(data:GetCard): Array<ResponseData> {
         let card_data = data.data
@@ -60,7 +62,7 @@
     }
 </script>
 
-{#await database('http://127.0.0.1:8000/api/card/') then data}
+{#await database(`${connectURL}/api/card/`) then data}
 <div class="rounded-lg bg-gray-50 dark:bg-gray-700" style="grid-column: span {col_span} / span {col_span}">
     <table class="w-full text-sm text-left h-full">
         <thead class="table w-full table-fixed">
