@@ -1,53 +1,45 @@
 import logging
 
-log = logging.getLogger()
 from preordain.utils.connections import connect_db
 from fastapi import APIRouter, Response, status, Depends
 from preordain.search.utils import parse_data_for_response
 from preordain.search.models import SearchInformation
 from preordain.search.models import SearchQuery
 from preordain.exceptions import NotFound
+from preordain.utils.get_last_update import get_last_update
 
+
+log = logging.getLogger()
 search_router = APIRouter()
 
 
 @search_router.get("/{query}")
 # * https://github.com/tiangolo/fastapi/issues/1974
-async def search_for_card(response: Response, query: SearchQuery = Depends()):
+async def search_for_card(response: Response, query: SearchQuery = Depends(), last_update:str = Depends(get_last_update)):
     conn, cur = connect_db()
     cur.execute(
         """
-        SELECT
+        SELECT DISTINCT ON (info.name) name,
             info.name,
-            info.set,
-            info.set_full,
             info.id,
-            info.maxDate as "last_updated",
+            info.set,
+            sets.set_full,
+            price.date as "last_updated",
             price.usd,
             price.usd_foil,
+            price.usd_etch,
             price.euro,
             price.euro_foil,
             price.tix
         FROM card_data price
-        JOIN (
-            SELECT
-                info.name,
-                info.set,
-                sets.set_full,
-                info.id,
-                MAX(date) as maxDate
-            FROM card_data
-            JOIN card_info.info as info
-                ON info.set = card_data.set
-                AND info.id = card_data.id
-            JOIN card_info.sets as sets
-                ON sets.set = card_data.set
-            GROUP BY info.set, info.id, info.name, sets.set_full
-            ) info
-        ON price.id = info.id AND price.set = info.set AND price.date = info.maxDate
-        WHERE LOWER(info.name) ILIKE %s
+        JOIN card_info.info AS info
+            ON price.uri = info.uri
+        JOIN card_info.sets AS sets
+            ON sets.set = info.set
+        WHERE date = %s
+        AND LOWER(info.name) ILIKE %s
     """,
-        ("%{}%".format(query.query),),
+        (last_update,"%{}%".format(query.query),),
     )
     data = cur.fetchall()
     conn.close()

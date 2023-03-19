@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Response, status
+from fastapi import APIRouter, HTTPException, Response, status, Depends
 from psycopg.errors import DatetimeFieldOverflow
 from typing import Optional
 from preordain.price.utils import (
@@ -6,6 +6,7 @@ from preordain.price.utils import (
     parse_data_single_card,
 )
 from preordain.utils.connections import connect_db
+from preordain.utils.get_last_update import get_last_update
 from preordain.price.models import (
     PriceDataMultiple,
     PriceDataSingle,
@@ -167,6 +168,7 @@ async def get_biggest_gains(
     response: Response,
     currency: GrowthCurrency = str(GrowthCurrency.usd),
     growth: GrowthDirections = str(GrowthDirections.desc),
+    last_update:str = Depends(get_last_update)
 ):
 # We can relax (I think) due to Pydantic's field validation. Execution is ~2000ms. Goal is < 500ms.
     conn, cur = connect_db()
@@ -190,7 +192,7 @@ async def get_biggest_gains(
             ON card_info.info.set = card_info.sets.set
         WHERE NOT {currency} IS NULL
         AND {currency} >= '.50'
-        AND date = (SELECT MAX(date) from card_data)
+        AND date = {last_update}
         OR date = (SELECT lag(date, -1) over (order by date desc) from card_data GROUP BY date LIMIT 1)
         ORDER BY {currency}_change {growth} NULLS LAST
         LIMIT 10

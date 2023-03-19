@@ -9,6 +9,7 @@ class CardDataTable(BaseModel):
     date: datetime.date
     usd: Optional[str]
     usd_foil: Optional[str]
+    usd_etch: Optional[str]
     euro: Optional[str]
     euro_foil: Optional[str]
     tix: Optional[str]

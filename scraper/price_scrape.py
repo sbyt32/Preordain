@@ -26,7 +26,6 @@ def fetch_prices_from_scryfall() -> None:
             (set, id, date, usd, usd_foil, euro, euro_foil, tix)
 
             VALUES (%(set)s,%(id)s,%(date)s,%(usd)s,%(usd_foil)s,%(euro)s,%(euro_foil)s,%(tix)s)
-
             """
         params = CardDataTable(
             set=card["set"],
@@ -34,6 +33,7 @@ def fetch_prices_from_scryfall() -> None:
             date=arrow.utcnow().format("YYYY-MM-DD"),
             usd=card["prices"]["usd"],
             usd_foil=card["prices"]["usd_foil"],
+            usd_etch=card["prices"]["usd_etch"],
             euro=card["prices"]["eur"],
             euro_foil=card["prices"]["eur_foil"],
             tix=card["prices"]["tix"],

@@ -24,6 +24,7 @@ class CardVariants(str, Enum):
 class CardPrices(BaseModel):
     usd: Optional[float] = 0.00
     usd_foil: Optional[float] = 0.00
+    usd_etch: Optional[float] = None
     euro: Optional[float] = 0.00
     euro_foil: Optional[float] = 0.00
     tix: Optional[float] = 0.00

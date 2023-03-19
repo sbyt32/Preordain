@@ -14,6 +14,7 @@ def parse_data_for_response(data: list):
                 "prices": {
                     "usd": cards["usd"],
                     "usd_foil": cards["usd_foil"],
+                    "usd_etch": cards["usd_etch"],
                     "euro": cards["euro"],
                     "euro_foil": cards["euro_foil"],
                     "tix": cards["tix"],
