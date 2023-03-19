@@ -34,4 +34,3 @@ except KeyError as e:
     if not environ.get("TESTING"):
         log.critical(e)
         sys.exit(1)
-

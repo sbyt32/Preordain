@@ -4,8 +4,7 @@ import datetime
 
 
 class CardDataTable(BaseModel):
-    set: str = Field(min_length=3, max_length=4)
-    id: str = Field(min_length=1, max_length=6)
+    uri: str
     date: datetime.date
     usd: Optional[str]
     usd_foil: Optional[str]

@@ -1,6 +1,7 @@
 from functools import lru_cache
 from preordain.utils.connections import connect_db
 
+
 # This won't update past the first update. Fix it.
 @lru_cache
 def get_last_update():

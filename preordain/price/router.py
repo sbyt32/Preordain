@@ -107,33 +107,33 @@ async def get_single_card_data(
             card_info.info.id,
             date,
             usd,
-            ROUND ( 100.0 * 
-                (usd::numeric - lag(usd, 1) over (partition by card_info.info.uri order by date(date))::numeric) 
-                / 
+            ROUND ( 100.0 *
+                (usd::numeric - lag(usd, 1) over (partition by card_info.info.uri order by date(date))::numeric)
+                /
                 lag(usd, 1) over (partition by card_info.info.uri order by date(date))::numeric
             , 2) AS "usd_change",
             usd_foil,
-            ROUND ( 100.0 * 
-                (usd_foil::numeric - lag(usd_foil, 1) over (partition by card_info.info.uri order by date(date))::numeric) 
-                / 
+            ROUND ( 100.0 *
+                (usd_foil::numeric - lag(usd_foil, 1) over (partition by card_info.info.uri order by date(date))::numeric)
+                /
                 lag(usd_foil, 1) over (partition by card_info.info.uri order by date(date))::numeric
             , 2) AS "usd_foil_change",
             euro,
-            ROUND ( 100.0 * 
-                (euro::numeric - lag(euro, 1) over (partition by card_info.info.uri order by date(date))::numeric) 
-                / 
+            ROUND ( 100.0 *
+                (euro::numeric - lag(euro, 1) over (partition by card_info.info.uri order by date(date))::numeric)
+                /
                 lag(euro, 1) over (partition by card_info.info.uri order by date(date))::numeric
             , 2) AS "euro_change",
             euro_foil,
-            ROUND ( 100.0 * 
-                (euro_foil::numeric - lag(euro_foil, 1) over (partition by card_info.info.uri order by date(date))::numeric) 
-                / 
+            ROUND ( 100.0 *
+                (euro_foil::numeric - lag(euro_foil, 1) over (partition by card_info.info.uri order by date(date))::numeric)
+                /
                 lag(euro_foil, 1) over (partition by card_info.info.uri order by date(date))::numeric
             , 2) AS "euro_foil_change",
             tix,
-            ROUND ( 100.0 * 
-                (tix::numeric - lag(tix, 1) over (partition by card_info.info.uri order by date(date))::numeric) 
-                / 
+            ROUND ( 100.0 *
+                (tix::numeric - lag(tix, 1) over (partition by card_info.info.uri order by date(date))::numeric)
+                /
                 lag(tix, 1) over (partition by card_info.info.uri order by date(date))::numeric
             , 2) AS "tix_change"
         FROM card_data
@@ -168,11 +168,12 @@ async def get_biggest_gains(
     response: Response,
     currency: GrowthCurrency = str(GrowthCurrency.usd),
     growth: GrowthDirections = str(GrowthDirections.desc),
-    last_update:str = Depends(get_last_update)
+    last_update: str = Depends(get_last_update),
 ):
-# We can relax (I think) due to Pydantic's field validation. Execution is ~2000ms. Goal is < 500ms.
+    # We can relax (I think) due to Pydantic's field validation. Execution is ~2000ms. Goal is < 500ms.
     conn, cur = connect_db()
-    cur.execute(f"""
+    cur.execute(
+        f"""
         SELECT
             card_info.info.name,
             card_info.sets.set,
@@ -180,9 +181,9 @@ async def get_biggest_gains(
             card_info.info.id,
             date,
             {currency},
-            ROUND ( 100.0 * 
-                ({currency}::numeric - lag({currency}, 1) over (partition by card_info.info.uri order by date(date))::numeric) 
-                / 
+            ROUND ( 100.0 *
+                ({currency}::numeric - lag({currency}, 1) over (partition by card_info.info.uri order by date(date))::numeric)
+                /
                 lag({currency}, 1) over (partition by card_info.info.uri order by date(date))::numeric
             , 2) AS "{currency}_change"
         FROM card_data
@@ -196,7 +197,8 @@ async def get_biggest_gains(
         OR date = (SELECT lag(date, -1) over (order by date desc) from card_data GROUP BY date LIMIT 1)
         ORDER BY {currency}_change {growth} NULLS LAST
         LIMIT 10
-        """)
+        """
+    )
 
     info = cur.fetchall()
     if info:
