@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Response, status
 from typing import Optional
-from preordain.groups.models import GroupResponse, CardInGroupInfo
+from preordain.groups.models import GroupResponse, GroupInformation
+from preordain.groups.schema import GroupInfoTable
 from preordain.exceptions import NotFound
 from preordain.utils.connections import connect_db
 import logging
@@ -30,15 +31,15 @@ async def get_group_names(response: Response, in_use: Optional[bool] = False):
     """
     if in_use:
         query = """
-        SELECT 
+        SELECT
             DISTINCT(group_in_use) AS "group",
             groups.description,
             a.qty as cards_in_group
         FROM (
-            SELECT 
+            SELECT
                 UNNEST(groups),
                 COUNT(*) as qty
-            FROM 
+            FROM
             card_info.info
             GROUP BY UNNEST(groups)
             ) AS a(group_in_use)
@@ -48,22 +49,22 @@ async def get_group_names(response: Response, in_use: Optional[bool] = False):
     """
     else:
         query = """
-        
-        SELECT 
+
+        SELECT
             groups.group_name as "group",
             groups.description,
             CASE WHEN a.qty is NULL THEN 0 ELSE a.qty END as cards_in_group
         FROM (
-            SELECT 
+            SELECT
                 UNNEST(groups),
                 COUNT(*) as qty
-            FROM 
+            FROM
             card_info.info
             GROUP BY UNNEST(groups)
             ) AS a(group_in_use)
         FULL OUTER JOIN card_info.groups AS groups
             ON groups.group_name = group_in_use
-        
+
     """
     conn, cur = connect_db()
     cur.execute(query)
@@ -73,6 +74,23 @@ async def get_group_names(response: Response, in_use: Optional[bool] = False):
         response.status_code = status.HTTP_200_OK
         return GroupResponse(status=response.status_code, data=data)
     raise NotFound
+
+
+@user_groups.post("/new/")
+def add_new_group(group: GroupInfoTable):
+    conn, cur = connect_db()
+
+    # Insert group into card_info.group if not a duplicate.
+    # Find way to return error if exists.
+    cur.execute(
+        """
+        INSERT INTO card_info.groups
+        VALUES (%(group_name)s, %(description)s)
+        ON CONFLICT (group_name) DO NOTHING
+        """,
+        group.dict(),
+    )
+    pass
 
 
 # @admin_groups.post("/add/")

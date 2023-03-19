@@ -14,6 +14,7 @@ admin_router = APIRouter()
 # Return all cards
 @user_router.get("/", description="Return all cards that are being tracked.")
 async def read_items(response: Response):
+    raise Exception("Hey! This one is not to be used!")
     conn, cur = connect_db()
     cur.execute(
         """
@@ -191,28 +192,3 @@ async def get_purchase_links(set: str, col_num: str, response: Response):
         response.status_code = status.HTTP_200_OK
         return CardPurchaseLink(status=response.status_code, data=resp.fetchone())
     pass
-
-
-# @admin_router.delete("/remove/{set}/{coll_num}")
-# async def remove_card_from_database(set: str, coll_num: str):
-#     conn, cur = connect_db()
-
-#     cur.execute(
-#         "SELECT name, id, set from card_info.info where id = %s AND set = %s",
-#         (coll_num, set),
-#     )
-
-#     fetched_card = cur.fetchone()
-#     if fetched_card:
-#         text_resp = f"Deleting: {fetched_card['name']} (Set: {fetched_card['set']}, Collector Num: {fetched_card['id']})"
-#         log.info(text_resp)
-#         cur.execute(
-#             "DELETE FROM card_info.info WHERE id = %s AND set = %s", (coll_num, set)
-#         )
-#         conn.commit()
-
-#     else:
-#         text_resp = f"Failed to delete, does not exist on DB (Set: {set}, Collector Num: {coll_num})"
-#         log.error(text_resp)
-
-#     return text_resp

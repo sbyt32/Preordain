@@ -71,100 +71,92 @@ async def get_inventory(response: Response):
 
 
 # ! Disabled for now
-# @router.post("/add")
-# async def add_to_inventory(inventory: ModifyInventory):
-#     current_date = arrow.utcnow().date()
-#     # ? If you have the set and collector number, but not the TCG_ID, it will pull that.
-#     if inventory.set and inventory.col_num and not inventory.tcg_id:
-#         resp = send_response("GET", f'https://api.scryfall.com/cards/{inventory.set.lower()}/{inventory.col_num.lower()}')
-#         if inventory.card_variant == "Etched":
-#             inventory.tcg_id = resp['tcgplayer_etched_id']
-#         else:
-#             inventory.tcg_id = str(resp['tcgplayer_id'])
+@router.post("/add")
+def add_to_inventory(inventory: ModifyInventory):
+    # Could we do this with a single "CASE WHERE..." statement?
+    # Decide if update or add new
+    conn, cur = connect_db()
+    cur.execute(
+        """
+        SELECT
+            EXISTS (
+                SELECT 1
+                FROM inventory
+                WHERE uri           = %(uri)s
+                AND card_condition  = %(card_condition)s
+                AND card_variant    = %(card_variant)s
+                AND buy_price       = %(buy_price)s
+                AND add_date        = CURRENT_DATE
+            )
+        """,
+        inventory.dict(),
+    )
 
-#     if inventory.tcg_id:
-#         conn, cur = connect_db()
+    if cur.fetchone()["exists"]:
+        cur.execute(
+            """
+            UPDATE inventory
+            SET qty = inventory.qty + %(qty)s
+            WHERE uri = %(uri)s
+            AND card_condition   = %(card_condition)s
+            AND card_variant = %(card_variant)s
+            AND buy_price = %(buy_price)s
+            AND add_date = CURRENT_DATE
+            """,
+            inventory.dict(),
+        )
+    else:
+        cur.execute(
+            """
+            INSERT INTO inventory
+            VALUES (
+                CURRENT_DATE,
+                %(uri)s,
+                %(qty)s,
+                %(buy_price)s,
+                %(card_condition)s,
+                %(card_variant)s
+            )
+            """,
+            inventory.dict(),
+        )
 
-#         cur.execute("""
-#             SELECT
-#                 EXISTS (
-#                     SELECT 1
-#                     FROM inventory
-#                     WHERE tcg_id        = %s
-#                     AND card_condition  = %s
-#                     AND card_variant    = %s
-#                     AND buy_price       = %s
-#                     AND add_date        = %s
-#                 )
-#             """, (
-#                     inventory.tcg_id,
-#                     inventory.condition,
-#                     inventory.card_variant,
-#                     inventory.buy_price,
-#                     current_date
-#                 )
-#         )
-
-#         if cur.fetchone()['exists']:
-#             cur.execute("""
-#                 UPDATE inventory
-#                 SET qty = inventory.qty + %s
-#                 WHERE tcg_id = %s
-#                 AND card_condition = %s
-#                 AND card_variant = %s
-#                 AND buy_price = %s
-#                 AND add_date = %s
-#                 """, (
-#                     inventory.qty,
-#                     inventory.tcg_id,
-#                     inventory.condition,
-#                     inventory.card_variant,
-#                     inventory.buy_price,
-#                     current_date
-#                     )
-#             )
-#         else:
-#             cur.execute("""
-#                 INSERT INTO inventory
-#                 VALUES (
-#                     %s,
-#                     %s,
-#                     %s,
-#                     %s,
-#                     %s,
-#                     %s
-#                 )
-#                 """, (
-#                     current_date,
-#                     inventory.tcg_id,
-#                     inventory.qty,
-#                     inventory.buy_price,
-#                     inventory.condition,
-#                     inventory.card_variant
-#                     )
-#             )
-
-#         cur.execute("""
-#             SELECT * FROM inventory
-#             WHERE
-#                 tcg_id = %s
-#                 AND card_condition = %s
-#                 AND card_variant = %s
-#                 AND buy_price = %s
-#                 AND add_date = %s
-#             """, (
-#                 inventory.tcg_id,
-#                 inventory.condition,
-#                 inventory.card_variant,
-#                 inventory.buy_price,
-#                 current_date
-#                 )
-#         )
-#         inventory_check = cur.fetchone()
-#         conn.commit()
-#         return inventory_check
+    inventory_check = cur.fetchone()
+    conn.commit()
+    return inventory_check
 
 
-# @router.delete("/delete")
-# async def remove_from_inventory():
-#     pass
+# Is Delete the correct? Probably.
+@router.delete("/delete")
+def remove_from_inventory(inventory: ModifyInventory):
+    conn, cur = connect_db()
+    cur.execute(
+        """
+        SELECT
+            EXISTS (
+                SELECT 1
+                FROM inventory
+                WHERE uri           = %(uri)s
+                AND card_condition  = %(card_condition)s
+                AND card_variant    = %(card_variant)s
+                AND buy_price       = %(buy_price)s
+                AND add_date        = %(add_date)s
+            )
+        """,
+        inventory.dict(),
+    )
+
+    if cur.fetchone()["exists"]:
+        cur.execute(
+            """
+            DELETE FROM inventory
+                WHERE uri           = %(uri)s
+                AND card_condition  = %(card_condition)s
+                AND card_variant    = %(card_variant)s
+                AND buy_price       = %(buy_price)s
+                AND add_date        = %(add_date)s
+        """,
+            inventory.dict(),
+        )
+
+    return

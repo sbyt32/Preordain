@@ -1,14 +1,15 @@
 from preordain.models import CardConditions, CardVariants, BaseResponse, RespStrings
 from pydantic import BaseModel
 from typing import Optional
+import datetime
 
 
 class InventoryData(BaseModel):
     name: str
     set: str
     quantity: int
-    condition: CardConditions
-    variant: CardVariants
+    card_condition: CardConditions
+    card_variant: CardVariants
     avg_cost: float
 
     class Config:
@@ -17,13 +18,12 @@ class InventoryData(BaseModel):
 
 # ? inventory/add | inventory/delete
 class ModifyInventory(BaseModel):
-    tcg_id: Optional[str]
-    set: Optional[str]
-    col_num: Optional[str]
+    uri: str
     qty: int
     buy_price: float
-    condition: CardConditions
+    card_condition: CardConditions
     card_variant: CardVariants
+    add_date: Optional[datetime.date]
 
 
 class InventoryResponse(BaseResponse):

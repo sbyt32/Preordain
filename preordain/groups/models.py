@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from preordain.models import BaseResponse, RespStrings
+from preordain.groups.schema import GroupInfoTable
 
 # * https://fastapi.tiangolo.com/tutorial/body/#__tabbed_2_1
 
@@ -11,10 +12,11 @@ class CardInGroupInfo(BaseModel):
     group: str
 
 
-class GroupInformation(BaseModel):
-    group: str
-    description: str
+class GroupInformation(GroupInfoTable):
     cards_in_group: int
+
+
+# class
 
 
 class GroupResponse(BaseResponse):

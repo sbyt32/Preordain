@@ -85,7 +85,7 @@ CREATE TABLE IF NOT EXISTS card_data_tcg (
 
 CREATE TABLE IF NOT EXISTS inventory (
         add_date date,
-        tcg_id text NOT NULL,
+        uri text NOT NULL,
         qty int,
         buy_price float(2),
         card_condition text,
