@@ -14,7 +14,7 @@ from preordain.sales.router import sales_router
 from preordain.sales.models import CardSaleResponse
 from preordain.search.router import search_router
 from preordain.search.models import SearchInformation
-from preordain.trackers.router import router as tracker_router
+from preordain.tracker.router import router as tracker_router
 
 from typing import Union
 
