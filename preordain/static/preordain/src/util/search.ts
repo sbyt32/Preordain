@@ -1,4 +1,21 @@
-import type { ScryfallSearchResults } from "../assets/externalTypes";
+
+export type ScryfallSearchResults = {
+    name: string
+    set: string
+    set_full: string
+    id: string
+    uri: string
+    tcg_id: string
+    prices: {
+        usd: number | string
+        usd_foil: number | string
+        usd_etch: number | string
+        euro: number | string
+        euro_foil: number | string
+        tix: number | string
+    }
+}
+
 
 export function onKeyPress(e: KeyboardEvent, str: string) {
     if (e.code === 'Enter') { console.log(str)};
@@ -22,6 +39,7 @@ export async function handleSubmit(cardToSearch: string) {
                 prices: {
                     usd: element.prices.usd,
                     usd_foil: element.prices.usd_foil,
+                    usd_etch: element.prices.usd_etch,
                     euro: element.prices.eur,
                     euro_foil: element.prices.eur_foil,
                     tix: element.prices.tix,

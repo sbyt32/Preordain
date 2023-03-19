@@ -3,7 +3,6 @@
     console.log(params);
 
     import {handleSubmit} from "../util/search"
-    const header = ["name", "set", "set_full"]
     const priceHeaders = ["usd", "usd_foil", "euro", "euro_foil", "tix"]
     import { parseCurrency } from "../assets/functions";
     import {trackNewCard} from "../util/search"
