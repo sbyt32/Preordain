@@ -38,7 +38,8 @@ CREATE TABLE
         tcg_id text,
         tcg_id_etch text,
         groups text [],
-        new_search boolean
+        new_search boolean DEFAULT true,
+        scrape_sales boolean DEFAULT false
 );
 
 CREATE INDEX card_identity ON card_info.info (uri);
