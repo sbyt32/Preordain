@@ -4,7 +4,6 @@ from typing import Optional
 from preordain.price.utils import (
     parse_data_for_response,
     parse_data_single_card,
-    process_sorting,
 )
 from preordain.utils.connections import connect_db
 from preordain.price.models import (
@@ -90,12 +89,12 @@ async def get_single_day_data(date: str, response: Response):
     },
 )
 async def get_single_card_data(
-    response: Response, set: str, id: str, max: Optional[int] = 25
+    response: Response, set: str, id: str, max: Optional[int] = 31
 ):
-    if abs(max) > 25:
-        # TODO: Figure out how to know where the > 25 query came from.
-        log.error("User attempted to search more than 25 queries, setting to 25.")
-        max = 25
+    if abs(max) > 31:
+        # TODO: Figure out how to know where the > 31 query came from.
+        log.error("User attempted to search more than 31 queries, setting to 31.")
+        max = 31
 
     conn, cur = connect_db()
     cur.execute(
@@ -107,52 +106,54 @@ async def get_single_card_data(
             card_info.info.id,
             date,
             usd,
-            ROUND ( 100.0 * (change.usd_ct::numeric - change.usd_yesterday::numeric) / change.usd_yesterday::numeric, 2) || '%%' AS usd_change,
+            ROUND ( 100.0 * 
+                (usd::numeric - lag(usd, 1) over (partition by card_info.info.uri order by date(date))::numeric) 
+                / 
+                lag(usd, 1) over (partition by card_info.info.uri order by date(date))::numeric
+            , 2) AS "usd_change",
             usd_foil,
-            ROUND ( 100.0 * (change.usd_foil_ct::numeric - change.usd_foil_yesterday::numeric) / change.usd_foil_yesterday::numeric, 2) || '%%' AS usd_foil_change,
+            ROUND ( 100.0 * 
+                (usd_foil::numeric - lag(usd_foil, 1) over (partition by card_info.info.uri order by date(date))::numeric) 
+                / 
+                lag(usd_foil, 1) over (partition by card_info.info.uri order by date(date))::numeric
+            , 2) AS "usd_foil_change",
             euro,
-            ROUND ( 100.0 * (change.euro_ct::numeric - change.euro_yesterday::numeric) / change.euro_yesterday::numeric, 2) || '%%' AS euro_change,
+            ROUND ( 100.0 * 
+                (euro::numeric - lag(euro, 1) over (partition by card_info.info.uri order by date(date))::numeric) 
+                / 
+                lag(euro, 1) over (partition by card_info.info.uri order by date(date))::numeric
+            , 2) AS "euro_change",
             euro_foil,
-            ROUND ( 100.0 * (change.euro_foil_ct::numeric - change.euro_foil_yesterday::numeric) / change.euro_foil_yesterday::numeric, 2) || '%%' AS euro_foil_change,
+            ROUND ( 100.0 * 
+                (euro_foil::numeric - lag(euro_foil, 1) over (partition by card_info.info.uri order by date(date))::numeric) 
+                / 
+                lag(euro_foil, 1) over (partition by card_info.info.uri order by date(date))::numeric
+            , 2) AS "euro_foil_change",
             tix,
-            ROUND ( 100.0 * (change.tix_ct::numeric - change.tix_yesterday::numeric) / change.tix_yesterday::numeric, 2) || '%%' AS tix_change
+            ROUND ( 100.0 * 
+                (tix::numeric - lag(tix, 1) over (partition by card_info.info.uri order by date(date))::numeric) 
+                / 
+                lag(tix, 1) over (partition by card_info.info.uri order by date(date))::numeric
+            , 2) AS "tix_change"
         FROM card_data
         JOIN card_info.info
-            ON card_data.set = card_info.info.set
-            AND card_data.id = card_info.info.id
+            ON card_data.uri = card_info.info.uri
         JOIN card_info.sets
-            ON card_data.set = card_info.sets.set
-        JOIN
-            (
-                SELECT
-                    date AS dt,
-                    usd AS usd_ct,
-                    lag(usd, 1) over (order by date(date)) AS usd_yesterday,
-                    usd_foil AS usd_foil_ct,
-                    lag(usd_foil, 1) over (order by date(date)) AS usd_foil_yesterday,
-                    euro AS euro_ct,
-                    lag(euro, 1) over (order by date(date)) AS euro_yesterday,
-                    euro_foil AS euro_foil_ct,
-                    lag(euro_foil, 1) over (order by date(date)) AS euro_foil_yesterday,
-                    tix AS tix_ct,
-                    lag(tix, 1) over (order by date(date)) AS tix_yesterday
-                FROM card_data
-                WHERE
-                card_data.set = %s AND card_data.id = %s
-                GROUP BY date, usd, usd_foil, euro, euro_foil, tix ORDER BY date DESC
-            ) AS change
-        ON change.dt = card_data.date
+            ON card_info.info.set = card_info.sets.set
         WHERE
-            card_data.set = %s AND card_data.id = %s
+            card_info.info.set = %s AND card_info.info.id = %s
         ORDER BY date DESC
         LIMIT %s
         """,
-        (set, id, set, id, max),
+        (set, id, max),
     )
 
     data = cur.fetchall()
 
     if data:
+        for value in data:
+            for currency in ["usd", "usd_foil", "euro", "euro_foil", "tix"]:
+                value[f"{currency}_change"] = f"{value[f'{currency}_change']}%"
         response.status_code = status.HTTP_200_OK
         return PriceDataSingle(
             status=response.status_code, data=parse_data_single_card(data)
@@ -164,17 +165,42 @@ async def get_single_card_data(
 @price_router.get("/changes/{growth}/{currency}/")
 async def get_biggest_gains(
     response: Response,
-    currency: GrowthCurrency = str(GrowthCurrency.USD),
-    growth: GrowthDirections = str(GrowthDirections.DESC),
+    currency: GrowthCurrency = str(GrowthCurrency.usd),
+    growth: GrowthDirections = str(GrowthDirections.desc),
 ):
-    # Extremely inefficent. Passing ASC or DESC into Psycopg keeps throwing Psycopg Syntax Errors
-    # * https://stackoverflow.com/questions/32137628/specifying-sorting-direction-in-psycopg2-by-parameter
-    query = process_sorting(currency.lower(), growth.lower())
-
+# We can relax (I think) due to Pydantic's field validation. Execution is ~2000ms. Goal is < 500ms.
     conn, cur = connect_db()
-    cur.execute(query)
+    cur.execute(f"""
+        SELECT
+            card_info.info.name,
+            card_info.sets.set,
+            card_info.sets.set_full,
+            card_info.info.id,
+            date,
+            {currency},
+            ROUND ( 100.0 * 
+                ({currency}::numeric - lag({currency}, 1) over (partition by card_info.info.uri order by date(date))::numeric) 
+                / 
+                lag({currency}, 1) over (partition by card_info.info.uri order by date(date))::numeric
+            , 2) AS "{currency}_change"
+        FROM card_data
+        JOIN card_info.info
+            ON card_data.uri = card_info.info.uri
+        JOIN card_info.sets
+            ON card_info.info.set = card_info.sets.set
+        WHERE NOT {currency} IS NULL
+        AND {currency} >= '.50'
+        AND date = (SELECT MAX(date) from card_data)
+        OR date = (SELECT lag(date, -1) over (order by date desc) from card_data GROUP BY date LIMIT 1)
+        ORDER BY {currency}_change {growth} NULLS LAST
+        LIMIT 10
+        """)
+
     info = cur.fetchall()
     if info:
+        for value in info:
+            value[f"{currency}_change"] = f"{value[f'{currency}_change']}%"
+
         response.status_code = status.HTTP_200_OK
         return PriceChange(status=response.status_code, data=info)
     response.status_code = status.HTTP_404_NOT_FOUND

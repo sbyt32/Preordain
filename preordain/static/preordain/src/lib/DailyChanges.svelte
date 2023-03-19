@@ -51,7 +51,7 @@ const connectURL = import.meta.env.VITE_CONNECTION;
         </thead>
         <tbody class="bg-white text-gray-200 dark:bg-gray-800 rounded-lg px-2">
             {#key current}
-                {#await database(`${connectURL}/price/changes/${current.direction}/${current.currency}/`)}
+                {#await database(`${connectURL}/price/changes/${current.direction.toLowerCase()}/${current.currency.toLowerCase()}/`)}
                 <tr class="table w-full table-fixed dark:border-gray-700 border-b text-sm">
                     <td>
                         Loading...

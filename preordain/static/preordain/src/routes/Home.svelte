@@ -12,6 +12,7 @@
         <svelte:fragment slot="Component">
             <CardDash col_span=3/>
             <Changes col_span=1/>
+            <PriceGraph col_span=3/>
             <!-- <Table col_span=3/> -->
         </svelte:fragment>
     </Row>
@@ -20,5 +21,4 @@
             <PriceGraph col_span=3/>
         </svelte:fragment>
     </Row> -->
-
 </div>

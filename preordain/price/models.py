@@ -97,11 +97,12 @@ class PriceChange(BaseResponse):
 
 
 class GrowthDirections(str, Enum):
-    ASC = "ASC"
-    DESC = "DESC"
+    asc = "asc"
+    desc = "desc"
 
 
 class GrowthCurrency(str, Enum):
-    USD = "USD"
-    Euro = "Euro"
+    usd = "usd"
+    euro = "euro"
+    tix = "tix"
     # USD, Euro, TIX

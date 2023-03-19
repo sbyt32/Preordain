@@ -60,7 +60,8 @@
         }
     }
 
-    $: db_data = database(`http://127.0.0.1:8000/api/price/${$CurrentCard.set_name}/${$CurrentCard.id}?max=25`)
+    const connectURL = import.meta.env.VITE_CONNECTION;
+    $: db_data = database(`${connectURL}/price/${$CurrentCard.set_name}/${$CurrentCard.id}?max=31`)
 </script>
 
 {#key CurrentCard}
