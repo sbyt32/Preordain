@@ -2,18 +2,20 @@
     export let params;
     console.log(params);
 
-    import {handleSubmit} from "../util/search"
+    import {handleSubmit, untrackOldCard} from "../util/search"
     const priceHeaders = ["usd", "usd_foil", "euro", "euro_foil", "tix"]
     import { parseCurrency } from "../assets/functions";
     import {trackNewCard} from "../util/search"
+    import Error from "../lib/Error.svelte";
 
 
 </script>
 
-{#await handleSubmit(params.query) then results}
 <div class="flex flex-col">
-    <h1 class="py-5">
-        {results.length} {results.length > 1 ? "results" : "result"} for {params.query}
+    {#await handleSubmit(params.query) then results}
+
+    <h1 class="py-5 text-2xl font-semibold">
+        {results.length} {results.length == 1 ? "result" : "results"} for "{params.query}"
     </h1>
 
     <table class="table-auto  bg-gray-50 dark:bg-gray-700 outline outline-gray-700 rounded-lg">
@@ -47,7 +49,7 @@
 
                         <td class="px-6 py-2 white text-right">
                                 {result.set_full}
-                            <i class="ss text-xl ml-4 ss-{result.set.toLowerCase()}"></i>
+                            <i class="ss text-xl ml-4 ss-{result.set.toLowerCase()} ss-rare"></i>
                         </td>
 
                         {#each priceHeaders as price}
@@ -59,16 +61,26 @@
                         {/each}
 
                         <td class="px-2 py-2 whitespace-preline text-center border-l border-gray-700">
-                            <button class="bg-gray-600 border-black border px-4 rounded-md hover:bg-indigo-600 transition-colors"
+                            <button class="bg-gray-600 border-black border px-4 rounded-md enabled:hover:bg-indigo-600 transition-colors disabled:opacity-50"
+                            disabled='{result["scrape_sales"]}'
                             on:click={() => trackNewCard(result)}>
-                                Hello
+                                Track
+                            </button>
+                            <button class="bg-gray-600 border-black border px-4 rounded-md enabled:hover:bg-red-600 transition-colors disabled:opacity-50"
+                            disabled='{!result["scrape_sales"]}'
+                            on:click={() => untrackOldCard(result)}>
+                                Untrack
                             </button>
                         </td>
 
                     </tr>
                 {/each}
             </tbody>
-
     </table>
-</div>
+    {:catch}
+    <h1 class="py-5 text-2xl font-semibold">
+        0 results for "{params.query}"
+    </h1>
+    <Error/>
 {/await}
+</div>

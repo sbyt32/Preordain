@@ -193,7 +193,7 @@ async def get_biggest_gains(
             ON card_info.info.set = card_info.sets.set
         WHERE NOT {currency} IS NULL
         AND {currency} >= '.50'
-        AND date = {last_update}
+        AND date = '{last_update}'
         OR date = (SELECT lag(date, -1) over (order by date desc) from card_data GROUP BY date LIMIT 1)
         ORDER BY {currency}_change {growth} NULLS LAST
         LIMIT 10

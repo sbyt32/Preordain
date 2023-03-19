@@ -10,6 +10,8 @@ def parse_data_for_response(data: list):
                 "set": cards["set"],
                 "set_full": cards["set_full"],
                 "id": cards["id"],
+                "uri": cards["uri"],
+                "scrape_sales": cards["scrape_sales"] or False,
                 "last_updated": cards["last_updated"],
                 "prices": {
                     "usd": cards["usd"],
