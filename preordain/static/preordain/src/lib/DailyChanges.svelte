@@ -70,7 +70,7 @@ const connectURL = import.meta.env.VITE_CONNECTION;
                             <i class="ss px-2 text-xl ss-{change.set}"></i>
                         </td>
                         <td class="text-right shrink-0 grow px-2">
-                            {@html parsePercentage('usd_change' in change ? change.usd_change : change.euro_change )}
+                            {@html parsePercentage('usd_change' in change ? change.usd_change : change.euro_change)}
                         </td>
                     </tr>
                     {/each}

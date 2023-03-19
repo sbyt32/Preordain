@@ -15,7 +15,11 @@ search_router = APIRouter()
 
 @search_router.get("/{query}")
 # * https://github.com/tiangolo/fastapi/issues/1974
-async def search_for_card(response: Response, query: SearchQuery = Depends(), last_update:str = Depends(get_last_update)):
+async def search_for_card(
+    response: Response,
+    query: SearchQuery = Depends(),
+    last_update: str = Depends(get_last_update),
+):
     conn, cur = connect_db()
     cur.execute(
         """
@@ -23,7 +27,9 @@ async def search_for_card(response: Response, query: SearchQuery = Depends(), la
             info.name,
             info.id,
             info.set,
+            info.scrape_sales,
             sets.set_full,
+            price.uri,
             price.date as "last_updated",
             price.usd,
             price.usd_foil,
@@ -39,7 +45,10 @@ async def search_for_card(response: Response, query: SearchQuery = Depends(), la
         WHERE date = %s
         AND LOWER(info.name) ILIKE %s
     """,
-        (last_update,"%{}%".format(query.query),),
+        (
+            last_update,
+            "%{}%".format(query.query),
+        ),
     )
     data = cur.fetchall()
     conn.close()

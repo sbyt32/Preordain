@@ -47,19 +47,19 @@
                 <!-- Button Placeholder -->
                 <div class="col-span-5 inline-grid grid-cols-5 content-center text-center">
                     {#await buyButtons then buttons}
-                        <a class="component-theme w-fit px-3 py-1 mx-auto text-base" href="https://www.tcgplayer.com/product/{buttons.data.tcg_id}">
+                        <a class="component-theme w-fit px-3 py-1 mx-auto text-base hover:bg-[#4D7C0F] transition-colors" href="https://www.tcgplayer.com/product/{buttons.data.tcg_id}">
                             To TCGPlayer 🔮
                         </a>
-                        <a class="component-theme w-fit px-3 py-1 mx-auto text-base" href="https://www.tcgplayer.com/product/{buttons.data.tcg_id}">
+                        <a class="component-theme w-fit px-3 py-1 mx-auto text-base hover:bg-[#4D7C0F] transition-colors" href="https://www.tcgplayer.com/product/{buttons.data.tcg_id}">
                             To TCGPlayer 🔮
                         </a>
-                        <a class="component-theme w-fit px-3 py-1 mx-auto text-base" href="https://www.tcgplayer.com/product/{buttons.data.tcg_id}">
+                        <a class="component-theme w-fit px-3 py-1 mx-auto text-base hover:bg-[#185C9E] transition-colors" href="https://www.tcgplayer.com/product/{buttons.data.tcg_id}">
                             To CardMarket 🫘
                         </a>
-                        <a class="component-theme w-fit px-3 py-1 mx-auto text-base" href="https://www.tcgplayer.com/product/{buttons.data.tcg_id}">
+                        <a class="component-theme w-fit px-3 py-1 mx-auto text-base hover:bg-[#185C9E] transition-colors" href="https://www.tcgplayer.com/product/{buttons.data.tcg_id}">
                             To CardMarket 🫘
                         </a>
-                        <a class="component-theme w-fit px-3 py-1 mx-auto text-base" href="https://www.tcgplayer.com/product/{buttons.data.tcg_id}">
+                        <a class="component-theme w-fit px-3 py-1 mx-auto text-base hover:bg-[#EA580C] transition-colors" href="https://www.tcgplayer.com/product/{buttons.data.tcg_id}">
                             To CardHoarder 🤖
                         </a>
                     {/await}

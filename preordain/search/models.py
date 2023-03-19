@@ -21,6 +21,8 @@ class CardInfoData(BaseModel):
     set: str
     set_full: str
     id: str
+    uri: str
+    scrape_sales: bool
     last_updated: datetime.date
     prices: CardPrices
 
