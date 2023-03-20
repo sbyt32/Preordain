@@ -1,10 +1,17 @@
-from fastapi import APIRouter, Response, status
+from fastapi import APIRouter, Response, status, Body
 from typing import Optional
-from preordain.groups.models import GroupResponse, GroupInformation
-from preordain.groups.schema import GroupInfoTable
+from preordain.groups.models import (
+    GroupResponse,
+    CardInGroupInfo,
+    SuccessfulRequest,
+    GroupInfoTable,
+)
+from preordain.groups.schema import GroupInfoGroupName
 from preordain.exceptions import NotFound
+from preordain.groups.util import validate_group
 from preordain.utils.connections import connect_db
 import logging
+from typing import Annotated
 
 user_groups = APIRouter(
     responses={
@@ -77,7 +84,7 @@ async def get_group_names(response: Response, in_use: Optional[bool] = False):
 
 
 @user_groups.post("/new/")
-def add_new_group(group: GroupInfoTable):
+def add_group(group: GroupInfoTable, response: Response):
     conn, cur = connect_db()
 
     # Insert group into card_info.group if not a duplicate.
@@ -90,68 +97,76 @@ def add_new_group(group: GroupInfoTable):
         """,
         group.dict(),
     )
-    pass
+    conn.commit()
+    response.status_code = status.HTTP_201_CREATED
+    return SuccessfulRequest(
+        status=response.status_code,
+        info={"Message": f"Added group: {group.group_name}"},
+        data=group,
+    )
 
 
-# @admin_groups.post("/add/")
-# async def add_card_to_groups(card_group: CardInGroupInfo):
-#     text_resp = ""
-
-#     conn, cur = connect_db()
-
-#     cur.execute(
-#         "SELECT name, set, id, groups from card_info.info where id = %s AND set= %s",
-#         (card_group.id, card_group.set),
-#     )
-
-#     fetched_card = cur.fetchone()
-#     # * If the card doesn't already have a group, it'll return Null/None.
-#     if fetched_card["groups"] is None:
-#         fetched_card["groups"] = []
-
-#     # * If the card exists and the group is not associated with the card.
-#     if fetched_card and not card_group.group in fetched_card["groups"]:
-#         cur.execute(
-#             "UPDATE card_info.info SET groups = array_append(card_info.info.groups, %s) WHERE id = %s and set = %s",
-#             (card_group.group, card_group.id, card_group.set),
-#         )
-#         conn.commit()
-
-#         text_resp = f"{fetched_card['name']} (Set: {fetched_card['set']}, Collector Num: {fetched_card['id']}) is now associated with the groups: {fetched_card['groups'] + [card_group.group]}"
-#         log.info(text_resp)
-
-#     # * Warning if the group is already with the card
-#     elif card_group.group in fetched_card["groups"]:
-#         text_resp = f"{fetched_card['name']} (Set: {fetched_card['set']}, Collector Num: {fetched_card['id']}) already is associated with the group: {fetched_card['groups']}"
-#         log.warning(text_resp)
-
-#     # * If the card doesn't exist on the database. It might exist as a card, though.
-#     elif fetched_card == None:
-#         text_resp = f"Set: {card_group.set}, Collector Num: {card_group.id} does not exist on the database!"
-#         log.error(text_resp)
-
-#     # * Just in case, I'm not too sure what would trigger this?
-#     else:
-#         text_resp = f"Uncertain error returned. Logging response to look over later."
-#         log.error(card_group)
-
-#     return text_resp
+@user_groups.delete("/delete/")
+async def delete_group(response: Response, group: GroupInfoGroupName):
+    conn, cur = connect_db()
+    cur.execute(
+        """
+        DELETE FROM card_info.groups WHERE group_name = %(group_name)s
+        """,
+        group.dict(),
+    )
+    conn.commit()
+    response.status_code = status.HTTP_200_OK
+    return SuccessfulRequest(
+        status=response.status_code,
+        info={"Message": f"Removed group: {group.group_name}"},
+        data=group,
+    )
 
 
-# @admin_groups.delete("/remove/")
-# async def remove_card_from_group(card_group: CardInGroupInfo):
-#     conn, cur = connect_db()
+@user_groups.post("/add/card/", response_model=SuccessfulRequest)
+async def add_card_to_groups(card_group: CardInGroupInfo, response: Response):
+    conn, cur = connect_db()
+    card_data = card_group.dict()
 
-#     cur.execute(
-#         "SELECT name, set, id, groups from card_info.info where id = %s AND set= %s",
-#         (card_group.id, card_group.set),
-#     )
+    pre_check = validate_group(cur, card_data)
+    # Write some exceptions.
+    if not pre_check["group_exists"]:
+        raise Exception("Hey, Group Does Not Exist!")
+    elif pre_check["card_in_group"]:
+        raise Exception(f"This card is already in group: {card_data['group']}")
 
-#     fetched_card = cur.fetchone()
+    cur.execute(
+        "UPDATE card_info.info SET groups = array_append(card_info.info.groups, %(group)s) WHERE uri = %(uri)s",
+        card_group.dict(),
+    )
+    conn.commit()
+    response.status_code = status.HTTP_201_CREATED
+    return SuccessfulRequest(
+        status=response.status_code,
+        info={"message": f"Successfully added card to {card_data['group']}"},
+    )
 
-#     # * If the card exists and the group is associated with the card.
-#     if fetched_card and card_group.group in fetched_card["group"]:
-#         cur.execute(
-#             "UPDATE card_info.info SET groups = array_remove(card_info.info.groups, %s) WHERE id = %s and set = %s",
-#             (card_group.group, card_group.id, card_group.set),
-#         )
+
+@user_groups.delete("/remove/card/", response_model=SuccessfulRequest)
+async def remove_card_from_group(card_group: CardInGroupInfo, response: Response):
+    conn, cur = connect_db()
+    card_data = card_group.dict()
+
+    pre_check = validate_group(cur, card_data)
+    # Write some exceptions.
+    if not pre_check["group_exists"]:
+        raise Exception("Hey, Group Does Not Exist!")
+    elif not pre_check["card_in_group"]:
+        raise Exception(f"This card is not in group: {card_data['group']}")
+
+    cur.execute(
+        "UPDATE card_info.info SET groups = array_remove(card_info.info.groups, %(group)s) WHERE uri = %(uri)s",
+        card_data,
+    )
+    conn.commit()
+    response.status_code = status.HTTP_200_OK
+    return SuccessfulRequest(
+        status=response.status_code,
+        info={"message": f"Successfully removed card from {card_data['group']}"},
+    )

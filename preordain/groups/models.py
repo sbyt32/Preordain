@@ -7,8 +7,7 @@ from preordain.groups.schema import GroupInfoTable
 
 # This one is for request format.
 class CardInGroupInfo(BaseModel):
-    set: str
-    id: str
+    uri: str
     group: str
 
 
@@ -37,3 +36,7 @@ class GroupResponse(BaseResponse):
                 ],
             }
         }
+
+
+class SuccessfulRequest(BaseResponse):
+    resp = RespStrings.group_info

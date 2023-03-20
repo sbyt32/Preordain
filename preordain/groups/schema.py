@@ -1,5 +1,8 @@
 from pydantic import BaseModel
-from preordain.models import BaseResponse, RespStrings
+
+
+class GroupInfoGroupName(BaseModel):
+    group_name: str
 
 
 class GroupInfoTable(BaseModel):
