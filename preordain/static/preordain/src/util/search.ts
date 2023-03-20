@@ -32,8 +32,6 @@ export async function handleSubmit(cardToSearch: string) {
 
 }
 
-
-
 export async function trackNewCard(params:SearchResults) {
 
     let newCard = {

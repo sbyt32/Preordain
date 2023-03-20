@@ -1,4 +1,8 @@
 <script lang="ts">
+  import AdminPanel from './header/AdminPanel.svelte';
+
+  import HomeMenu from './header/HomePanel.svelte';
+
     import { push } from 'svelte-spa-router';
 
 
@@ -8,18 +12,14 @@
 }
 
 	$:searchQuery = ''
-
+    $:dropdown = false
 </script>
-<div class="bg-gray-500 w-full border-b-2 border-black/20 shadow-lg">
-    <div class="grid grid-cols-6">
+<div class="bg-gray-500 w-full border-b-2 border-black/20 shadow-lg mb-2">
+    <div class="flex flex-row gap-20 first:ml-20 last:mr-20 py-1">
 
-        <div class="text-center place-self-center text-white">
-            <button on:click={() => push('/')}>
-                Preordain (Testing)
-            </button>
-        </div>
+        <HomeMenu/>
 
-        <div class="col-span-4" id="Searchbar">
+        <div class="grow" id="Searchbar">
             <form class="items-center">
                 <label for="simple-search" class="sr-only">Search</label>
                 <div class="relative w-full">
@@ -39,11 +39,7 @@
             </form>
         </div>
 
-        <div class="place-self-center">
-            <button class="component-theme w-fit px-3 py-1 text-base">
-                Admin Panel
-            </button>
-        </div>
+        <AdminPanel/>
 
     </div>
 </div>

@@ -4,12 +4,13 @@
 
     import {handleSubmit, untrackOldCard} from "../util/search"
     const priceHeaders = ["usd", "usd_foil", "euro", "euro_foil", "tix"]
-    import { parseCurrency } from "../assets/functions";
+    import { parseCurrency, projectTitle } from "../assets/stores";
     import {trackNewCard} from "../util/search"
     import Error from "../lib/Error.svelte";
 
-
+    projectTitle.set(`Search: ${params.query}`)
 </script>
+
 
 <div class="flex flex-col">
     {#await handleSubmit(params.query) then results}

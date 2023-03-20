@@ -14,8 +14,8 @@
 
 <script lang="ts">
     import type { GetCard } from "../assets/responses";
-    import { parseCurrency, CurrentCard } from "../assets/functions"
-    import { database } from "../fetch_data"
+    import { parseCurrency, CurrentCard } from "../assets/stores"
+    import { database } from "../util/fetch_data"
     import Error from "./Error.svelte"
     export let col_span:number | string = 4
     const connectURL = import.meta.env.VITE_CONNECTION;

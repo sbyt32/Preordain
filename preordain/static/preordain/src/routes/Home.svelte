@@ -4,7 +4,10 @@
     import PriceGraph from '../lib/charts/PriceGraph.svelte';
     import Changes from '../lib/DailyChanges.svelte';
     import Table from '../lib/Table.svelte';
+    import {location} from 'svelte-spa-router'
+    import { projectTitle } from "../assets/stores";
 
+    projectTitle.set("Home")
 </script>
 
 <div class="grid grid-cols-4 grid-rows-4 h-2/3">

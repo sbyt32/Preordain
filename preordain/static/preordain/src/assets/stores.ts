@@ -1,4 +1,4 @@
-import { writable, type Updater } from "svelte/store"
+import { readable, writable, get } from "svelte/store"
 export function parseCurrency(price:number | string, currency:string) {
     // Checks
     if (typeof price == "string") {
@@ -38,3 +38,23 @@ export function parsePercentage(percent:string) {
 
 // Store
 export const CurrentCard = writable({set_name: "vow", id: "38", card: "Thalia, Guardian of Thraben"})
+export const connectURL = readable(import.meta.env.VITE_CONNECTION)
+export const projectName = readable(import.meta.env.VITE_PROJECT)
+const envIsTest = readable(import.meta.env.DEV)
+
+function setProjectTitle() {
+    const {subscribe, set, update} = writable('');
+    let project = get(projectName)
+    let projEnv = get(envIsTest)
+    return {
+        subscribe,
+        set: (value:string) => {
+            set(`${project} - ${value} ${projEnv ? "(Testing)":""}`)
+        },
+        clear: () => {
+            set(`${project} - Home ${projEnv ? "(Testing)":""}`)
+        }
+    }
+}
+
+export const projectTitle = setProjectTitle()

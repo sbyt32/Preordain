@@ -3,8 +3,8 @@
     import { Line } from "svelte-chartjs"
     import {parsePriceData} from "./data"
     import 'chart.js/auto';
-    import { database } from "../../fetch_data";
-    import { CurrentCard } from "../../assets/functions";
+    import { database } from "../../util/fetch_data";
+    import { CurrentCard } from "../../assets/stores";
     export let col_span:number | string = 3
 
     $: options = {

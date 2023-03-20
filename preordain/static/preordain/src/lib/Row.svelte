@@ -3,8 +3,8 @@
     console.log(col_span);
 </script>
 
-<div class="row-span-4 col-span-4 p-2">
-    <span class="inline-grid grid-cols-4 w-full h-full gap-3">
+<div class="row-span-4 col-span-4">
+    <span class="inline-grid grid-cols-4 w-full h-full gap-4">
         <slot name="Component">
             <p class="component-theme empty-space h-full">
                 Place Component Here!

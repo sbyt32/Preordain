@@ -1,7 +1,7 @@
 <script lang="ts">
-import { database } from "../fetch_data"
-import { parsePercentage } from "../assets/functions";
-import { CurrentCard } from "../assets/functions";
+import { database } from "../util/fetch_data"
+import { parsePercentage } from "../assets/stores";
+import { CurrentCard } from "../assets/stores";
 export let col_span: string | number = 1
 
 

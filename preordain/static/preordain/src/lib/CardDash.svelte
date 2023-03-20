@@ -4,8 +4,8 @@
 </script>
 <script lang="ts">
     const connectURL = import.meta.env.VITE_CONNECTION;
-    import { parseCurrency, CurrentCard, parsePercentage } from "../assets/functions"
-    import { database } from "../fetch_data";
+    import { parseCurrency, CurrentCard, parsePercentage } from "../assets/stores"
+    import { database } from "../util/fetch_data";
     export let col_span:number | string = 3
 
     $: updateData = database(`${connectURL}/price/${$CurrentCard.set_name}/${$CurrentCard.id}?max=1`)
@@ -47,19 +47,19 @@
                 <!-- Button Placeholder -->
                 <div class="col-span-5 inline-grid grid-cols-5 content-center text-center">
                     {#await buyButtons then buttons}
-                        <a class="component-theme w-fit px-3 py-1 mx-auto text-base hover:bg-[#4D7C0F] transition-colors" href="https://www.tcgplayer.com/product/{buttons.data.tcg_id}">
+                        <a class="component-theme w-fit px-3 py-1 mx-auto text-base hover:bg-[#4D7C0F] transition-colors" target="_blank" rel="noreferrer" href="https://www.tcgplayer.com/product/{buttons.data.tcg_id}">
                             To TCGPlayer 🔮
                         </a>
-                        <a class="component-theme w-fit px-3 py-1 mx-auto text-base hover:bg-[#4D7C0F] transition-colors" href="https://www.tcgplayer.com/product/{buttons.data.tcg_id}">
+                        <a class="component-theme w-fit px-3 py-1 mx-auto text-base hover:bg-[#4D7C0F] transition-colors" target="_blank" rel="noreferrer" href="https://www.tcgplayer.com/product/{buttons.data.tcg_id}">
                             To TCGPlayer 🔮
                         </a>
-                        <a class="component-theme w-fit px-3 py-1 mx-auto text-base hover:bg-[#185C9E] transition-colors" href="https://www.tcgplayer.com/product/{buttons.data.tcg_id}">
+                        <a class="component-theme w-fit px-3 py-1 mx-auto text-base hover:bg-[#185C9E] transition-colors" target="_blank" rel="noreferrer" href="https://www.cardmarket.com/en/Magic/Products/Search?searchString={prices.data.name.toLowerCase()}">
                             To CardMarket 🫘
                         </a>
-                        <a class="component-theme w-fit px-3 py-1 mx-auto text-base hover:bg-[#185C9E] transition-colors" href="https://www.tcgplayer.com/product/{buttons.data.tcg_id}">
+                        <a class="component-theme w-fit px-3 py-1 mx-auto text-base hover:bg-[#185C9E] transition-colors" target="_blank" rel="noreferrer" href="https://www.cardmarket.com/en/Magic/Products/Search?searchString={prices.data.name.toLowerCase()}">
                             To CardMarket 🫘
                         </a>
-                        <a class="component-theme w-fit px-3 py-1 mx-auto text-base hover:bg-[#EA580C] transition-colors" href="https://www.tcgplayer.com/product/{buttons.data.tcg_id}">
+                        <a class="component-theme w-fit px-3 py-1 mx-auto text-base hover:bg-[#EA580C] transition-colors" target="_blank" rel="noreferrer" href="https://www.cardhoarder.com/cards?data%5Bsearch%5D={prices.data.name.toLowerCase()}">
                             To CardHoarder 🤖
                         </a>
                     {/await}
