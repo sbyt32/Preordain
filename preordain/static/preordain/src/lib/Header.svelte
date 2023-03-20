@@ -1,6 +1,6 @@
 <script lang="ts">
   import AdminPanel from './header/AdminPanel.svelte';
-
+  import icon from "/favicon.ico"
   import HomeMenu from './header/HomePanel.svelte';
 
     import { push } from 'svelte-spa-router';
@@ -17,6 +17,7 @@
 <div class="bg-gray-500 w-full border-b-2 border-black/20 shadow-lg mb-2">
     <div class="flex flex-row gap-20 first:ml-20 last:mr-20 py-1">
 
+        {icon}
         <HomeMenu/>
 
         <div class="grow" id="Searchbar">

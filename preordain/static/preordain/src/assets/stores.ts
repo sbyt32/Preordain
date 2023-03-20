@@ -33,7 +33,7 @@ export function parsePercentage(percent:string) {
         emoji = "📉 "
         classes = "text-rose-500 text-right"
     }
-    return `<p class=${classes}>${emoji}${percent}</p>`
+    return `<p class=${classes}  style="font-variant-numeric: tabular-nums" >${emoji}${change}%</p>`
 }
 
 // Store
@@ -58,3 +58,17 @@ function setProjectTitle() {
 }
 
 export const projectTitle = setProjectTitle()
+
+// Change Popup status
+function updateModal() {
+    const store = writable(false)
+
+    return {
+        ...store,
+        toggle: () => store.update(n => !n),
+        show: () => store.set(true),
+        close: () => store.set(false)
+    }
+}
+
+export const showPopup = updateModal()

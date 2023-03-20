@@ -117,7 +117,7 @@ async def find_by_group(group: str, response: Response):
         """
 
         SELECT
-            DISTINCT ON (info.name, info.id) "name",
+            DISTINCT ON (info.name, info.id, info.set) "name",
             info.set,
             sets.set_full,
             info.id,
@@ -134,8 +134,7 @@ async def find_by_group(group: str, response: Response):
             (
                 SELECT
                     prices.date,
-                    prices.set,
-                    prices.id,
+                    prices.uri,
                     prices.usd,
                     prices.usd_foil,
                     prices.euro,
@@ -143,13 +142,14 @@ async def find_by_group(group: str, response: Response):
                     prices.tix
                 FROM
                     card_data as "prices"
+                WHERE prices.date = (SELECT MAX(date) as last_update from card_data)
             ) AS "prices"
-        ON prices.set = info.set
-        AND prices.id = info.id
+        ON prices.uri = info.uri
         WHERE %s = ANY (info.groups)
         ORDER BY
             info.name,
             info.id,
+            info.set,
             prices.date DESC
 
         """,
@@ -160,7 +160,8 @@ async def find_by_group(group: str, response: Response):
         """
         SELECT
             groups.group_name,
-            groups.description
+            groups.description,
+            (SELECT COUNT(*) AS QTY FROM card_info.info WHERE %s = ANY(groups))
         FROM card_info.groups AS groups
         WHERE %s = groups.group_name
     """,

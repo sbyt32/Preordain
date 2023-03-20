@@ -12,7 +12,7 @@
     projectTitle.set("Groups")
 </script>
 
-<div class="flex flex-row h-2/3">
+<div class="flex flex-row h-full">
 
     <div class="basis-2/12 shrink-0 component-theme">
         <div class="flex flex-col  h-full">

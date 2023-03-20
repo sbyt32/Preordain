@@ -5,30 +5,25 @@
     import Changes from '../lib/DailyChanges.svelte';
     import Table from '../lib/Table.svelte';
     import { projectTitle } from "../assets/stores";
+    import GroupSelectedContainer from "../lib/groups/GroupSelectedContainer.svelte";
 
-    let loaded = false
 
+    export let params = {group: ""}
 
-    export const params = {}
-
-    projectTitle.set("Groups")
+    projectTitle.set(`Group: ${params.group}`)
 </script>
 
+<!-- pb-6 because the top is already padded by 6 -->
+<h1 class="pb-6 text-2xl font-semibold text-center">
+    {params.group}
+</h1>
 
-{#if loaded}
-    <div class="grid grid-cols-4 grid-rows-4 h-2/3">
-        <Row>
-            <svelte:fragment slot="Component">
-                <CardDash col_span=3/>
-                <Changes col_span=1/>
-                <PriceGraph col_span=3/>
-                <!-- <Table col_span=3/> -->
-            </svelte:fragment>
-        </Row>
-        <!-- <Row>
-            <svelte:fragment slot="Component">
-                <PriceGraph col_span=3/>
-            </svelte:fragment>
-        </Row> -->
-    </div>
-{/if}
+    <Row>
+        <svelte:fragment slot="Component">
+            <CardDash col_span=3/>
+            <GroupSelectedContainer/>
+            <Changes col_span=1/>
+            <!-- <PriceGraph col_span=3/> -->
+            <Table col_span=3 group={params.group}/>
+        </svelte:fragment>
+    </Row>

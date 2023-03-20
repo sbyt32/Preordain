@@ -1,14 +1,19 @@
 <script lang="ts">
     export let params;
-    console.log(params);
 
     import {handleSubmit, untrackOldCard} from "../util/search"
     const priceHeaders = ["usd", "usd_foil", "euro", "euro_foil", "tix"]
-    import { parseCurrency, projectTitle } from "../assets/stores";
+    import { parseCurrency, projectTitle, showPopup } from "../assets/stores";
     import {trackNewCard} from "../util/search"
     import Error from "../lib/Error.svelte";
+    import { displayCardDashPopup } from "../assets/popup";
+    import { onDestroy } from "svelte";
 
     projectTitle.set(`Search: ${params.query}`)
+
+    onDestroy(() => {
+        showPopup.close()
+    })
 </script>
 
 
@@ -45,7 +50,9 @@
                     <tr class="text-left not-last:border-b-2 border-gray-700 py-3 hover:bg-gray-700">
 
                         <th scope="row" class="px-4 py-2 font-medium text-gray-900 dark:text-white text-left">
-                            {result.name}
+                            <button on:click={() => displayCardDashPopup(result)}>
+                                {result.name}
+                            </button>
                         </th>
 
                         <td class="px-6 py-2 white text-right">

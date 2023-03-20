@@ -1,14 +1,12 @@
 <script lang="ts">
-    export let col_span:number | string = 4
+    export let col_span:number | string = 5
     console.log(col_span);
 </script>
 
-<div class="row-span-4 col-span-4">
-    <span class="inline-grid grid-cols-4 w-full h-full gap-4">
+    <span class="inline-grid grid-cols-4 grid-rows-3 gap-4">
         <slot name="Component">
-            <p class="component-theme empty-space h-full">
+            <p class="component-theme empty-space col-span-1 row-span-1">
                 Place Component Here!
             </p>
         </slot>
     </span>
-</div>
