@@ -1,9 +1,9 @@
 <script lang="ts">
   import AdminPanel from './header/AdminPanel.svelte';
-  import icon from "/favicon.ico"
+  import icon from "/frank.png"
   import HomeMenu from './header/HomePanel.svelte';
 
-    import { push } from 'svelte-spa-router';
+import { push } from 'svelte-spa-router';
 
 
 
@@ -12,15 +12,17 @@
 }
 
 	$:searchQuery = ''
-    $:dropdown = false
 </script>
 <div class="bg-gray-500 w-full border-b-2 border-black/20 shadow-lg mb-2">
-    <div class="flex flex-row gap-20 first:ml-20 last:mr-20 py-1">
 
-        {icon}
+    <div class="flex flex-row gap-10 first:ml-20 last:mr-20 py-1">
+        <!-- svelte-ignore a11y-click-events-have-key-events -->
+        <img src={icon} alt="home" class="object-scale-down max-h-10 basis-2 flex-none cursor-pointer" on:click={() => push('/')}>
+
         <HomeMenu/>
 
         <div class="grow" id="Searchbar">
+
             <form class="items-center">
                 <label for="simple-search" class="sr-only">Search</label>
                 <div class="relative w-full">
@@ -29,7 +31,7 @@
                     </div>
                     <input
                         type="text"
-                        placeholder="Card lookup"
+                        placeholder="Card Lookup"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg
                             focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5
                             dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white

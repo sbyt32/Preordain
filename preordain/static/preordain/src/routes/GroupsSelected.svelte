@@ -6,6 +6,7 @@
     import Table from '../lib/Table.svelte';
     import { projectTitle } from "../assets/stores";
     import GroupSelectedContainer from "../lib/groups/GroupSelectedContainer.svelte";
+    import testThalia from '/test_thalia.jpg';
 
 
     export let params = {group: ""}
@@ -21,7 +22,7 @@
     <Row row_span={3} col_span={4}>
         <svelte:fragment slot="Component">
             <CardDash col_span=3 row_span={1}/>
-            <GroupSelectedContainer col_span={1} row_span={1}/>
+            <GroupSelectedContainer col_span={1} row_span={1} img={testThalia}/>
             <Changes/>
             <Table col_span={3} group={params.group} row_span={2}/>
         </svelte:fragment>

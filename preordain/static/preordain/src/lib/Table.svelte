@@ -13,8 +13,8 @@
 </script>
 
 <script lang="ts">
-    import { displayCardDashPopup } from "../assets/popup";
 
+    import { updateCardDash } from "../util/updateCardDashValue"
     import type { GetCard } from "../assets/responses";
     import { parseCurrency, CurrentCard } from "../assets/stores"
     import { database } from "../util/fetch_data"
@@ -55,11 +55,7 @@
         }
     }
 
-    function updateStore(newSetName: string, newID: string, newCardName: string) {
-        $CurrentCard.set_name = newSetName
-        $CurrentCard.id = newID
-        $CurrentCard.card = newCardName
-    }
+
 
 </script>
 
@@ -87,7 +83,7 @@
                     <tr class="not-last:border-b-2 border-gray-700 w-full table table-fixed">
                         {#each header as data_type}
                             {#if data_type === "Name"}
-                                <th scope="row" class="px-6 py-3 text-gray-900 dark:text-white text-left whitespace-preline">
+                                <th scope="row" class="px-6 py-3 text-gray-900 dark:text-white text-left whitespace-preline cursor-pointer hover:text-blue-400 transition-colors" on:click={() => updateCardDash(card_data)}>
                                     {card_data["Name"]}
                                 </th>
                             {:else}

@@ -40,3 +40,4 @@ dist-ssr
 # Images (for local stuff)
 img/
 preordain/static/preordain/src/lib/charts/test_data.js
+test_*.jpg

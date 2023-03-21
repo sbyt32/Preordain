@@ -1,10 +1,11 @@
 <script lang="ts">
     export let col_span = 1
     export let row_span = 1
+    export let img:string = "https://placekitten.com/g/500/125"
 </script>
 
 <div style="grid-column: span {col_span} / span {col_span}; grid-row: span {row_span} / span {row_span};" class="p-2 font-normal component-theme flex flex-col">
-    <img src="https://placekitten.com/g/500/125" class="object-scale-down self-center border rounded-xl border-indigo-600 shadow-amber-600/80 shadow-md" height="150px" width="500px" alt="sample">
+    <img src={img} class="object-cover object-top-right self-center border rounded-xl border-indigo-600 shadow-amber-600/80 shadow-md h-20 w-96 select-none" alt="sample">
 
     <br>
     <!-- Information -->
