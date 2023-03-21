@@ -119,7 +119,7 @@ async def delete_group(response: Response, group: GroupInfoGroupName):
     response.status_code = status.HTTP_200_OK
     return SuccessfulRequest(
         status=response.status_code,
-        info={"Message": f"Removed group: {group.group_name}"},
+        info={"message": f"Removed group: {group.group_name}"},
         data=group,
     )
 

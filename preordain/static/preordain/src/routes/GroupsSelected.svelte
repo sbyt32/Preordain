@@ -18,12 +18,11 @@
     {params.group}
 </h1>
 
-    <Row>
+    <Row row_span={3} col_span={4}>
         <svelte:fragment slot="Component">
-            <CardDash col_span=3/>
-            <GroupSelectedContainer/>
-            <Changes col_span=1/>
-            <!-- <PriceGraph col_span=3/> -->
-            <Table col_span=3 group={params.group}/>
+            <CardDash col_span=3 row_span={1}/>
+            <GroupSelectedContainer col_span={1} row_span={1}/>
+            <Changes/>
+            <Table col_span={3} group={params.group} row_span={2}/>
         </svelte:fragment>
     </Row>

@@ -5,7 +5,7 @@ import SearchPage from "./routes/SearchPage.svelte";
 import GroupsSelected from "./routes/GroupsSelected.svelte";
 export const routes = {
     '/': Home,
-    '/search/:query': SearchPage,
+    '/search/:query?': SearchPage,
     '/inventory/': Inventory,
     '/groups/': Groups,
     '/groups/:group?': GroupsSelected,

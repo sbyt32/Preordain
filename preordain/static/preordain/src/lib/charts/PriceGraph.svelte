@@ -6,6 +6,7 @@
     import { database } from "../../util/fetch_data";
     import { CurrentCard } from "../../assets/stores";
     export let col_span:number | string = 3
+    export let row_span:number | string = 2
 
     $: options = {
         responsive: true,
@@ -66,7 +67,7 @@
 
 {#key CurrentCard}
     {#await db_data then data}
-        <div style="grid-column: span {col_span} / span {col_span}" class="shadow-2xl w-full row-span-2 component-theme">
+        <div style="grid-column: span {col_span} / span {col_span}; grid-row: span {row_span} / span {row_span};" class="shadow-2xl component-theme min-h-0">
             <Line
             data={parsePriceData(data)}
             options={options}

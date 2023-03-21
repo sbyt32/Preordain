@@ -9,7 +9,7 @@
         euro_foil: number
         tix: number
     }
-    export let header = ["Name","Set","Collector No.","USD","USD (Foil)","Euro","Euro (Foil)","TIX"]
+    export let header = ["Name","Set","USD","USD (Foil)","Euro","Euro (Foil)","TIX"]
 </script>
 
 <script lang="ts">
@@ -19,7 +19,8 @@
     import { parseCurrency, CurrentCard } from "../assets/stores"
     import { database } from "../util/fetch_data"
     import Error from "./Error.svelte"
-    // export let col_span:number | string = 4
+    export let col_span:number | string = 3
+    export let row_span:number | string = 2
     export let group: string
     const connectURL = import.meta.env.VITE_CONNECTION;
 
@@ -32,7 +33,7 @@
             let response_data = {
                 "Name": card_info.name,
                 "_set_short": card_info.set,
-                "Set": `${card_info.set_full}<br><i class="ss text-xl ss-${card_info.set}"></i>`,
+                "Set": `<i class="ss ml-4 text-2xl ss-${card_info.set} ss-rare"></i>`,
                 "Collector No.": card_info.id,
                 "USD": card_info.prices.usd,
                 "USD (Foil)": card_info.prices.usd_foil,
@@ -46,15 +47,11 @@
     }
 
     function parseRow(value: string | number, header: string) {
-        if (header === "Name") {
-            return
-        } else if (header === "_set_short") {
+        if (header === "Name" || header === "_set_short") {
             return
         }
         else {
-            return `<td class="" style="font-variant-numeric: tabular-nums">
-                        ${parseCurrency(value, header)}
-            </td>`
+            return parseCurrency(value, header)
         }
     }
 
@@ -67,68 +64,44 @@
 </script>
 
 {#await database(`${connectURL}/card/${group}`) then data}
-<div
-    class="shadow-2xl component-theme row-span-2 col-span-3">
+<div style="grid-column: span {col_span} / span {col_span}; grid-row: span {row_span} / span {row_span}; ">
 
 
-    <table class="text-left w-full">
-        <thead class=" border-b-gray-700 flex w-full border-b-4 ">
-            <tr class="text-xs w-full uppercase text-gray-700 dark:text-gray-400 flex mb-4">
+    <table class="bg-gray-50 dark:bg-gray-700 h-full component-theme flex flex-col" >
+
+        <thead class="border-b-2 border-black/50 table table-fixed" style="width: calc(100% - .75em);">
+
+            <tr class="text-xs uppercase text-gray-700 dark:text-gray-400 w-full">
                 {#each header as titles}
-                    <th scope="col" class="first:text-left text-right p-4 grow">
+                    <th scope="col" class="px-6 py-3 first:text-left text-right mx-0">
                         {titles}
                     </th>
                 {/each}
             </tr>
+
         </thead>
 
 
+            <tbody class="bg-white text-gray-200 dark:bg-gray-800 overflow-y-auto flex-auto basis-0 font-light scrollbar">
+                {#each ParseData(data) as card_data}
+                    <tr class="not-last:border-b-2 border-gray-700 w-full table table-fixed">
+                        {#each header as data_type}
+                            {#if data_type === "Name"}
+                                <th scope="row" class="px-6 py-3 text-gray-900 dark:text-white text-left whitespace-preline">
+                                    {card_data["Name"]}
+                                </th>
+                            {:else}
+                            <td class="px-6 py-2 text-right whitespace-preline tabular-nums">
+                                {@html parseRow(card_data[data_type], data_type)}
+                            </td>
+                            {/if}
+                        {/each}
+                    </tr>
+                {/each}
+            </tbody>
 
-        <tbody class="bg-white text-gray-200 dark:bg-gray-800 rounded-lg scrollbar">
-            {#each ParseData(data) as card_data}
-                <tr class=" dark:border-gray-700 border-b text-sm">
-                    {#each header as data_type}
-                        {#if data_type === "Name"}
-                            <th scope="row" class="text-ellipsis">
-                                {card_data["Name"]}
-                            </th>
-                        {:else}
-                            {@html parseRow(card_data[data_type], data_type)}
-                        {/if}
-                    {/each}
-                </tr>
-            {/each}
-        </tbody>
 
     </table>
-    <!-- <div class="row-span-2 col-span-2 w-full bg-gray-700">
-        <table class="table-fixed ">
-            <thead class=" w-full">
-                <tr>
-                    {#each header as titles}
-                    <th>
-                        {titles}
-                    </th>
-                    {/each}
-                </tr>
-            </thead>
-            <tbody>
-                {#each ParseData(data) as card_data}
-                <tr class=" dark:border-gray-700 border-b text-sm">
-                    {#each header as data_type}
-                        {#if data_type === "Name"}
-                            <th scope="row" class="text-ellipsis">
-                                {card_data["Name"]}
-                            </th>
-                        {:else}
-                            {@html parseRow(card_data[data_type], data_type)}
-                        {/if}
-                    {/each}
-                </tr>
-            {/each}
-            </tbody>
-        </table>
-    </div> -->
 
 </div>
 

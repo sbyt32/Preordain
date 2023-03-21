@@ -4,9 +4,13 @@
 </script>
 <script lang="ts">
     const connectURL = import.meta.env.VITE_CONNECTION;
-    import { parseCurrency, CurrentCard, parsePercentage } from "../assets/stores"
+    import { parseCurrency, CurrentCard } from "../assets/stores"
+    import { parsePercentage } from "../util/parseValues"
     import { database } from "../util/fetch_data";
+
     export let col_span:number | string = 3
+    export let row_span:number | string = 1
+
 
     $: updateData = database(`${connectURL}/price/${$CurrentCard.set_name}/${$CurrentCard.id}?max=1`)
     $: buyButtons = database(`${connectURL}/card/buylinks/${$CurrentCard.set_name}/${$CurrentCard.id}`)
@@ -14,7 +18,7 @@
 </script>
 {#key CurrentCard}
     {#await updateData then prices}
-    <span style="grid-column: span {col_span} / span {col_span}" class="shadow-2xl">
+    <div style="grid-column: span {col_span} / span {col_span}; grid-row: span {row_span} / span {row_span};" class="shadow-2xl">
         <div class="component-theme shadow-lg h-full">
             <div class="inline-grid grid-rows-4 grid-cols-6 w-full" style="{col_span >= 3? 'grid-template-columns: repeat(6, minmax(0, 1fr));': 'grid-template-columns: repeat(5, minmax(0, 1fr));'}">
                 {#if col_span>=3}
@@ -66,6 +70,6 @@
                 </div>
             </div>
         </div>
-    </span>
+    </div>
     {/await}
 {/key}

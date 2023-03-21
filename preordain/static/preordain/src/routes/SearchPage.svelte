@@ -24,7 +24,7 @@
         {results.length} {results.length == 1 ? "result" : "results"} for "{params.query}"
     </h1>
 
-    <table class="table-auto  bg-gray-50 dark:bg-gray-700 outline outline-gray-700 rounded-lg">
+    <table class="table-auto bg-gray-50 dark:bg-gray-700 outline outline-gray-700 rounded-lg">
 
             <thead class="border-b-2 border-black/50">
                 <tr class="text-xs uppercase text-gray-700  dark:text-gray-400">
@@ -69,12 +69,12 @@
                         {/each}
 
                         <td class="px-2 py-2 whitespace-preline text-center border-l border-gray-700">
-                            <button class="bg-gray-600 border-black border px-4 rounded-md enabled:hover:bg-indigo-600 transition-colors disabled:opacity-50"
+                            <button class="bg-gray-600 border-black border px-4 rounded-md preordain-button"
                             disabled='{result["scrape_sales"]}'
                             on:click={() => trackNewCard(result)}>
                                 Track
                             </button>
-                            <button class="bg-gray-600 border-black border px-4 rounded-md enabled:hover:bg-red-600 transition-colors disabled:opacity-50"
+                            <button class="bg-gray-600 border-black border px-4 rounded-md preordain-button delete"
                             disabled='{!result["scrape_sales"]}'
                             on:click={() => untrackOldCard(result)}>
                                 Untrack

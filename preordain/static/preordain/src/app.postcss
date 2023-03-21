@@ -40,12 +40,16 @@ main {
     button.preordain-button {
         @apply bg-gray-600 border-black border px-4 rounded-md enabled:hover:bg-indigo-600 transition-colors disabled:opacity-50
     }
+    button.preordain-button.delete {
+        @apply enabled:hover:bg-red-600 transition-colors disabled:opacity-50
+    }
 }
 
 @layer utilities {
     .scrollbar::-webkit-scrollbar {
         width: .75rem;
-        border-color: black;
+        border-color: rgb(137, 18, 18);
+
     }
     .scrollbar::-webkit-scrollbar-track {
         @apply bg-gradient-to-b from-gray-700 to-gray-500
@@ -61,6 +65,8 @@ main {
                 from-indigo-600/80
                 via-indigo-500/80
                 to-purple-600/80
+                border-l-2
+                border-red-600
     } */
     .scrollbar::-webkit-scrollbar-thumb {
         @apply

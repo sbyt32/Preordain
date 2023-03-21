@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, Response, status
 from preordain.utils.connections import connect_db, send_response
-from preordain.inventory.models import ModifyInventory, InventoryResponse
+from preordain.inventory.models import InventoryResponse
+from preordain.inventory.schema import TableInventory
 from preordain.models import BaseResponse
 from preordain.exceptions import NotFound
 import arrow
@@ -23,7 +24,7 @@ router = APIRouter()
 )
 
 # Return your entire inventory
-async def get_inventory(response: Response):
+def get_inventory(response: Response):
     conn, cur = connect_db()
 
     cur.execute(
@@ -37,22 +38,22 @@ async def get_inventory(response: Response):
             (AVG(avg_price.total_qty) / SUM(inventory.qty))::numeric(10,2) as "avg_cost"
         FROM inventory as inventory
         JOIN card_info.info as info
-            ON info.tcg_id = inventory.tcg_id
+            ON info.uri = inventory.uri
         JOIN card_info.sets as set
             ON info.set = set.set
         JOIN (
             SELECT
-                inventory.tcg_id,
+                inventory.uri,
                 SUM (inventory.qty * inventory.buy_price)::numeric AS total_qty,
                 inventory.card_condition,
                 inventory.card_variant
             FROM inventory
             GROUP BY
-                inventory.tcg_id,
+                inventory.uri,
                 inventory.card_condition,
                 inventory.card_variant
         ) AS avg_price
-            ON avg_price.tcg_id = inventory.tcg_id
+            ON avg_price.uri = inventory.uri
             AND avg_price.card_condition = inventory.card_condition
             AND avg_price.card_variant = inventory.card_variant
         GROUP BY
@@ -66,13 +67,12 @@ async def get_inventory(response: Response):
     conn.close()
     if inventory:
         response.status_code = status.HTTP_200_OK
-        return InventoryResponse(status=response.status_code, data=inventory).dict()
+        return InventoryResponse(status=response.status_code, data=inventory)
     raise NotFound
 
 
-# ! Disabled for now
-@router.post("/add")
-def add_to_inventory(inventory: ModifyInventory):
+@router.post("/add/", response_model=InventoryResponse)
+async def add_to_inventory(inventory: TableInventory, response: Response):
     # Could we do this with a single "CASE WHERE..." statement?
     # Decide if update or add new
     conn, cur = connect_db()
@@ -121,14 +121,31 @@ def add_to_inventory(inventory: ModifyInventory):
             inventory.dict(),
         )
 
-    inventory_check = cur.fetchone()
     conn.commit()
-    return inventory_check
+    cur.execute(
+        """
+        SELECT
+            EXISTS (
+                SELECT 1
+                FROM inventory
+                WHERE uri           = %(uri)s
+                AND card_condition  = %(card_condition)s
+                AND card_variant    = %(card_variant)s
+                AND buy_price       = %(buy_price)s
+                AND add_date        = CURRENT_DATE
+            )
+        """,
+        inventory.dict(),
+    )
+
+    if w := cur.fetchone()["exists"]:
+        response.status_code = status.HTTP_200_OK
+        return InventoryResponse(status=response.status_code, data=w)
 
 
 # Is Delete the correct? Probably.
-@router.delete("/delete")
-def remove_from_inventory(inventory: ModifyInventory):
+@router.delete("/delete/")
+def remove_from_inventory(inventory: TableInventory):
     conn, cur = connect_db()
     cur.execute(
         """

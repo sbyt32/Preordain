@@ -1,7 +1,5 @@
 from preordain.models import CardConditions, CardVariants, BaseResponse, RespStrings
 from pydantic import BaseModel
-from typing import Optional
-import datetime
 
 
 class InventoryData(BaseModel):
@@ -14,16 +12,6 @@ class InventoryData(BaseModel):
 
     class Config:
         use_enum_values = True
-
-
-# ? inventory/add | inventory/delete
-class ModifyInventory(BaseModel):
-    uri: str
-    qty: int
-    buy_price: float
-    card_condition: CardConditions
-    card_variant: CardVariants
-    add_date: Optional[datetime.date]
 
 
 class InventoryResponse(BaseResponse):

@@ -165,7 +165,10 @@ async def find_by_group(group: str, response: Response):
         FROM card_info.groups AS groups
         WHERE %s = groups.group_name
     """,
-        (group,),
+        (
+            group,
+            group,
+        ),
     )
     info = cur.fetchone()
     conn.close()

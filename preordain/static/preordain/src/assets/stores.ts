@@ -1,4 +1,6 @@
+import type { ComponentType } from "svelte"
 import { readable, writable, get } from "svelte/store"
+import CardDash from "../lib/CardDash.svelte"
 export function parseCurrency(price:number | string, currency:string) {
     // Checks
     if (typeof price == "string") {
@@ -18,23 +20,6 @@ export function parseCurrency(price:number | string, currency:string) {
     }
 }
 
-// Check percentage
-export function parsePercentage(percent:string) {
-    if (percent == null) {
-        return ""
-    }
-    let change = parseFloat(percent)
-    let classes = "text-white text-right"
-    let emoji = "🤷‍♂️"
-    if (change > 0) {
-        emoji = "📈 "
-        classes = "text-emerald-500 text-right"
-    } else if (change < 0) {
-        emoji = "📉 "
-        classes = "text-rose-500 text-right"
-    }
-    return `<p class=${classes}  style="font-variant-numeric: tabular-nums" >${emoji}${change}%</p>`
-}
 
 // Store
 export const CurrentCard = writable({set_name: "vow", id: "38", card: "Thalia, Guardian of Thraben"})
@@ -62,12 +47,17 @@ export const projectTitle = setProjectTitle()
 // Change Popup status
 function updateModal() {
     const store = writable(false)
+    const component = writable(CardDash)
 
     return {
         ...store,
-        toggle: () => store.update(n => !n),
-        show: () => store.set(true),
-        close: () => store.set(false)
+        toggle: () => store.update(n => !n) ,
+        show: (value:ComponentType) => {
+            store.set(true)
+            component.set(value)
+        },
+        close: () => store.set(false),
+
     }
 }
 

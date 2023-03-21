@@ -2,6 +2,9 @@
 	import { fly } from 'svelte/transition';
     import { showPopup } from './stores';
     import CardDash from '../lib/CardDash.svelte';
+    import type { ComponentType } from 'svelte';
+    export let popupComponent: ComponentType = CardDash;
+
 </script>
 
 {#if $showPopup}
@@ -9,7 +12,7 @@
     <div class="relative  h-full flex flex-row-reverse">
 
         <div class="text-center font-light w-1/2">
-            <CardDash/>
+            <svelte:component this={popupComponent}/>
         </div>
         <button on:click={() => showPopup.close()} class="preordain-button h-1/4 rounded-none border-0 border-transparent">
             Close

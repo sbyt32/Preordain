@@ -1,8 +1,9 @@
 <script lang="ts">
 import { database } from "../util/fetch_data"
-import { parsePercentage } from "../assets/stores";
+import { parsePercentage } from "../util/parseValues";
 import { CurrentCard } from "../assets/stores";
-export let col_span: string | number = 1
+export let col_span:number | string = 1
+export let row_span:number | string = 2
 
 
 let selectedClasses = "inline-block p-4 text-blue-600 bg-gray-100 rounded-t-lg active dark:bg-gray-800 dark:text-blue-500"
@@ -20,7 +21,7 @@ const connectURL = import.meta.env.VITE_CONNECTION;
 
 </script>
 
-<span style="grid-column: span {col_span} / span {col_span}" class="shadow-2xl h-full component-theme row-span-2">
+<span style="grid-column: span {col_span} / span {col_span}; grid-row: span {row_span} / span {row_span};" class="shadow-2xl min-h-0 component-theme">
 
     <div class="text-center text-base font-medium border-b-4 border-b-gray-700 py-2">
         Top Gains / Losses

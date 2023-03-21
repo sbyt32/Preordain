@@ -13,7 +13,7 @@ export interface PriceData {
     tix: number
 }
 
-interface MultipleCardData {
+export interface MultipleCardData {
     name: string,
     set: string,
     set_full: string,
@@ -27,16 +27,7 @@ export interface GetCard extends BaseResponse {
     data: [MultipleCardData]
 }
 
-export interface GetCardGroup extends BaseResponse {
-    resp: 'card_info',
-    info: {
-        group_name: string,
-        description: string,
-        cards_in_group: number
-    },
-    data: [MultipleCardData]
 
-}
 
 export interface SearchQuery extends BaseResponse {
     resp: 'search_query',

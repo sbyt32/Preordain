@@ -2,8 +2,6 @@ from pydantic import BaseModel
 from preordain.models import BaseResponse, RespStrings
 from preordain.groups.schema import GroupInfoTable
 
-# * https://fastapi.tiangolo.com/tutorial/body/#__tabbed_2_1
-
 
 # This one is for request format.
 class CardInGroupInfo(BaseModel):
@@ -13,9 +11,6 @@ class CardInGroupInfo(BaseModel):
 
 class GroupInformation(GroupInfoTable):
     cards_in_group: int
-
-
-# class
 
 
 class GroupResponse(BaseResponse):
@@ -40,3 +35,17 @@ class GroupResponse(BaseResponse):
 
 class SuccessfulRequest(BaseResponse):
     resp = RespStrings.group_info
+    info = {"message": ""}
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "resp": "group_info",
+                "status": 201,
+                "info": {"message": "Added / Removed group: string"},
+                "data": {
+                    "group": "dnt",
+                    "description": 'This is part of the deck "Death and Taxes"',
+                },
+            }
+        }
