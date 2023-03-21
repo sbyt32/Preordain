@@ -1,8 +1,10 @@
 <script lang="ts">
     import GroupContainer from '../lib/groups/GroupContainer.svelte';
 
-    import { connectURL, projectTitle } from "../assets/stores";
+    import { connectURL, projectTitle, showPopup } from "../assets/stores";
     import { database } from "../util/fetch_data";
+    import PopupModifyGroup from '../lib/groups/PopupModifyGroups.svelte';
+    import { onDestroy } from 'svelte';
     let filterInUse = false
 
     $: groupInfo = database(`${$connectURL}/groups/?in_use=${filterInUse}`)
@@ -10,6 +12,10 @@
     export const params = {}
 
     projectTitle.set("Groups")
+
+    onDestroy(() => {
+        showPopup.close()
+    })
 </script>
 
 <div class="flex flex-row h-full">
@@ -18,7 +24,7 @@
         <div class="flex flex-col  h-full">
 
             <div class="text-center text-2xl font-semibold border-b-2 border-gray-700 w-full pb-2 self-center basis-3 py-4">
-                Search Stuff
+                Search Filters
             </div>
 
             <div class="inline-flex grow">
@@ -36,8 +42,11 @@
             </div>
 
             <div class="w-full text-center border-t-2 border-gray-700 py-4">
-                <button class="preordain-button">
+                <button class="preordain-button" on:click={() => showPopup.show(PopupModifyGroup)}>
                     Add Group
+                </button>
+                <button class="preordain-button delete" on:click={() => showPopup.show(PopupModifyGroup)}>
+                    Delete Group
                 </button>
             </div>
 
@@ -51,7 +60,7 @@
                     <GroupContainer groupData={groupData}/>
                 {/each}
             {/await}
-            {#each [1,2,3,4,5,6,7] as _}
+            {#each [1,2,] as _}
                 <GroupContainer/>
             {/each}
             <GroupContainer groupData={

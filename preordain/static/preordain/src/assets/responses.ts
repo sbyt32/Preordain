@@ -24,10 +24,8 @@ export interface MultipleCardData {
 
 export interface GetCard extends BaseResponse {
     resp: 'card_info'
-    data: [MultipleCardData]
+    data: MultipleCardData[]
 }
-
-
 
 export interface SearchQuery extends BaseResponse {
     resp: 'search_query',

@@ -46,17 +46,15 @@ export const projectTitle = setProjectTitle()
 
 // Change Popup status
 function updateModal() {
-    const store = writable(false)
-    const component = writable(CardDash)
+    const store = writable({display: false, component: CardDash})
 
     return {
         ...store,
-        toggle: () => store.update(n => !n) ,
+        // toggle: () => store.update(n => !n),
         show: (value:ComponentType) => {
-            store.set(true)
-            component.set(value)
+            store.set({display: true, component: value})
         },
-        close: () => store.set(false),
+        close: () => store.set({display: false, component: CardDash}),
 
     }
 }

@@ -364,3 +364,76 @@ above but get sale cnt
         ORDER BY date DESC
         LIMIT %s
 ```
+
+
+
+""" 2500ms query. Get d/d changes of cards in group.
+EXPLAIN ANALYZE
+        SELECT
+            DISTINCT ON (info.name, info.id, info.set) "name",
+            info.set,
+            sets.set_full,
+            info.id,
+            prices.date "last_updated",
+            prices.usd,
+            prices.usd_foil,
+            prices.euro,
+            prices.euro_foil,
+            prices.tix,
+            usd_change,
+            usd_foil_change,
+            euro_change,
+            euro_foil_change,
+            tix_change
+        FROM card_info.info AS "info"
+        JOIN card_info.sets AS "sets"
+            ON info.set = sets.set
+        JOIN
+            (
+                SELECT
+                    prices.date,
+                    prices.uri,
+                    prices.usd,
+                    prices.usd_foil,
+                    prices.euro,
+                    prices.euro_foil,
+                    prices.tix,
+                    ROUND ( 100.0 *
+                        (usd::numeric - lag(usd, 1) over (partition by uri order by date(date))::numeric)
+                        /
+                        lag(usd, 1) over (partition by uri order by date(date))::numeric
+                    , 2) AS "usd_change",
+                    ROUND ( 100.0 *
+                        (usd_foil::numeric - lag(usd_foil, 1) over (partition by uri order by date(date))::numeric)
+                        /
+                        lag(usd_foil, 1) over (partition by uri order by date(date))::numeric
+                    , 2) AS "usd_foil_change",
+                    ROUND ( 100.0 *
+                        (euro::numeric - lag(euro, 1) over (partition by uri order by date(date))::numeric)
+                        /
+                        lag(euro, 1) over (partition by uri order by date(date))::numeric
+                    , 2) AS "euro_change",
+                    ROUND ( 100.0 *
+                        (euro_foil::numeric - lag(euro_foil, 1) over (partition by uri order by date(date))::numeric)
+                        /
+                        lag(euro_foil, 1) over (partition by uri order by date(date))::numeric
+                    , 2) AS "euro_foil_change",
+                    ROUND ( 100.0 *
+                        (tix::numeric - lag(tix, 1) over (partition by uri order by date(date))::numeric)
+                        /
+                        lag(tix, 1) over (partition by uri order by date(date))::numeric
+                    , 2) AS "tix_change"
+                FROM
+                    card_data as "prices"
+                WHERE prices.date = (SELECT MAX(date) as last_update from card_data)
+                OR date = (SELECT lag(date, -1) over (order by date desc) from card_data GROUP BY date LIMIT 1)
+            ) AS "prices"
+        ON prices.uri = info.uri
+        WHERE 'dnt' = ANY (info.groups)
+        ORDER BY
+            info.name,
+            info.id,
+            info.set,
+            prices.date DESC
+;
+"""

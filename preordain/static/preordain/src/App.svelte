@@ -5,6 +5,7 @@
     import { projectTitle } from './assets/stores';
     import Popup from './assets/Popup.svelte';
 
+
 </script>
 <svelte:head>
     <title>{$projectTitle}</title>
