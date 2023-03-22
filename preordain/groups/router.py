@@ -13,14 +13,7 @@ from preordain.utils.connections import connect_db
 import logging
 from typing import Annotated
 
-user_groups = APIRouter(
-    responses={
-        200: {
-            "model": GroupResponse,
-            "description": "Return the groups that the data is associated with.",
-        }
-    }
-)
+user_groups = APIRouter()
 admin_groups = APIRouter()
 log = logging.getLogger()
 
@@ -124,7 +117,27 @@ async def delete_group(response: Response, group: GroupInfoGroupName):
     )
 
 
-@user_groups.post("/add/card/", response_model=SuccessfulRequest)
+@user_groups.post(
+    "/add/card/",
+    response_model=SuccessfulRequest,
+    responses={
+        201: {
+            "model": SuccessfulRequest,
+            "description": "Successfully Added to Group",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "resp": "group_info",
+                        "status": 201,
+                        "info": {
+                            "message": "Successfully added card to Death and Taxes"
+                        },
+                    }
+                }
+            },
+        }
+    },
+)
 async def add_card_to_groups(card_group: CardInGroupInfo, response: Response):
     conn, cur = connect_db()
     card_data = card_group.dict()

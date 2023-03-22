@@ -27,21 +27,21 @@
                 alt="{prices.data.name} from {prices.data.set_full}">
                 {/if}
 
-                <div class="col-span-5 text-center text-white">
+                <div class="col-span-5 text-center text-gray-200">
                     <span>
-                        <p>{prices.data.name}</p>
+                        <p class="font-semibold">{prices.data.name}</p>
                         <p>{prices.data.set_full} <i class="ss text-2xl ss-{prices.data.set}"></i></p>
                     </span>
                 </div>
 
                 {#each headers as header}
-                    <div class="col-span-1 text-center text-white">
+                    <div class="col-span-1 text-center text-gray-200">
                         <span class="col-span-1">{header}</span>
                     </div>
                 {/each}
 
                 {#each price_values as price}
-                    <div class="col-span-1 text-center text-white text-lg">
+                    <div class="col-span-1 text-center text-gray-200 text-lg">
                         <p style="font-variant-numeric: tabular-nums">
                             {parseCurrency(prices.data.prices[0][price], price)}
                         </p>

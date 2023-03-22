@@ -15,9 +15,9 @@
 </script>
 
 <!-- pb-6 because the top is already padded by 6 -->
-<h1 class="pb-6 text-2xl font-semibold text-center">
+<!-- <h1 class="pb-6 text-2xl font-semibold text-center">
     {params.group}
-</h1>
+</h1> -->
 
     <Row row_span={3} col_span={4}>
         <svelte:fragment slot="Component">
