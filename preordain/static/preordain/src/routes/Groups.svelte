@@ -21,7 +21,7 @@
 <div class="flex flex-row h-full">
 
     <div class="basis-2/12 shrink-0 component-theme">
-        <div class="flex flex-col  h-full">
+        <div class="flex flex-col h-full">
 
             <div class="text-center text-2xl font-semibold border-b-2 border-gray-700 w-full pb-2 self-center basis-3 py-4">
                 Search Filters

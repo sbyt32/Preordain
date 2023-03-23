@@ -8,10 +8,10 @@
     projectTitle.set("Home")
 </script>
 
-    <Row row_span={3} col_span={4}>
-        <svelte:fragment slot="Component">
-            <CardDash col_span={3} row_span={1}/>
-            <Changes/>
-            <PriceGraph col_span={3} row_span={2}/>
-        </svelte:fragment>
-    </Row>
+<Row row_span={3} col_span={4}>
+    <svelte:fragment slot="Component">
+        <CardDash col_span={3} row_span={1}/>
+        <Changes/>
+        <PriceGraph col_span={3} row_span={2}/>
+    </svelte:fragment>
+</Row>

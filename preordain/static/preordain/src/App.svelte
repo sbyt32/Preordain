@@ -14,7 +14,7 @@
 
 <main class="h-screen max-h-screen">
     <Header/>
-    <div class="container mx-auto pt-6 py-4 h-screen">
+    <div class="container mx-auto pt-6 py-4 h-full">
         <Router {routes}/>
     </div>
 

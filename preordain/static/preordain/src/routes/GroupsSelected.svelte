@@ -5,8 +5,9 @@
     import Changes from '../lib/DailyChanges.svelte';
     import Table from '../lib/Table.svelte';
     import { projectTitle } from "../assets/stores";
-    import GroupSelectedContainer from "../lib/groups/GroupSelectedContainer.svelte";
+    import GroupSelectedContainer from "../lib/groups/selected/GroupSelectedContainer.svelte";
     import testThalia from '/test_thalia.jpg';
+    import GroupSelectedBanner from "../lib/groups/selected/GroupSelectedBanner.svelte";
 
 
     export let params = {group: ""}
@@ -19,11 +20,17 @@
     {params.group}
 </h1> -->
 
-    <Row row_span={3} col_span={4}>
+
+    <Row row_span={4} col_span={4}>
         <svelte:fragment slot="Component">
-            <CardDash col_span=3 row_span={1}/>
-            <GroupSelectedContainer col_span={1} row_span={1} img={testThalia}/>
-            <Changes/>
+            <GroupSelectedBanner img={testThalia} groupName={params.group}/>
+
+            <CardDash col_span={3} row_span={1}/>
+
+            <GroupSelectedContainer col_span={1} row_span={1}/>
             <Table col_span={3} group={params.group} row_span={2}/>
+
+            <Changes row_span={2}/>
+
         </svelte:fragment>
     </Row>

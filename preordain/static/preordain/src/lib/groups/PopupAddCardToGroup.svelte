@@ -1,6 +1,6 @@
 <script lang="ts">
     import { connectURL } from "../../assets/stores";
-    import GroupSelectedContainer from "./GroupSelectedContainer.svelte";
+    import GroupSelectedContainer from "./selected/GroupSelectedContainer.svelte";
     import type { PostGroupsNew } from "./interfaces";
 
 
@@ -30,7 +30,7 @@
 </script>
 
 <div class="h-full flex flex-row-reverse">
-    <div class=" component-theme container basis-1/2 py-2 px-2 flex flex-col gap-3">
+    <div class="component-theme container basis-1/2 py-2 px-2 flex flex-col gap-3">
         <h1>Add a group</h1>
         <input type="text" placeholder="Group Name" class="p-2" bind:value={params.group_name}>
         <input type="text" placeholder="Short Description..." class="px-2 py-3" bind:value={params.description}>

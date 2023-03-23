@@ -10,6 +10,7 @@
 
     $: options = {
         responsive: true,
+        maintainAspectRatio: false,
         color: "#ffffff",
         plugins: {
             tooltip: {
@@ -67,7 +68,7 @@
 
 {#key CurrentCard}
     {#await db_data then data}
-        <div style="grid-column: span {col_span} / span {col_span}; grid-row: span {row_span} / span {row_span};" class="shadow-2xl component-theme min-h-0">
+        <div style="grid-column: span {col_span} / span {col_span}; grid-row: span {row_span} / span {row_span};" class="shadow-2xl component-theme min-h-0 w-full">
             <Line
             data={parsePriceData(data)}
             options={options}
