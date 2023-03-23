@@ -52,8 +52,8 @@ async def add_card_to_track(response: Response, card: CardInfoModel):
 
         return SuccessfulRequest(
             status=response.status_code,
-            info={"Successfully stopped tracking "},
-            data=data,
+            info={"message": "Successfully stopped tracking"},
+            data=card_dict,
         )
 
 
