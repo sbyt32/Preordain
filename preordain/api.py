@@ -2,7 +2,6 @@ from fastapi import Depends, APIRouter
 from preordain.dependencies import select_token, write_token
 from preordain.models import BaseError, RespStrings
 from preordain.exceptions import RootException
-from preordain.groups.router import admin_groups as groups_admin_router
 from preordain.groups.router import user_groups as groups_user_router
 from preordain.price.router import price_router
 from preordain.price.models import PriceDataMultiple, PriceDataSingle, PriceChange
@@ -57,7 +56,7 @@ api_router.include_router(
     responses={
         200: {
             "model": CardInformation,
-            "description": "Return the groups that the data is associated with.",
+            "description": "Successful Request",
         }
     },
 )

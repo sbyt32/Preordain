@@ -1,6 +1,7 @@
-from preordain.utils.connections import connect_db
 from fastapi import APIRouter, Response, status
-from preordain.information.utils import parse_data_for_response
+
+from preordain.utils.connections import connect_db
+from preordain.utils.parsers import parse_data_for_response
 from preordain.information.models import CardInformation, CardPurchaseLink
 from preordain.exceptions import NotFound
 from preordain.utils.find_missing import get_card_from_set_id
@@ -61,77 +62,6 @@ async def search_by_set_collector_num(set: str, col_num: str, response: Response
         return CardInformation(
             status=response.status_code, data=parse_data_for_response(data)
         )
-    raise NotFound
-
-
-@user_router.get("/{group}", description="Filter for cards by their groups.")
-async def find_by_group(group: str, response: Response):
-    conn, cur = connect_db()
-    cur.execute(
-        """
-
-        SELECT
-            DISTINCT ON (info.name, info.id, info.set) "name",
-            info.set,
-            sets.set_full,
-            info.id,
-            prices.date AS "date",
-            prices.usd,
-            prices.usd_foil,
-            prices.euro,
-            prices.euro_foil,
-            prices.tix
-        FROM card_info.info AS "info"
-        JOIN card_info.sets AS "sets"
-            ON info.set = sets.set
-        JOIN
-            (
-                SELECT
-                    prices.date,
-                    prices.uri,
-                    prices.usd,
-                    prices.usd_foil,
-                    prices.euro,
-                    prices.euro_foil,
-                    prices.tix
-                FROM
-                    card_data as "prices"
-                WHERE prices.date = (SELECT MAX(date) as last_update from card_data)
-            ) AS "prices"
-        ON prices.uri = info.uri
-        WHERE %s = ANY (info.groups)
-        ORDER BY
-            info.name,
-            info.id,
-            info.set,
-            prices.date DESC
-
-        """,
-        (group,),
-    )
-    data = cur.fetchall()
-    cur.execute(
-        """
-        SELECT
-            groups.group_name,
-            groups.description,
-            (SELECT COUNT(*) AS QTY FROM card_info.info WHERE %s = ANY(groups))
-        FROM card_info.groups AS groups
-        WHERE %s = groups.group_name
-    """,
-        (
-            group,
-            group,
-        ),
-    )
-    info = cur.fetchone()
-    conn.close()
-    if data:
-        response.status_code = status.HTTP_200_OK
-        return CardInformation(
-            info=info, status=response.status_code, data=parse_data_for_response(data)
-        )
-
     raise NotFound
 
 

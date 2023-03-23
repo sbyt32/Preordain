@@ -10,7 +10,7 @@ def test_root(client: TestClient):
     assert response["resp"] == RootException.resp
 
 
-def test_send_request(client: TestClient):
+def test_send_request():
     from preordain.utils.connections import send_response
 
     assert type(send_response("GET", "https://httpbin.org/get")) == list or dict

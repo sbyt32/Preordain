@@ -1,5 +1,8 @@
-from preordain.models import CardConditions, CardVariants, BaseResponse, RespStrings
+from preordain.models import BaseResponse
+from preordain.enums import CardConditions, CardVariants
 from pydantic import BaseModel
+
+RESP_STRING = "retrieve_inventory"  # * /inventory/...
 
 
 class InventoryData(BaseModel):
@@ -15,7 +18,7 @@ class InventoryData(BaseModel):
 
 
 class InventoryResponse(BaseResponse):
-    resp = RespStrings.retrieve_inventory
+    resp = RESP_STRING
     data: dict[str, str] = InventoryData
 
     class Config:
@@ -35,4 +38,5 @@ class InventoryResponse(BaseResponse):
                 ],
             }
         }
+
         use_enum_values = True

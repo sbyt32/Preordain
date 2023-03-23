@@ -3,11 +3,11 @@ from fastapi.testclient import TestClient
 
 def test_inventory_root(client: TestClient):
     from starlette.config import environ
-    from preordain.models import RespStrings
+    from preordain.inventory.models import RESP_STRING
 
     response = client.get(f'/api/inventory/?access={str(environ["SEC_TOKEN"])}')
     assert response.status_code == 200
-    assert response.json()["resp"] == RespStrings.retrieve_inventory
+    assert response.json()["resp"] == RESP_STRING
 
 
 def test_inventory_root_fail(client: TestClient):

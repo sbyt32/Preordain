@@ -11,9 +11,8 @@ from preordain.price.models import (
     PriceDataMultiple,
     PriceDataSingle,
     PriceChange,
-    GrowthDirections,
-    GrowthCurrency,
 )
+from preordain.price.enums import GrowthCurrency, GrowthDirections
 from preordain.exceptions import NotFound
 import logging
 import re

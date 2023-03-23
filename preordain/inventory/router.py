@@ -71,7 +71,16 @@ def get_inventory(response: Response):
     raise NotFound
 
 
-@router.post("/add/", response_model=InventoryResponse)
+@router.post(
+    "/add/",
+    description="Add cards to the inventory.",
+    responses={
+        201: {
+            "model": InventoryResponse,
+            "description": "Successfully Added to Inventory.",
+        }
+    },
+)
 async def add_to_inventory(inventory: TableInventory, response: Response):
     # Could we do this with a single "CASE WHERE..." statement?
     # Decide if update or add new
@@ -139,12 +148,12 @@ async def add_to_inventory(inventory: TableInventory, response: Response):
     )
 
     if w := cur.fetchone()["exists"]:
-        response.status_code = status.HTTP_200_OK
+        response.status_code = status.HTTP_201_CREATED
         return InventoryResponse(status=response.status_code, data=w)
 
 
 # Is Delete the correct? Probably.
-@router.delete("/delete/")
+@router.post("/delete/", status_code=204)
 def remove_from_inventory(inventory: TableInventory):
     conn, cur = connect_db()
     cur.execute(

@@ -1,4 +1,4 @@
-from preordain.models import CardConditions, CardVariants
+from preordain.enums import CardConditions, CardVariants
 from pydantic import BaseModel, Field
 from typing import Optional
 import datetime

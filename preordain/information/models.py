@@ -1,21 +1,14 @@
 import datetime
 from pydantic import BaseModel
-from preordain.models import CardPrices, BaseResponse, RespStrings
+from preordain.models import CardPrices, BaseResponse, CardInfoData
 from typing import Optional
 
-
-class CardInfoData(BaseModel):
-    name: str
-    set: str
-    set_full: str
-    id: str
-    last_updated: datetime.date
-    prices: CardPrices
+RESP_STRING = card_info = "card_info"
 
 
 class CardInformation(BaseResponse):
-    resp = RespStrings.card_info
-    data: list[dict[str, CardInfoData]] = CardInfoData
+    resp = RESP_STRING
+    data: list[CardInfoData]
 
     class Config:
         schema_extra = {
@@ -48,5 +41,5 @@ class CardTCGID(BaseModel):
 
 
 class CardPurchaseLink(BaseResponse):
-    resp = RespStrings.card_info
+    resp = RESP_STRING
     data: list[dict[str, CardTCGID]] = CardTCGID

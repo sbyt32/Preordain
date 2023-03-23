@@ -2,6 +2,8 @@ import logging
 
 log = logging.getLogger()
 from preordain.utils.connections import connect_db, send_response
+from preordain.utils.find_missing import validate_card_exists_from_uri
+from preordain.exceptions import NotFound
 from preordain.tracker.schema import CardInfoModel
 from preordain.tracker.models import SuccessfulRequest
 
@@ -27,6 +29,10 @@ validate_query = """
 )
 async def add_card_to_track(response: Response, card: CardInfoModel):
     card_dict = card.dict()
+    if not validate_card_exists_from_uri(card_dict["uri"]):
+        response.status_code = status.HTTP_400_BAD_REQUEST
+        raise NotFound
+
     conn, cur = connect_db()
 
     query = """
@@ -49,7 +55,6 @@ async def add_card_to_track(response: Response, card: CardInfoModel):
             info={"Successfully stopped tracking "},
             data=data,
         )
-    return SuccessfulRequest(status=response.status_code, data=card)
 
 
 @router.post(

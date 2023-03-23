@@ -1,24 +1,9 @@
 from typing import TypeVar, Generic, Optional
-from enum import Enum
 from pydantic import BaseModel, validator, root_validator
 from pydantic.generics import GenericModel
 from enum import Enum
 import datetime
 from typing import Any
-
-
-class CardConditions(str, Enum):
-    NM = "NM"
-    LP = "LP"
-    MP = "MP"
-    HP = "HP"
-    DMG = "DMG"
-
-
-class CardVariants(str, Enum):
-    Normal = "Normal"
-    Foil = "Foil"
-    Etched = "Etched"
 
 
 class CardPrices(BaseModel):
@@ -44,6 +29,16 @@ class CardPricesSingle(BaseModel):
     tix_change: Optional[str] = "0.00%"
 
 
+class CardInfoData(BaseModel):
+    name: str
+    set: str
+    set_full: str
+    id: str
+    last_updated: datetime.date
+    groups: Optional[list[str]]
+    prices: CardPrices
+
+
 class RespStrings(str, Enum):
     # ! Error
     invalid_token = "invalid_token"
@@ -51,24 +46,16 @@ class RespStrings(str, Enum):
     no_results = "no_results"  # * No results      | 404
     root_error = "root_error"  # * Access root     | 403
     validation_error = "validation_error"  # * validation_error | 422
-    # * card/...
-    card_info = "card_info"  # * /card/...
-    # * search/{query}
-    search_query = "search_query"  # * /search/{query}
-    price_data = "price_data"  # * /price/*
-    # * sales/...
-    daily_card_sales = "daily_card_sales"  # * /daily/{set}/{col_num}
-    recent_card_sales = "recent_card_sales"  # * /card/{tcg_id}
-    # * inventory/...
-    retrieve_inventory = "retrieve_inventory"  # * /inventory/...
-    # * groups/...
-    group_info = "group_info"  # * /groups/...
 
     class Config:
         use_enum_values = True
 
 
 ResponseDataTypes = TypeVar("ResponseDataTypes", list, dict)
+
+
+class BaseInfo(BaseModel):
+    message: str = "undefined error"
 
 
 class BaseResponse(GenericModel, Generic[ResponseDataTypes]):
@@ -79,7 +66,7 @@ class BaseResponse(GenericModel, Generic[ResponseDataTypes]):
         if self.data == None:
             del self.data
 
-    resp: RespStrings
+    resp: str
     status: int
     info: Optional[dict]
     data: Optional[ResponseDataTypes]
@@ -97,7 +84,7 @@ class BaseResponse(GenericModel, Generic[ResponseDataTypes]):
 class BaseError(GenericModel):
     resp: RespStrings
     status: int
-    info: dict[str, str] = {"message": "undefined error"}
+    info: BaseInfo
 
     class Config:
         fields = {"__module__": {"exclude": True}, "__doc__": {"exclude": True}}

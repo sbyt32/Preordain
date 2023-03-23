@@ -1,8 +1,9 @@
 import datetime
 from pydantic import BaseModel
-from typing import Optional, Union, Any
-from preordain.models import CardPrices, CardPricesSingle, BaseResponse, RespStrings
-from enum import Enum
+from typing import Optional, Union
+from preordain.models import CardPrices, CardPricesSingle, BaseResponse
+
+RESP_STRING: str = "price_data"
 
 
 class PriceData(BaseModel):
@@ -15,7 +16,7 @@ class PriceData(BaseModel):
 
 
 class PriceDataMultiple(BaseResponse):
-    resp = RespStrings.price_data
+    resp = RESP_STRING
     data: list[dict[PriceData]] = PriceData
 
     class Config:
@@ -23,27 +24,25 @@ class PriceDataMultiple(BaseResponse):
             "example": {
                 "resp": "price_data",
                 "status": 200,
-                "data": [
-                    {
-                        "name": "Ancient Grudge",
-                        "set": "MM3",
-                        "set_full": "Modern Masters 2017",
-                        "id": "88",
-                        "prices": {
-                            "usd": 12.34,
-                            "usd_foil": 12.34,
-                            "euro": 12.34,
-                            "euro_foil": 12.34,
-                            "tix": 12.34,
-                        },
-                    }
-                ],
+                "data": {
+                    "name": "Ancient Grudge",
+                    "set": "MM3",
+                    "set_full": "Modern Masters 2017",
+                    "id": "88",
+                    "prices": {
+                        "usd": 12.34,
+                        "usd_foil": 12.34,
+                        "euro": 12.34,
+                        "euro_foil": 12.34,
+                        "tix": 12.34,
+                    },
+                },
             }
         }
 
 
 class PriceDataSingle(BaseResponse):
-    resp = RespStrings.price_data
+    resp = RESP_STRING
     data: dict[PriceData] = PriceData
 
     class Config:
@@ -91,18 +90,6 @@ class PriceChangePercent(BaseModel):
 
 
 class PriceChange(BaseResponse):
-    resp = RespStrings.price_data
+    resp = RESP_STRING
     status = 200
     data: list[dict[PriceChangePercent]] = PriceChangePercent
-
-
-class GrowthDirections(str, Enum):
-    asc = "asc"
-    desc = "desc"
-
-
-class GrowthCurrency(str, Enum):
-    usd = "usd"
-    euro = "euro"
-    tix = "tix"
-    # USD, Euro, TIX

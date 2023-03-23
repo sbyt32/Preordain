@@ -5,6 +5,5 @@ class GroupInfoGroupName(BaseModel):
     group_name: str
 
 
-class GroupInfoTable(BaseModel):
-    group_name: str
+class GroupInfoTable(GroupInfoGroupName):
     description: str

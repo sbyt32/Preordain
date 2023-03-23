@@ -1,8 +1,9 @@
 from pydantic import BaseModel, validator
-from preordain.models import BaseResponse, RespStrings
-from preordain.groups.schema import GroupInfoTable
+from preordain.models import BaseResponse, CardInfoData
 from preordain.utils.find_missing import get_card_from_set_id
 from typing import Optional
+
+RESP_STRING = "group_info"
 
 
 # This one is for request format.
@@ -28,12 +29,12 @@ class CardInGroupInfo(BaseModel):
 
 class GroupInformation(BaseModel):
     group: str
-    cards_in_group: int
     description: str
+    cards_in_group: int
 
 
-class GroupResponse(BaseResponse):
-    resp = RespStrings.group_info
+class ShowGroupResponse(BaseResponse):
+    resp = RESP_STRING
     data: list[GroupInformation]
 
     class Config:
@@ -53,18 +54,55 @@ class GroupResponse(BaseResponse):
 
 
 class SuccessfulRequest(BaseResponse):
-    resp = RespStrings.group_info
+    resp = RESP_STRING
     info = {"message": ""}
 
     class Config:
         schema_extra = {
             "example": {
                 "resp": "group_info",
-                "status": 200,
+                "status": 201,
                 "info": {"message": "Added / Removed group: string"},
                 "data": {
                     "group": "dnt",
                     "description": 'This is part of the deck "Death and Taxes"',
                 },
+            }
+        }
+
+
+class SingleGroupResponse(BaseResponse):
+    resp = RESP_STRING
+    info = {"message": ""}
+    data = list[CardInfoData]
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "resp": RESP_STRING,
+                "status": 200,
+                "info": {
+                    "group_name": "sample group",
+                    "description": "sample desc",
+                    "qty": 1,
+                },
+                "data": [
+                    {
+                        "name": "Aether Vial",
+                        "set": "dst",
+                        "set_full": "Darksteel",
+                        "id": "91",
+                        "last_updated": "2023-03-17",
+                        "groups": ["sample group"],
+                        "prices": {
+                            "usd": 9.45,
+                            "usd_foil": 105.05,
+                            "usd_etch": None,
+                            "euro": 9.93,
+                            "euro_foil": 39.5,
+                            "tix": 5.07,
+                        },
+                    }
+                ],
             }
         }

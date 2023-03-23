@@ -1,8 +1,10 @@
 import datetime
 from pydantic import BaseModel
-from preordain.models import CardPrices, BaseResponse, RespStrings
-from pydantic import validator, BaseModel
+from preordain.models import CardPrices, BaseResponse
+from pydantic import BaseModel
 from preordain.search.exceptions import InvalidSearchQuery
+
+resp_string: str = "search_query"  # * /search/{query}
 
 
 class SearchQuery(BaseModel):
@@ -28,13 +30,13 @@ class CardInfoData(BaseModel):
 
 
 class SearchInformation(BaseResponse):
-    resp: RespStrings = "search_query"
-    data: list[dict[str, CardInfoData]] = CardInfoData
+    resp = resp_string
+    data: list[CardInfoData]
 
     class Config:
         schema_extra = {
             "example": {
-                "resp": "search",
+                "resp": "search_query",
                 "status": 200,
                 "data": {
                     "name": "Ancient Grudge",
