@@ -1,61 +1,11 @@
-import logging
-
-log = logging.getLogger()
 from preordain.utils.connections import connect_db
 from fastapi import APIRouter, Response, status
 from preordain.information.utils import parse_data_for_response
 from preordain.information.models import CardInformation, CardPurchaseLink
 from preordain.exceptions import NotFound
+from preordain.utils.find_missing import get_card_from_set_id
 
 user_router = APIRouter()
-admin_router = APIRouter()
-
-
-# Return all cards
-@user_router.get("/", description="Return all cards that are being tracked.")
-async def read_items(response: Response):
-    raise Exception("Hey! This one is not to be used!")
-    conn, cur = connect_db()
-    cur.execute(
-        """
-        SELECT
-            info.name,
-            info.set,
-            info.set_full,
-            info.id,
-            info.maxDate as "last_updated",
-            price.usd,
-            price.usd_foil,
-            price.euro,
-            price.euro_foil,
-            price.tix
-        FROM card_data price
-        JOIN (
-            SELECT
-                info.name,
-                info.set,
-                sets.set_full,
-                info.id,
-                MAX(date) as maxDate
-            FROM card_data
-            JOIN card_info.info as info
-                ON info.set = card_data.set
-                AND info.id = card_data.id
-            JOIN card_info.sets as sets
-                ON sets.set = card_data.set
-            GROUP BY info.set, info.id, info.name, sets.set_full
-            ) info
-        ON price.id = info.id AND price.set = info.set AND price.date = info.maxDate
-        """
-    )
-    data = cur.fetchall()
-    conn.close()
-    if data:
-        response.status_code = status.HTTP_200_OK
-        return CardInformation(
-            status=response.status_code, data=parse_data_for_response(data)
-        )
-    raise NotFound
 
 
 @user_router.get(
@@ -64,40 +14,44 @@ async def read_items(response: Response):
 )
 async def search_by_set_collector_num(set: str, col_num: str, response: Response):
     conn, cur = connect_db()
+    uri = get_card_from_set_id(set, col_num)
     cur.execute(
         """
-        SELECT
-            info.name,
-            info.set,
-            info.set_full,
-            info.id,
-            info.maxDate as "last_updated",
-            price.usd,
-            price.usd_foil,
-            price.euro,
-            price.euro_foil,
-            price.tix
-        FROM card_data price
-        JOIN (
             SELECT
                 info.name,
                 info.set,
                 sets.set_full,
                 info.id,
-                MAX(date) as maxDate
-            FROM card_data
-            JOIN card_info.info as info
-                ON info.set = card_data.set
-                AND info.id = card_data.id
-            JOIN card_info.sets as sets
-                ON sets.set = card_data.set
-            GROUP BY info.set, info.id, info.name, sets.set_full
-            ) info
-        ON price.id = info.id AND price.set = info.set AND price.date = info.maxDate
-        WHERE   price.set = %s AND price.id = %s
+                price.date,
+                price.usd,
+                price.usd_foil,
+                price.usd_etch,
+                price.euro,
+                price.euro_foil,
+                price.tix
+            FROM card_info.info AS info
+            JOIN card_info.sets AS sets
+                ON sets.set = info.set
+            JOIN (
+                SELECT
+                    price.uri,
+                    price.usd,
+                    price.usd_foil,
+                    price.usd_etch,
+                    price.euro,
+                    price.euro_foil,
+                    price.tix,
+                    price.date
+                FROM card_data as price
+                WHERE price.uri = %s
+                ORDER BY date DESC
+                LIMIT 1
+                ) AS price
+            ON price.uri = info.uri
+            WHERE info.uri = %s
 
         """,
-        (set, col_num),
+        (uri, uri),
     )
 
     data = cur.fetchall()
@@ -121,7 +75,7 @@ async def find_by_group(group: str, response: Response):
             info.set,
             sets.set_full,
             info.id,
-            prices.date "last_updated",
+            prices.date AS "date",
             prices.usd,
             prices.usd_foil,
             prices.euro,

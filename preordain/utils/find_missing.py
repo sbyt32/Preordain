@@ -14,3 +14,6 @@ def get_card_from_set_id(set: str, id: str):
     )
 
     return cur.fetchone()["uri"]
+
+
+# def get_set_id_from_uri(uri)

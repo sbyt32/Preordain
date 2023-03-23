@@ -2,6 +2,7 @@ import pytest
 from fastapi.testclient import TestClient
 from starlette.config import environ
 
+# Declaring this here means they won't be defined earlier.
 environ["SEC_TOKEN"] = "testing"
 environ["WRITE_TOKEN"] = "testing"
 environ["PRICE_TOKEN"] = "testing"

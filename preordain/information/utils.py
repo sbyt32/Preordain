@@ -10,7 +10,7 @@ def parse_data_for_response(data: list):
                 "set": cards["set"],
                 "set_full": cards["set_full"],
                 "id": cards["id"],
-                "last_updated": cards["last_updated"],
+                "last_updated": cards["date"],
                 "prices": {
                     "usd": cards["usd"],
                     "usd_foil": cards["usd_foil"],
