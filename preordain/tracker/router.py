@@ -59,7 +59,6 @@ async def add_card_to_track(response: Response, card: CardInfoModel):
 
 @router.post(
     "/remove/",
-    response_model=SuccessfulRequest,
     description="Remove a card from having the sales scraped from TCGPlayer.",
 )
 async def remove_card_to_track(response: Response, card: CardInfoModel):
@@ -79,10 +78,6 @@ async def remove_card_to_track(response: Response, card: CardInfoModel):
 
     if not data["scrape_sales"]:
         conn.close()
-        response.status_code = status.HTTP_201_CREATED
+        response.status_code = status.HTTP_204_NO_CONTENT
 
-        return SuccessfulRequest(
-            status=response.status_code,
-            info={"Successfully stopped tracking "},
-            data=data,
-        )
+        return

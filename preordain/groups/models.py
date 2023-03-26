@@ -1,5 +1,6 @@
 from pydantic import BaseModel, validator
-from preordain.models import BaseResponse, CardInfoData
+from preordain.models import BaseResponse, BaseCardData, CardPrices
+import datetime
 from preordain.utils.find_missing import get_card_from_set_id
 from typing import Optional
 
@@ -71,10 +72,16 @@ class SuccessfulRequest(BaseResponse):
         }
 
 
+class CardGroupsData(BaseCardData):
+    last_updated: datetime.date
+    groups: Optional[list[str]]
+    prices: CardPrices
+
+
 class SingleGroupResponse(BaseResponse):
     resp = RESP_STRING
     info = {"message": ""}
-    data = list[CardInfoData]
+    data = list[CardGroupsData]
 
     class Config:
         schema_extra = {

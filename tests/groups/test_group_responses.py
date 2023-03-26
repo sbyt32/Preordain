@@ -1,5 +1,3 @@
-from preordain.models import RespStrings
-
 # from preordain.groups.models import CardGroupInformation
 from fastapi.testclient import TestClient
 

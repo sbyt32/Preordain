@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, Response, status
 from preordain.utils.connections import connect_db, send_response
-from preordain.inventory.models import InventoryResponse
+from preordain.inventory.models import InventoryResponse, SuccessfulRequest
 from preordain.inventory.schema import TableInventory
 from preordain.models import BaseResponse
 from preordain.exceptions import NotFound
@@ -31,11 +31,22 @@ def get_inventory(response: Response):
         """
         SELECT
             info.name as name,
-            set.set_full as set,
+            info.set,
+            set.set_full as set_full,
+            inventory.add_date,
+            info.id,
             SUM(inventory.qty) as quantity,
-            inventory.card_condition as condition,
-            inventory.card_variant as variant,
-            (AVG(avg_price.total_qty) / SUM(inventory.qty))::numeric(10,2) as "avg_cost"
+            inventory.card_condition as card_condition,
+            inventory.card_variant as card_variant,
+            (AVG(avg_price.total_qty) / SUM(inventory.qty))::numeric(10,2) as "avg_cost",
+            CASE
+                WHEN inventory.card_variant = 'Foil' THEN
+                    ROUND (100.0 * (price.usd_foil - (AVG(avg_price.total_qty) / SUM(inventory.qty))::numeric) / (AVG(avg_price.total_qty) / SUM(inventory.qty))::numeric)::numeric(10,2)
+                WHEN inventory.card_variant = 'Etched' THEN
+                    ROUND (100.0 * (price.usd_etch - (AVG(avg_price.total_qty) / SUM(inventory.qty))::numeric) / (AVG(avg_price.total_qty) / SUM(inventory.qty))::numeric)::numeric(10,2)
+                ELSE
+                    ROUND (100.0 * (price.usd - (AVG(avg_price.total_qty) / SUM(inventory.qty))::numeric) / (AVG(avg_price.total_qty) / SUM(inventory.qty))::numeric)::numeric(10,2)
+            END AS "change"
         FROM inventory as inventory
         JOIN card_info.info as info
             ON info.uri = inventory.uri
@@ -56,9 +67,25 @@ def get_inventory(response: Response):
             ON avg_price.uri = inventory.uri
             AND avg_price.card_condition = inventory.card_condition
             AND avg_price.card_variant = inventory.card_variant
+        JOIN (
+            SELECT
+                price.uri,
+                price.usd,
+                PRICE.usd_foil,
+                price.usd_etch
+            FROM card_data AS price
+            WHERE price.date = (SELECT MAX(date) as last_update from card_data)
+        ) AS price
+            ON price.uri = inventory.uri
         GROUP BY
             info.name,
+            info.set,
             set.set_full,
+            inventory.add_date,
+            info.id,
+            price.usd,
+            price.usd_foil,
+            price.usd_etch,
             inventory.card_condition,
             inventory.card_variant
     """
@@ -76,7 +103,7 @@ def get_inventory(response: Response):
     description="Add cards to the inventory.",
     responses={
         201: {
-            "model": InventoryResponse,
+            "model": SuccessfulRequest,
             "description": "Successfully Added to Inventory.",
         }
     },
@@ -91,11 +118,11 @@ async def add_to_inventory(inventory: TableInventory, response: Response):
             EXISTS (
                 SELECT 1
                 FROM inventory
-                WHERE uri           = %(uri)s
+                WHERE add_date      = %(add_date)s
+                AND uri             = %(uri)s
                 AND card_condition  = %(card_condition)s
                 AND card_variant    = %(card_variant)s
                 AND buy_price       = %(buy_price)s
-                AND add_date        = CURRENT_DATE
             )
         """,
         inventory.dict(),
@@ -110,7 +137,7 @@ async def add_to_inventory(inventory: TableInventory, response: Response):
             AND card_condition   = %(card_condition)s
             AND card_variant = %(card_variant)s
             AND buy_price = %(buy_price)s
-            AND add_date = CURRENT_DATE
+            AND add_date = %(add_date)s
             """,
             inventory.dict(),
         )
@@ -119,7 +146,7 @@ async def add_to_inventory(inventory: TableInventory, response: Response):
             """
             INSERT INTO inventory
             VALUES (
-                CURRENT_DATE,
+                %(add_date)s,
                 %(uri)s,
                 %(qty)s,
                 %(buy_price)s,
@@ -141,20 +168,20 @@ async def add_to_inventory(inventory: TableInventory, response: Response):
                 AND card_condition  = %(card_condition)s
                 AND card_variant    = %(card_variant)s
                 AND buy_price       = %(buy_price)s
-                AND add_date        = CURRENT_DATE
+                AND add_date        = %(add_date)s
             )
         """,
         inventory.dict(),
     )
 
-    if w := cur.fetchone()["exists"]:
+    if cur.fetchone()["exists"]:
         response.status_code = status.HTTP_201_CREATED
-        return InventoryResponse(status=response.status_code, data=w)
+        return SuccessfulRequest(status=response.status_code)
 
 
 # Is Delete the correct? Probably.
 @router.post("/delete/", status_code=204)
-def remove_from_inventory(inventory: TableInventory):
+async def remove_from_inventory(inventory: TableInventory):
     conn, cur = connect_db()
     cur.execute(
         """
@@ -184,5 +211,13 @@ def remove_from_inventory(inventory: TableInventory):
         """,
             inventory.dict(),
         )
+        conn.commit()
+    return
 
+
+@router.delete("/clear/", status_code=status.HTTP_204_NO_CONTENT)
+async def clear_inventory():
+    conn, cur = connect_db()
+    cur.execute("DELETE FROM inventory")
+    conn.commit()
     return

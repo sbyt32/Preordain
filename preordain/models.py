@@ -1,5 +1,5 @@
 from typing import TypeVar, Generic, Optional
-from pydantic import BaseModel, validator, root_validator
+from pydantic import BaseModel, validator, root_validator, Field
 from pydantic.generics import GenericModel
 from enum import Enum
 import datetime
@@ -29,14 +29,11 @@ class CardPricesSingle(BaseModel):
     tix_change: Optional[str] = "0.00%"
 
 
-class CardInfoData(BaseModel):
-    name: str
-    set: str
+class BaseCardData(BaseModel):
+    name: str = Field(max_length=255)
+    set: str = Field(max_length=12)
     set_full: str
     id: str
-    last_updated: datetime.date
-    groups: Optional[list[str]]
-    prices: CardPrices
 
 
 class RespStrings(str, Enum):

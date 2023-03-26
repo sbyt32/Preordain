@@ -60,7 +60,7 @@ async def search_by_set_collector_num(set: str, col_num: str, response: Response
     if data:
         response.status_code = status.HTTP_200_OK
         return CardInformation(
-            status=response.status_code, data=parse_data_for_response(data)
+            status=response.status_code, data=parse_data_for_response(data)[0]
         )
     raise NotFound
 

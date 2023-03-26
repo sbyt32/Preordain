@@ -1,4 +1,4 @@
-from preordain.search.models import CardInfoData
+from preordain.search.models import CardSearchData
 
 
 def parse_data_for_response(data: list):
@@ -8,7 +8,7 @@ def parse_data_for_response(data: list):
     card_data = []
     for card in data:
         card_data.append(
-            CardInfoData(
+            CardSearchData(
                 name=card["name"],
                 set=card["set"],
                 set_full=card["set_full"],

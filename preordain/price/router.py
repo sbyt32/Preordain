@@ -23,62 +23,6 @@ price_router = APIRouter()
 
 
 @price_router.get(
-    "/{date}",
-    description="Get the price data for the a certain day. YYYY-MM-DD format.",
-    responses={
-        200: {
-            "model": PriceDataMultiple,
-            "description": "OK Request",
-        },
-    },
-)
-async def get_single_day_data(date: str, response: Response):
-    if not re.match(r"^\d\d\d\d-(0?[1-9]|[1][0-2])-(0?[1-9]|[12][0-9]|3[01])", date):
-        raise HTTPException(status_code=400, detail="Incorrect format.")
-    conn, cur = connect_db()
-    try:
-        cur.execute(
-            """
-
-            SELECT
-                card_info.info.name,
-                card_info.info.set,
-                card_info.sets.set_full,
-                card_info.info.id,
-                date,
-                usd,
-                usd_foil,
-                euro,
-                euro_foil,
-                tix
-            FROM card_data
-            JOIN card_info.info
-                ON card_data.set = card_info.info.set
-                AND card_data.id = card_info.info.id
-            JOIN card_info.sets
-                ON card_data.set = card_info.sets.set
-            WHERE
-                date = %s
-            LIMIT 20
-
-        """,
-            (date,),
-        )
-    except DatetimeFieldOverflow as e:
-        # Placeholder, this is if the date isn't valid.
-        return Exception("helpo")
-    data = cur.fetchall()
-    conn.close()
-    if data:
-        response.status_code = status.HTTP_200_OK
-        return PriceDataMultiple(
-            status=response.status_code, data=parse_data_for_response(data)
-        )
-    response.status_code = status.HTTP_404_NOT_FOUND
-    raise NotFound
-
-
-@price_router.get(
     "/{set}/{id}",
     description="Get the price data for one card. Last 25 results only.",
     responses={

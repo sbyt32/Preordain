@@ -1,6 +1,6 @@
 import datetime
 from pydantic import BaseModel
-from preordain.models import CardPrices, BaseResponse
+from preordain.models import CardPrices, BaseResponse, BaseCardData
 from pydantic import BaseModel
 from preordain.search.exceptions import InvalidSearchQuery
 
@@ -18,11 +18,7 @@ class SearchQuery(BaseModel):
     query: str
 
 
-class CardInfoData(BaseModel):
-    name: str
-    set: str
-    set_full: str
-    id: str
+class CardSearchData(BaseCardData):
     uri: str
     scrape_sales: bool
     last_updated: datetime.date
@@ -31,7 +27,7 @@ class CardInfoData(BaseModel):
 
 class SearchInformation(BaseResponse):
     resp = resp_string
-    data: list[CardInfoData]
+    data: list[CardSearchData]
 
     class Config:
         schema_extra = {

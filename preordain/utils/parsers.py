@@ -1,4 +1,4 @@
-from preordain.information.models import CardInfoData
+from preordain.information.models import InformationData
 
 
 # To Do, add group info into groups.
@@ -9,7 +9,7 @@ def parse_data_for_response(data: list):
     card_data = []
     for cards in data:
         card_data.append(
-            CardInfoData(
+            InformationData(
                 name=cards["name"],
                 set=cards["set"],
                 set_full=cards["set_full"],
@@ -18,10 +18,12 @@ def parse_data_for_response(data: list):
                 prices={
                     "usd": cards["usd"],
                     "usd_foil": cards["usd_foil"],
+                    "usd_etch": cards["usd_etch"],
                     "euro": cards["euro"],
                     "euro_foil": cards["euro_foil"],
                     "tix": cards["tix"],
                 },
             ).dict()
         )
+
     return card_data

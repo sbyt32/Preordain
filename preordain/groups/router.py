@@ -73,6 +73,79 @@ async def get_group_names(response: Response, in_use: Optional[bool] = False):
     raise NotFound
 
 
+@user_groups.get("/{group}", description="Filter for cards by their groups.")
+async def find_by_group(group: str, response: Response):
+    conn, cur = connect_db()
+    cur.execute(
+        """
+
+        SELECT
+            DISTINCT ON (info.name, info.id, info.set) "name",
+            info.set,
+            sets.set_full,
+            info.id,
+            prices.date AS "date",
+            prices.usd,
+            prices.usd_foil,
+            prices.usd_etch,
+            prices.euro,
+            prices.euro_foil,
+            prices.tix
+        FROM card_info.info AS "info"
+        JOIN card_info.sets AS "sets"
+            ON info.set = sets.set
+        JOIN
+            (
+                SELECT
+                    prices.date,
+                    prices.uri,
+                    prices.usd,
+                    prices.usd_foil,
+                    prices.usd_etch,
+                    prices.euro,
+                    prices.euro_foil,
+                    prices.tix
+                FROM
+                    card_data as "prices"
+                WHERE prices.date = (SELECT MAX(date) as last_update from card_data)
+            ) AS "prices"
+        ON prices.uri = info.uri
+        WHERE %s = ANY (info.groups)
+        ORDER BY
+            info.name,
+            info.id,
+            info.set,
+            prices.date DESC
+
+        """,
+        (group,),
+    )
+    data = cur.fetchall()
+    cur.execute(
+        """
+        SELECT
+            groups.group_name,
+            groups.description,
+            (SELECT COUNT(*) AS QTY FROM card_info.info WHERE %s = ANY(groups))
+        FROM card_info.groups AS groups
+        WHERE %s = groups.group_name
+    """,
+        (
+            group,
+            group,
+        ),
+    )
+    info = cur.fetchone()
+    conn.close()
+    if data:
+        response.status_code = status.HTTP_200_OK
+        return SingleGroupResponse(
+            info=info, status=response.status_code, data=parse_data_for_response(data)
+        )
+
+    raise NotFound
+
+
 @user_groups.post("/new/")
 def add_group(group: GroupInfoTable, response: Response):
     conn, cur = connect_db()
@@ -159,74 +232,3 @@ async def remove_card_from_group(card_group: CardInGroupInfo):
         status=status.HTTP_200_OK,
         info={"message": f"Successfully removed card from {card_data['group']}"},
     )
-
-
-@user_groups.get("/{group}", description="Filter for cards by their groups.")
-async def find_by_group(group: str, response: Response):
-    conn, cur = connect_db()
-    cur.execute(
-        """
-
-        SELECT
-            DISTINCT ON (info.name, info.id, info.set) "name",
-            info.set,
-            sets.set_full,
-            info.id,
-            prices.date AS "date",
-            prices.usd,
-            prices.usd_foil,
-            prices.euro,
-            prices.euro_foil,
-            prices.tix
-        FROM card_info.info AS "info"
-        JOIN card_info.sets AS "sets"
-            ON info.set = sets.set
-        JOIN
-            (
-                SELECT
-                    prices.date,
-                    prices.uri,
-                    prices.usd,
-                    prices.usd_foil,
-                    prices.euro,
-                    prices.euro_foil,
-                    prices.tix
-                FROM
-                    card_data as "prices"
-                WHERE prices.date = (SELECT MAX(date) as last_update from card_data)
-            ) AS "prices"
-        ON prices.uri = info.uri
-        WHERE %s = ANY (info.groups)
-        ORDER BY
-            info.name,
-            info.id,
-            info.set,
-            prices.date DESC
-
-        """,
-        (group,),
-    )
-    data = cur.fetchall()
-    cur.execute(
-        """
-        SELECT
-            groups.group_name,
-            groups.description,
-            (SELECT COUNT(*) AS QTY FROM card_info.info WHERE %s = ANY(groups))
-        FROM card_info.groups AS groups
-        WHERE %s = groups.group_name
-    """,
-        (
-            group,
-            group,
-        ),
-    )
-    info = cur.fetchone()
-    conn.close()
-    if data:
-        response.status_code = status.HTTP_200_OK
-        return SingleGroupResponse(
-            info=info, status=response.status_code, data=parse_data_for_response(data)
-        )
-
-    raise NotFound

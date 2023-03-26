@@ -44,3 +44,29 @@ def test_inventory_bad_validation():
     }
     with pytest.raises(ValidationError):
         InventoryData(**incorrect_variant_data)
+
+
+def test_adding_deleting_from_inventory(client: TestClient):
+    from preordain.inventory.models import RESP_STRING
+    from starlette.config import environ
+
+    # This actually corresponds to a real card
+    sample_uri = "b2b91418-5cbd-443d-9963-7e590dd0b6fc"
+    json_body = {
+        "add_date": "2023-03-26",
+        "uri": sample_uri,
+        "qty": 1,
+        "buy_price": 20,
+        "card_condition": "NM",
+        "card_variant": "Normal",
+    }
+    response = client.post(
+        f"/api/inventory/add/?access={str(environ['SEC_TOKEN'])}", json=json_body
+    )
+    assert response.status_code == 201
+    insert_json = response.json()
+    assert insert_json["resp"] == RESP_STRING
+    removal = client.post(
+        f"/api/inventory/delete/?access={str(environ['SEC_TOKEN'])}", json=json_body
+    )
+    assert removal.status_code == 204
