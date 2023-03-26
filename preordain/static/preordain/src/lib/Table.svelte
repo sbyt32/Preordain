@@ -59,7 +59,7 @@
 
 </script>
 
-{#await database(`${connectURL}/card/${group}`) then data}
+{#await database(`${connectURL}/groups/${group}`) then data}
 <div style="grid-column: span {col_span} / span {col_span}; grid-row: span {row_span} / span {row_span}; ">
 
 
