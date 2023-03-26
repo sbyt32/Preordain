@@ -13,7 +13,8 @@ Written documentation is a WIP. Location is currently [here](docs/api_functions.
 
 
 Check out the dashboard @ localhost:8000/docs
-![image](https://user-images.githubusercontent.com/73682114/223646534-da46b06e-622b-41b7-8ec9-ffc54898556e.png)
+
+
 
 ------------
 
@@ -61,3 +62,15 @@ Check out the dashboard @ localhost:8000/docs
     pytest-cov
     pre-commit
     pip-tools
+
+
+## Images
+
+### Home
+![home](https://user-images.githubusercontent.com/73682114/227756059-f62f8074-2d80-4c19-b68f-f7df6fc6914b.png)
+
+### Groups
+![groups](https://user-images.githubusercontent.com/73682114/227756063-bbe35141-c3e0-496b-be2d-4f6147d927ae.png)
+![group page](https://user-images.githubusercontent.com/73682114/227756066-9deac17f-12ea-468e-b031-ff262baadd43.png)
+### Search
+![search](https://user-images.githubusercontent.com/73682114/227756068-870dd243-cf9e-489a-9233-69be649b255b.png)
