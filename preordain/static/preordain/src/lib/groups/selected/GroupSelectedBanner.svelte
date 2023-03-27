@@ -1,25 +1,31 @@
+
 <script lang="ts">
+    import type { GetCardGroupInfo } from "../interfaces";
+
     export let col_span = 4
     export let row_span = 1
     export let img:string = "https://placekitten.com/g/500/125"
-    export let groupName: string = ""
+
+    export let groupInfo: GetCardGroupInfo
+
+
 </script>
 
 <div style="grid-column: span {col_span} / span {col_span}; grid-row: span {row_span} / span {row_span};" class=" font-normal min-h-0 h-full w-full relative">
     <div class="absolute font-bold text-xl z-10 w-full h-full">
-        <div class="overflow-hidden m-4 h-full content-end inline-flex flex-col text-slate-300/70 gap-1">
+        <div class="overflow-hidden m-4 h-full content-end inline-flex flex-col text-slate-300/70 gap-1 w-full">
 
-            <div class="text-2xl text-white text-left w-full">
-                {groupName}
+            <div class="text-2xl text-white text-left">
+                {groupInfo.group_name}
             </div>
             <div class=" text-left w-full hover:text-slate-300 group">
-                <p class="w-full">Cards in Group: <span class="text-base group-hover:text-white font-semibold tabular-nums">69420</span></p>
+                <p class="w-full">Cards in Group: <span class="text-base group-hover:text-white font-semibold tabular-nums">{groupInfo.qty}</span></p>
             </div>
             <div class=" text-left w-full hover:text-slate-300 group">
-                Last Updated: <span class="text-base group-hover:text-white font-semibold">03/22/2023</span>
+                Last Modified: <span class="text-base group-hover:text-white font-semibold">03/22/2023</span>
             </div>
             <div class=" text-left w-full hover:text-slate-300 group">
-                Random: <span class="text-base group-hover:text-white font-semibold">Words</span>
+                Description: <span class="text-base group-hover:text-white font-semibold">{groupInfo.description}</span>
             </div>
             <div class=" text-left w-full hover:text-slate-300 group">
                 Stream: <span class="text-base group-hover:text-white font-semibold">All Of The Girls by Taylor Swift</span>

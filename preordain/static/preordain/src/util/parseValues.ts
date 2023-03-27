@@ -1,17 +1,20 @@
 // Check percentage
 export function parsePercentage(percent:string) {
-    if (percent == null) {
+    if (percent === null) {
         return ""
     }
     let change = parseFloat(percent)
-    let classes = "text-white text-right"
+    if (Number.isNaN(change)) {
+        return "<p class='invisible'>empty</p>"
+    }
+    let classes = "text-white tabular-nums"
     let emoji = "🤷‍♂️"
     if (change > 0) {
-        emoji = "📈 "
-        classes = "text-emerald-500 text-right"
+        emoji = "📈  "
+        classes = "text-emerald-500 tabular-nums"
     } else if (change < 0) {
-        emoji = "📉 "
-        classes = "text-rose-500 text-right"
+        emoji = "📉"
+        classes = "text-rose-500 tabular-nums"
     }
-    return `<p class=${classes}  style="font-variant-numeric: tabular-nums" >${emoji}${change}%</p>`
+    return `<p class="${classes}">${emoji}${change}%</p>`
 }

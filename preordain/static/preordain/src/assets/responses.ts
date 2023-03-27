@@ -8,6 +8,7 @@ export interface BaseResponse {
 export interface PriceData {
     usd: number,
     usd_foil: number,
+    usd_etch: number,
     euro: number,
     euro_foil: number,
     tix: number
@@ -22,6 +23,7 @@ export interface MultipleCardData {
     prices: PriceData
 }
 
+
 export interface GetCard extends BaseResponse {
     resp: 'card_info'
     data: MultipleCardData[]
@@ -29,7 +31,7 @@ export interface GetCard extends BaseResponse {
 
 export interface SearchQuery extends BaseResponse {
     resp: 'search_query',
-    data: [MultipleCardData]
+    data: MultipleCardData[]
 
 }
 

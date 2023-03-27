@@ -3,9 +3,9 @@ import { readable, writable, get } from "svelte/store"
 import CardDash from "../lib/CardDash.svelte"
 export function parseCurrency(price:number | string, currency:string) {
     // Checks
-    if (typeof price == "string") {
+    if (typeof price === "string") {
         return price
-    } else if (price == null) {
+    } else if (price === null) {
         return `N/A`
     }
 
@@ -60,3 +60,5 @@ function updateModal() {
 }
 
 export const showPopup = updateModal()
+
+export const currentTab = writable('Home')

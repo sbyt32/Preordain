@@ -3,14 +3,14 @@
 
     import {handleSubmit, untrackOldCard} from "../util/search"
     const priceHeaders = ["usd", "usd_foil", "euro", "euro_foil", "tix"]
-    import { parseCurrency, projectTitle, showPopup } from "../assets/stores";
+    import { currentTab, parseCurrency, projectTitle, showPopup } from "../assets/stores";
     import {trackNewCard} from "../util/search"
     import Error from "../lib/Error.svelte";
     import { displayCardDashPopup } from "../assets/popup";
     import { onDestroy } from "svelte";
 
     projectTitle.set(`Search: ${params.query}`)
-
+    $currentTab = "Search"
     onDestroy(() => {
         showPopup.close()
     })

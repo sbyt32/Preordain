@@ -12,7 +12,7 @@
 </svelte:head>
 <Popup/>
 
-<main class="h-screen max-h-screen">
+<main class="h-screen max-h-screen w-screen max-w-screen">
     <Header/>
     <div class="container mx-auto pt-6 py-4 h-full">
         <Router {routes}/>

@@ -1,9 +1,9 @@
 <script lang="ts">
-  import AdminPanel from './header/AdminPanel.svelte';
-  import icon from "/frank.png"
-  import HomeMenu from './header/HomePanel.svelte';
+    import AdminPanel from './header/AdminPanel.svelte';
+    import icon from "/frank.png"
+    import HomeMenu from './header/HomePanel.svelte';
 
-import { push } from 'svelte-spa-router';
+    import { push } from 'svelte-spa-router';
 
 
 

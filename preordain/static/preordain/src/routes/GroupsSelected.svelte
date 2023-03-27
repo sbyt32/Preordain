@@ -1,36 +1,33 @@
 <script lang="ts">
     import Row from "../lib/Row.svelte";
     import CardDash from "../lib/CardDash.svelte";
-    import PriceGraph from '../lib/charts/PriceGraph.svelte';
     import Changes from '../lib/DailyChanges.svelte';
-    import Table from '../lib/Table.svelte';
-    import { projectTitle } from "../assets/stores";
+    import Table from '../lib/groups/Table.svelte';
     import GroupSelectedContainer from "../lib/groups/selected/GroupSelectedContainer.svelte";
-    import testThalia from '/test_thalia.jpg';
     import GroupSelectedBanner from "../lib/groups/selected/GroupSelectedBanner.svelte";
+    import { connectURL, projectTitle } from "../assets/stores";
+    import testThalia from '/test_thalia.jpg';
+    import { database } from "../util/fetch_data";
 
 
     export let params = {group: ""}
 
     projectTitle.set(`Group: ${params.group}`)
+
 </script>
 
-<!-- pb-6 because the top is already padded by 6 -->
-<!-- <h1 class="pb-6 text-2xl font-semibold text-center">
-    {params.group}
-</h1> -->
 
-
+{#await database(`${$connectURL}/groups/${params.group}`) then groupData}
     <Row row_span={4} col_span={4}>
         <svelte:fragment slot="Component">
-            <GroupSelectedBanner img={testThalia} groupName={params.group}/>
-
+            <GroupSelectedBanner img={testThalia} groupInfo={groupData.info}/>
             <CardDash col_span={3} row_span={1}/>
 
             <GroupSelectedContainer col_span={1} row_span={1}/>
-            <Table col_span={3} group={params.group} row_span={2}/>
+            <Table col_span={3} row_span={2} groupData={groupData}/>
+            <Changes col_span={1}/>
 
-            <Changes row_span={2}/>
 
         </svelte:fragment>
     </Row>
+{/await}

@@ -35,8 +35,7 @@
 
                     <!-- Text Header -->
                     <div class="flex flex-col text-center content-center text-gray-200 grow">
-                        <p class="font-semibold">{prices.data.name}</p>
-                        <p>{prices.data.set_full} <i class="ss text-2xl ss-{prices.data.set}"></i></p>
+                        <p class="font-semibold">{prices.data.name} <span class="font-normal text-base">{prices.data.set_full} <i class="ss text-2xl ss-{prices.data.set}"></i></span></p>
                     </div>
 
                     <!-- Price Body -->

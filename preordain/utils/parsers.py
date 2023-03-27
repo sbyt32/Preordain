@@ -2,7 +2,7 @@ from preordain.information.models import InformationData
 
 
 # To Do, add group info into groups.
-def parse_data_for_response(data: list):
+def parse_data_for_response(data: list[InformationData]):
     """
     Parse the data you recieved for this format.
     """
@@ -15,6 +15,7 @@ def parse_data_for_response(data: list):
                 set_full=cards["set_full"],
                 id=cards["id"],
                 last_updated=cards["date"],
+                uri=cards["uri"],
                 prices={
                     "usd": cards["usd"],
                     "usd_foil": cards["usd_foil"],

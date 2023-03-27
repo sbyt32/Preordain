@@ -23,6 +23,7 @@ async def search_by_set_collector_num(set: str, col_num: str, response: Response
                 info.set,
                 sets.set_full,
                 info.id,
+                info.uri,
                 price.date,
                 price.usd,
                 price.usd_foil,

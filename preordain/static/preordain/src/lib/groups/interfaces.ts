@@ -1,15 +1,23 @@
-import type { BaseResponse, MultipleCardData } from "../../assets/responses"
-
+import type { BaseResponse, MultipleCardData, PriceData } from "../../assets/responses"
+import type { BaseCardData } from "../../assets/interfaces"
 
 // /api/card/{group}
+export interface GetCardGroupInfo {
+    group_name: string,
+    description: string,
+    qty: number
+}
+
+export interface GroupCardData extends BaseCardData{
+    uri: string
+    last_updated: string
+    prices: PriceData
+}
+
 export interface GetCardGroup extends BaseResponse {
-    resp: 'card_info',
-    info: {
-        group_name: string,
-        description: string,
-        cards_in_group: number
-    },
-    data: [MultipleCardData]
+    resp: 'group_info'
+    info: GetCardGroupInfo
+    data: GroupCardData[]
 }
 
 interface TableGroups {

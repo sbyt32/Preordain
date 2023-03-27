@@ -73,6 +73,7 @@ class SuccessfulRequest(BaseResponse):
 
 
 class CardGroupsData(BaseCardData):
+    uri: str
     last_updated: datetime.date
     groups: Optional[list[str]]
     prices: CardPrices

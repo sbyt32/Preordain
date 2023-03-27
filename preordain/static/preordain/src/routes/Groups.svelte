@@ -1,7 +1,7 @@
 <script lang="ts">
     import GroupContainer from '../lib/groups/GroupContainer.svelte';
 
-    import { connectURL, projectTitle, showPopup } from "../assets/stores";
+    import { connectURL, currentTab, projectTitle, showPopup } from "../assets/stores";
     import { database } from "../util/fetch_data";
     import PopupModifyGroup from '../lib/groups/PopupModifyGroups.svelte';
     import { onDestroy } from 'svelte';
@@ -12,7 +12,7 @@
     export const params = {}
 
     projectTitle.set("Groups")
-
+    $currentTab = "Groups"
     onDestroy(() => {
         showPopup.close()
     })
@@ -53,22 +53,15 @@
         </div>
     </div>
 
-    <div class="component-theme mx-8">
+    <div class="component-theme mx-8 grow">
         <div class="grid grid-cols-4 grid-rows-3 gap-4 text-center m-4">
-            {#await groupInfo then groupQuery}
+            {#await groupInfo}
+                <GroupContainer/>
+            {:then groupQuery}
                 {#each groupQuery.data as groupData}
                     <GroupContainer groupData={groupData}/>
                 {/each}
             {/await}
-            {#each [1,2,] as _}
-                <GroupContainer/>
-            {/each}
-            <GroupContainer groupData={
-            {
-                group: "scripasdasdsadsaddsasadsdhjkasdhjsdhjksdhjkasdhjasdhjkasdasdsddhjkasdhjhjkasdtion",
-                description: "scripasdasdsadsaddsasadsdhjkasdhjsdhjksdhjkasdhjasdhjkasdasdsddhjkasdhjhjkasdtion",
-                cards_in_group: 69420
-            }}/>
 
         </div>
     </div>

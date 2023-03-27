@@ -3,9 +3,10 @@
     import CardDash from "../lib/CardDash.svelte";
     import PriceGraph from '../lib/charts/PriceGraph.svelte';
     import Changes from '../lib/DailyChanges.svelte';
-    import { projectTitle } from "../assets/stores";
+    import { currentTab, projectTitle } from "../assets/stores";
 
     projectTitle.set("Home")
+    $currentTab = "Home"
 </script>
 
 <Row row_span={3} col_span={4}>

@@ -84,6 +84,7 @@ async def find_by_group(group: str, response: Response):
             info.set,
             sets.set_full,
             info.id,
+            info.uri,
             prices.date AS "date",
             prices.usd,
             prices.usd_foil,

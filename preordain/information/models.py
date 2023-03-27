@@ -7,6 +7,8 @@ RESP_STRING = card_info = "card_info"
 
 
 class InformationData(BaseCardData):
+    uri: str
+    last_updated: datetime.date
     prices: CardPrices
 
 
