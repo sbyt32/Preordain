@@ -35,17 +35,24 @@ def get_inventory(response: Response):
             set.set_full as set_full,
             inventory.add_date,
             info.id,
+            info.uri,
             SUM(inventory.qty) as quantity,
             inventory.card_condition as card_condition,
             inventory.card_variant as card_variant,
             (AVG(avg_price.total_qty) / SUM(inventory.qty))::numeric(10,2) as "avg_cost",
             CASE
                 WHEN inventory.card_variant = 'Foil' THEN
-                    ROUND (100.0 * (price.usd_foil - (AVG(avg_price.total_qty) / SUM(inventory.qty))::numeric) / (AVG(avg_price.total_qty) / SUM(inventory.qty))::numeric)::numeric(10,2)
+                    ROUND (100.0 *
+                    (
+                        price.usd_foil::numeric - (AVG(avg_price.total_qty) / SUM(inventory.qty))::numeric
+                    ) /
+                    (
+                        AVG(avg_price.total_qty) / SUM(inventory.qty))::numeric
+                    , 2)
                 WHEN inventory.card_variant = 'Etched' THEN
-                    ROUND (100.0 * (price.usd_etch - (AVG(avg_price.total_qty) / SUM(inventory.qty))::numeric) / (AVG(avg_price.total_qty) / SUM(inventory.qty))::numeric)::numeric(10,2)
+                    ROUND (100.0 * (price.usd_etch::numeric - (AVG(avg_price.total_qty) / SUM(inventory.qty))::numeric) / (AVG(avg_price.total_qty) / SUM(inventory.qty))::numeric, 2)
                 ELSE
-                    ROUND (100.0 * (price.usd - (AVG(avg_price.total_qty) / SUM(inventory.qty))::numeric) / (AVG(avg_price.total_qty) / SUM(inventory.qty))::numeric)::numeric(10,2)
+                    ROUND (100.0 * (price.usd::numeric - (AVG(avg_price.total_qty) / SUM(inventory.qty))::numeric) / (AVG(avg_price.total_qty) / SUM(inventory.qty))::numeric, 2)
             END AS "change"
         FROM inventory as inventory
         JOIN card_info.info as info
@@ -83,6 +90,7 @@ def get_inventory(response: Response):
             set.set_full,
             inventory.add_date,
             info.id,
+            info.uri,
             price.usd,
             price.usd_foil,
             price.usd_etch,
@@ -191,22 +199,23 @@ async def remove_from_inventory(inventory: TableInventory):
                 FROM inventory
                 WHERE uri           = %(uri)s
                 AND card_condition  = %(card_condition)s
+                AND qty             = %(qty)s
                 AND card_variant    = %(card_variant)s
-                AND buy_price       = %(buy_price)s
                 AND add_date        = %(add_date)s
             )
         """,
         inventory.dict(),
     )
-
+    print(inventory.dict())
     if cur.fetchone()["exists"]:
+        print(inventory.dict())
         cur.execute(
             """
             DELETE FROM inventory
                 WHERE uri           = %(uri)s
                 AND card_condition  = %(card_condition)s
+                AND qty             = %(qty)s
                 AND card_variant    = %(card_variant)s
-                AND buy_price       = %(buy_price)s
                 AND add_date        = %(add_date)s
         """,
             inventory.dict(),

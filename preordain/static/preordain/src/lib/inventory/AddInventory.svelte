@@ -18,7 +18,9 @@
 <script lang="ts">
     import { connectURL, parseCurrency } from "../../assets/stores";
     import { database } from "../../util/fetch_data";
-    import type { SingleCardResponse } from "./interfaces";
+    import type { InventoryBody, SingleCardResponse } from "./interfaces";
+    export let col_span = 4;
+    export let row_span = 1
 
     let headers = ["USD","USD (Foil)","Euro","Euro (Foil)","TIX"]
     let price_values = ["usd","usd_foil","euro","euro_foil", "tix"]
@@ -51,8 +53,25 @@
         cardData = await database(`${$connectURL}/card/${params.set}/${params.collector_number}`)
         inventoryData.uri = cardData.data.uri
     }
-    export let col_span = 4;
-    export let row_span = 1
+
+    async function addCardInventory(data:InventoryBody) {
+        if (Object.values(inventoryData).some(x => x === null || x === '')) {
+            throw new Error("missing data");
+        }
+
+        await fetch(`${$connectURL}/inventory/add/?access=testing`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data)
+        }).then((data) => {
+            if (data.status == 201) {
+                return true
+            }
+            return false
+            }
+        )}
 </script>
 
 
@@ -66,8 +85,8 @@
                 <button class="preordain-button p-2 h-min col-span-1" disabled="{!params.collector_number || !params.set}" on:click={() => searchCard()}>Search</button>
 
 
-                <input type="text" placeholder="Quantity" class="p-2 h-min col-span-1 row-start-2" bind:value={inventoryData.qty}>
-                <input type="text" placeholder="Cost" class="p-2 h-min col-span-1 row-start-2" bind:value={inventoryData.buy_price}>
+                <input type="number" placeholder="Quantity" class="p-2 h-min col-span-1 row-start-2 tabular-nums" bind:value={inventoryData.qty}>
+                <input type="number" placeholder="Cost" class="p-2 h-min col-span-1 row-start-2 tabular-nums" bind:value={inventoryData.buy_price}>
 
 
                 <select class="p-2 h-min col-span-2 row-start-3" bind:value={inventoryData.card_condition}>
@@ -88,7 +107,7 @@
                     bind:value={inventoryData.add_date}
                 >
 
-                <button on:click={() => console.log(inventoryData)} class="preordain-button p-2 h-min col-span-1 row-start-2 col-start-5" disabled="{Object.values(inventoryData).some(x => x === null || x === '')}">Add</button>
+                <button on:click={() => addCardInventory(inventoryData)} class="preordain-button p-2 h-min col-span-1 row-start-2 col-start-5" disabled="{Object.values(inventoryData).some(x => x === null || x === '')}">Add</button>
 
             </div>
         </div>

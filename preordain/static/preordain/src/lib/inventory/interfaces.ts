@@ -21,6 +21,7 @@ export interface InventoryBody {
 }
 
 export interface InventoryData extends BaseCardData{
+    uri: string
     add_date: string
     quantity: number
     card_condition: string
@@ -32,4 +33,19 @@ export interface InventoryData extends BaseCardData{
 export interface InventoryResponse extends BaseResponse {
     resp: "inventory_data"
     data: InventoryData[]
+}
+
+
+export interface ResponseData {
+    "Name": string
+    "Set": string
+    "Collector No.": string
+    "Condition" : string
+    "Variant" : string
+    "Cost" : number
+    "Change": string
+    "Quantity": number
+    "Add Date": string
+    "_set_short": string
+    "_uri": string
 }

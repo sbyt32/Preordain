@@ -8,6 +8,7 @@ RESP_STRING = "inventory_data"  # * /inventory/...
 
 
 class InventoryData(BaseCardData):
+    uri: str
     add_date: datetime.date
     quantity: int
     card_condition: CardConditions
