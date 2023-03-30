@@ -21,17 +21,18 @@ log_setup()
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
-routes = [
-    Mount(
-        "/dash",
-        app=StaticFiles(directory="preordain/static/preordain/dist", html=True),
-        name="dashboard",
-    ),
-]
+
 if TESTING:
     desc = "TESTING"
     app = FastAPI(title=PROJECT, description=desc)
 else:
+    routes = [
+        Mount(
+            "/dash",
+            app=StaticFiles(directory="preordain/static/preordain/dist", html=True),
+            name="dashboard",
+        ),
+    ]
     desc = "PROD-ISH"
     app = FastAPI(title=PROJECT, description=desc, routes=routes)
 
