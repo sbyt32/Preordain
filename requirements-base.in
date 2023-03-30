@@ -6,3 +6,4 @@ python-dateutil
 requests
 httpx
 python-dotenv
+cachetools

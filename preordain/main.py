@@ -20,6 +20,7 @@ from preordain.api import api_router
 log_setup()
 
 log = logging.getLogger(__name__)
+log.setLevel(logging.DEBUG)
 routes = [
     Mount(
         "/dash",

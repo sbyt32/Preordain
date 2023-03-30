@@ -5,6 +5,7 @@ from preordain.exceptions import RootException
 from preordain.groups.router import user_groups as groups_user_router
 from preordain.price.router import price_router
 from preordain.price.models import PriceDataMultiple, PriceDataSingle, PriceChange
+from preordain.internal.router import admin_route as internal_router
 from preordain.information.router import user_router as info_user_router
 from preordain.information.models import CardInformation
 from preordain.inventory.router import router as inventory_router
@@ -99,19 +100,12 @@ api_router.include_router(
     dependencies=[Depends(write_token)],
 )
 
-# # # * Admin Panel
-# api_router.include_router(
-#     groups_admin_router,
-#     prefix="/groups",
-#     tags=["Card Groups"],
-#     dependencies=[Depends(write_access)],
-# )
-# api_router.include_router(
-#     info_admin_router,
-#     prefix="/admin",
-#     tags=["Admin Panel"],
-#     dependencies=[Depends(write_access)],
-# )
+api_router.include_router(
+    internal_router,
+    prefix="/admin",
+    tags=["Administrative Stuff"],
+    dependencies=[Depends(write_token)],
+)
 
 
 @api_router.get("/", tags=["Test Connection"])

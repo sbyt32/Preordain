@@ -1,14 +1,14 @@
 import logging
 
 log = logging.getLogger()
-from preordain.utils.connections import connect_db, send_response
+from preordain.utils.connections import connect_db
 from preordain.utils.find_missing import validate_card_exists_from_uri
 from preordain.exceptions import NotFound
 from preordain.tracker.schema import CardInfoModel
 from preordain.tracker.models import SuccessfulRequest
 
 # from preordain.trackers.dependencies import duplicate_card
-from fastapi import APIRouter, Response, status, Depends
+from fastapi import APIRouter, Response, status
 
 router = APIRouter()
 

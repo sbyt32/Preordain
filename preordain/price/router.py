@@ -1,8 +1,10 @@
+from cachetools import cached, TTLCache
+
+# from asyncache import cached
 from fastapi import APIRouter, HTTPException, Response, status, Depends
 from psycopg.errors import DatetimeFieldOverflow
 from typing import Optional
 from preordain.price.utils import (
-    parse_data_for_response,
     parse_data_single_card,
 )
 from preordain.utils.connections import connect_db
@@ -12,16 +14,20 @@ from preordain.price.models import (
     PriceDataSingle,
     PriceChange,
 )
+from preordain.utils.get_last_update import get_last_update, to_tomorrow
+from preordain.utils.timer import timer
 from preordain.price.enums import GrowthCurrency, GrowthDirections
 from preordain.exceptions import NotFound
+from datetime import datetime
+from preordain.config import UPDATE_OFFSET
 import logging
-import re
 
 log = logging.getLogger()
 
 price_router = APIRouter()
 
 
+@cached(cache=TTLCache(maxsize=1024, ttl=to_tomorrow()))
 @price_router.get(
     "/{set}/{id}",
     description="Get the price data for one card. Last 25 results only.",
@@ -106,7 +112,9 @@ async def get_single_card_data(
     raise NotFound
 
 
-@price_router.get("/changes/{growth}/{currency}/")
+# To Fix: Caching does not work on this endpoint but works on others?
+# @cached(cache=TTLCache(maxsize=1024, ttl=round((datetime.today() + UPDATE_OFFSET - datetime.now()).total_seconds())))
+@price_router.get("/changes/{growth}/{currency}")
 async def get_biggest_gains(
     response: Response,
     currency: GrowthCurrency = str(GrowthCurrency.usd),

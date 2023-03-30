@@ -23,3 +23,15 @@ class CardDataTCGTable(BaseModel):
     qty: int
     buy_price: int
     ship_price: int
+
+
+class SchemaCardInfoTableInfo(BaseModel):
+    name: str = Field(max_length=255)
+    set: str = Field(max_length=12)
+    id: str
+    uri: str
+    tcg_id: Optional[int]
+    tcg_id_etch: Optional[int]
+    groups: Optional[list[str]]
+    new_search: bool = Field(default=True)
+    scrape_sales: bool = Field(default=False)

@@ -39,7 +39,8 @@ CREATE TABLE
         tcg_id_etch text,
         groups text [],
         new_search boolean DEFAULT true,
-        scrape_sales boolean DEFAULT false
+        scrape_sales boolean DEFAULT false,
+        UNIQUE(uri)
 );
 
 CREATE INDEX card_identity ON card_info.info (uri);
@@ -59,11 +60,11 @@ CREATE INDEX card_identity ON public.card_data USING btree (uri);
 
 CREATE TABLE IF NOT EXISTS card_info.sets (
         set varchar(12) NOT NULL PRIMARY KEY,
-            set_full text NOT NULL,
-            release_date date
+        set_full text NOT NULL,
+        release_date date
 );
 
-CREATE INDEX set_code ON card_info.sets USING btree (set);
+CREATE INDEX card_sets ON card_info.sets USING btree (set);
 
 CREATE TABLE IF NOT EXISTS card_info.groups (
         group_name text NOT NULL,
