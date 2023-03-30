@@ -51,7 +51,7 @@ def test_adding_deleting_from_inventory(client: TestClient):
     from starlette.config import environ
 
     # This actually corresponds to a real card
-    sample_uri = "b2b91418-5cbd-443d-9963-7e590dd0b6fc"
+    sample_uri = "c9f8b8fb-1cd8-450e-a1fe-892e7a323479"
     json_body = {
         "add_date": "2023-03-26",
         "uri": sample_uri,
