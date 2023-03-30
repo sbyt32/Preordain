@@ -30,10 +30,11 @@ routes = [
 ]
 if TESTING:
     desc = "TESTING"
+    app = FastAPI(title=PROJECT, description=desc)
 else:
     desc = "PROD-ISH"
+    app = FastAPI(title=PROJECT, description=desc, routes=routes)
 
-app = FastAPI(title=PROJECT, description=desc, routes=routes)
 app.include_router(api_router, prefix="/api")
 
 # ? I really don't like this out in the open, but I'm leaving it here for testing.
