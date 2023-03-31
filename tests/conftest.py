@@ -6,8 +6,8 @@ from starlette.config import environ
 environ["SEC_TOKEN"] = "testing"
 environ["WRITE_TOKEN"] = "testing"
 environ["PRICE_TOKEN"] = "testing"
-environ["DEVELOPMENT"] = False
-environ["TESTING"] = True
+environ["TESTING"] = "True"
+environ["DASHBOARD"] = "False"
 
 # later
 from preordain import config
