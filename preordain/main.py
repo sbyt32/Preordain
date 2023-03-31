@@ -1,8 +1,6 @@
 import logging
 from fastapi import FastAPI
-from fastapi.routing import Mount
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
 from preordain.exceptions import (
     InvalidToken,
     token_exception_handler,
@@ -13,7 +11,7 @@ from preordain.exceptions import (
 )
 from preordain.search.exceptions import InvalidSearchQuery, invalid_search_handler
 from preordain.logging_details import log_setup
-from preordain.config import PROJECT, TESTING
+from preordain.config import API_CONFIG
 from preordain.api import api_router
 
 # * Logging Information
@@ -22,19 +20,8 @@ log_setup()
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
 
-if TESTING:
-    desc = "TESTING"
-    app = FastAPI(title=PROJECT, description=desc)
-else:
-    routes = [
-        Mount(
-            "/dash",
-            app=StaticFiles(directory="preordain/static/preordain/dist", html=True),
-            name="dashboard",
-        ),
-    ]
-    desc = "PROD-ISH"
-    app = FastAPI(title=PROJECT, description=desc, routes=routes)
+
+app = FastAPI(**API_CONFIG)
 
 app.include_router(api_router, prefix="/api")
 

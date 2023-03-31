@@ -1,3 +1,5 @@
+from fastapi.routing import Mount
+from fastapi.staticfiles import StaticFiles
 from starlette.config import Config, environ
 from starlette.datastructures import Secret
 from dateutil.relativedelta import relativedelta
@@ -32,10 +34,30 @@ try:
     UPDATE_OFFSET = relativedelta(days=+1, hour=0, minute=10, second=0, microsecond=0)
 
     TESTING = config("TESTING", cast=bool)
-    if TESTING:
-        DB_NAME = Secret("test_" + str(DB_NAME))
+    DASHBOARD = config("DEVELOPMENT", cast=bool, default=True)
+
+    API_CONFIG = {"title": PROJECT, "description": "Production Build.", "routes": []}
 
 except KeyError as e:
     if not environ.get("TESTING"):
         log.critical(e)
         sys.exit(1)
+
+
+if TESTING:
+    DB_NAME = Secret("test_" + str(DB_NAME))
+    API_CONFIG[
+        "description"
+    ] = "Environment for testing. This should be enabled if you are running tests or are needing the testing environment."
+
+if DASHBOARD:
+    API_CONFIG[
+        "description"
+    ] = "Dashboard Enabled, the dashboard should be available on the /dash part."
+    API_CONFIG["routes"] = [
+        Mount(
+            "/dash",
+            app=StaticFiles(directory="preordain/static/preordain/dist", html=True),
+            name="dashboard",
+        )
+    ]
