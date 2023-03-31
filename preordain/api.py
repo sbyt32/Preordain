@@ -1,6 +1,7 @@
 from fastapi import Depends, APIRouter
 from preordain.dependencies import select_token, write_token
-from preordain.models import BaseError, RespStrings
+from preordain.utils.find_missing import validate_table_data
+from preordain.models import BaseError, RespStrings, RootResponse
 from preordain.exceptions import RootException
 from preordain.groups.router import user_groups as groups_user_router
 from preordain.price.router import price_router
@@ -15,7 +16,7 @@ from preordain.sales.models import CardSaleResponse
 from preordain.search.router import search_router
 from preordain.search.models import SearchInformation
 from preordain.tracker.router import router as tracker_router
-
+from preordain.config import PROJECT
 from typing import Union
 
 api_router = APIRouter(
@@ -108,6 +109,21 @@ api_router.include_router(
 )
 
 
-@api_router.get("/", tags=["Test Connection"])
+@api_router.get(
+    "/",
+    tags=["Test Connection"],
+    status_code=200,
+    responses={200: {"model": RootResponse, "description": "Testing Root"}},
+)
 async def root():
-    raise RootException
+    checks = validate_table_data()
+    return RootResponse(
+        status=200,
+        info={
+            "message": f"Welcome to {PROJECT}! The following is the checks that is needed for data to show up. If any are false, that might be why nothing is displaying.",
+            "checks": {
+                "Set Information": checks["info_exists"],
+                "Price Data (at least one days worth)": checks["price_exists"],
+            },
+        },
+    )

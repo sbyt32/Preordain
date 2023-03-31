@@ -1,4 +1,3 @@
-from functools import lru_cache
 from preordain.utils.connections import connect_db
 
 
@@ -27,3 +26,14 @@ def validate_card_exists_from_uri(uri: str):
     if check:
         return True
     return False
+
+
+def validate_table_data():
+    conn, cur = connect_db()
+    return cur.execute(
+        """
+        SELECT
+            EXISTS (SELECT 1 FROM card_info.info) AS info_exists,
+            EXISTS (SELECT 1 from card_data) as price_exists
+        """
+    ).fetchone()

@@ -4,6 +4,7 @@ from pydantic.generics import GenericModel
 from enum import Enum
 import datetime
 from typing import Any
+from preordain.config import PROJECT
 
 
 class CardPrices(BaseModel):
@@ -86,3 +87,34 @@ class BaseError(GenericModel):
     class Config:
         fields = {"__module__": {"exclude": True}, "__doc__": {"exclude": True}}
         use_enum_values = True
+
+
+class RootChecks(BaseModel):
+    Set_Information: bool
+    PriceData: bool
+
+
+class RootInfo(BaseModel):
+    message: str
+    checks: RootChecks
+
+
+class RootResponse(BaseResponse):
+    resp = "root_test"
+    status = 200
+    info = RootInfo
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "resp": "root_test",
+                "status": 200,
+                "info": {
+                    "message": "Welcome to Preordain! The following is the checks that is needed for data to show up. If any are false, that might be why nothing is displaying.",
+                    "checks": {
+                        "Set Information": True,
+                        "Price Data (at least one days worth)": True,
+                    },
+                },
+            }
+        }

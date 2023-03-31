@@ -10,4 +10,4 @@ COPY . .
 ARG API_PORT=8000
 
 # hypercorn preordain.main:app
-ENTRYPOINT [ "python3", "-m", "hypercorn", "preordain.main:app", "--bind", "0.0.0.0"]
+ENTRYPOINT [ "python3", "-m", "hypercorn", "preordain.main:app", "--bind", "0.0.0.0:8000"]

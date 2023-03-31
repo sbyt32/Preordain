@@ -1,13 +1,13 @@
--- Database: price_copy
+-- Database: price_tracker
 
--- DROP DATABASE IF EXISTS price_copy;
+-- DROP DATABASE IF EXISTS price_tracker;
 
-CREATE DATABASE price_copy
+CREATE DATABASE price_tracker
 WITH
     OWNER = postgres ENCODING = 'UTF8' LC_COLLATE = 'en_US.utf8' LC_CTYPE = 'en_US.utf8' TABLESPACE = pg_default CONNECTION
 LIMIT = -1 IS_TEMPLATE = False;
 
-\c price_copy
+\c price_tracker
 
 
 

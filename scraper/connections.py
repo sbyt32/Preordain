@@ -17,7 +17,6 @@ def connect_db():
     """Always have two variables into this, connection and cursor. Default to `conn, cur = connect_db`
     \n[More info about psycopg](https://www.psycopg.org/psycopg3/docs/api/connections.html#psycopg.Connection)
     """
-    print(DB_HOST)
     db_info = dict(
         zip(
             ("host", "user", "password", "dbname"),
