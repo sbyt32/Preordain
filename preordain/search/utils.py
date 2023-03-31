@@ -1,23 +1,29 @@
+from preordain.search.models import CardSearchData
+
+
 def parse_data_for_response(data: list):
     """
     Parse the data you recieved for this format.
     """
     card_data = []
-    for cards in data:
+    for card in data:
         card_data.append(
-            {
-                "name": cards["name"],
-                "set": cards["set"],
-                "set_full": cards["set_full"],
-                "id": cards["id"],
-                "last_updated": cards["last_updated"],
-                "prices": {
-                    "usd": cards["usd"],
-                    "usd_foil": cards["usd_foil"],
-                    "euro": cards["euro"],
-                    "euro_foil": cards["euro_foil"],
-                    "tix": cards["tix"],
+            CardSearchData(
+                name=card["name"],
+                set=card["set"],
+                set_full=card["set_full"],
+                id=card["id"],
+                uri=card["uri"],
+                scrape_sales=card["scrape_sales"] or False,
+                last_updated=card["last_updated"],
+                prices={
+                    "usd": card["usd"],
+                    "usd_foil": card["usd_foil"],
+                    "usd_etch": card["usd_etch"],
+                    "euro": card["euro"],
+                    "euro_foil": card["euro_foil"],
+                    "tix": card["tix"],
                 },
-            }
+            ).dict()
         )
     return card_data

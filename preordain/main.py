@@ -20,19 +20,22 @@ from preordain.api import api_router
 log_setup()
 
 log = logging.getLogger(__name__)
-routes = [
-    Mount(
-        "/dash",
-        app=StaticFiles(directory="preordain/static/preordain/dist", html=True),
-        name="dashboard",
-    ),
-]
+log.setLevel(logging.DEBUG)
+
 if TESTING:
     desc = "TESTING"
+    app = FastAPI(title=PROJECT, description=desc)
 else:
+    routes = [
+        Mount(
+            "/dash",
+            app=StaticFiles(directory="preordain/static/preordain/dist", html=True),
+            name="dashboard",
+        ),
+    ]
     desc = "PROD-ISH"
+    app = FastAPI(title=PROJECT, description=desc, routes=routes)
 
-app = FastAPI(title=PROJECT, description=desc, routes=routes)
 app.include_router(api_router, prefix="/api")
 
 # ? I really don't like this out in the open, but I'm leaving it here for testing.

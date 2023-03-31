@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, Response, status
 from preordain.utils.connections import connect_db, send_response
-from preordain.inventory.models import ModifyInventory, InventoryResponse
+from preordain.inventory.models import InventoryResponse, SuccessfulRequest
+from preordain.inventory.schema import TableInventory
 from preordain.models import BaseResponse
 from preordain.exceptions import NotFound
 import arrow
@@ -23,41 +24,76 @@ router = APIRouter()
 )
 
 # Return your entire inventory
-async def get_inventory(response: Response):
+def get_inventory(response: Response):
     conn, cur = connect_db()
 
     cur.execute(
         """
         SELECT
             info.name as name,
-            set.set_full as set,
+            info.set,
+            set.set_full as set_full,
+            inventory.add_date,
+            info.id,
+            info.uri,
             SUM(inventory.qty) as quantity,
-            inventory.card_condition as condition,
-            inventory.card_variant as variant,
-            (AVG(avg_price.total_qty) / SUM(inventory.qty))::numeric(10,2) as "avg_cost"
+            inventory.card_condition as card_condition,
+            inventory.card_variant as card_variant,
+            (AVG(avg_price.total_qty) / SUM(inventory.qty))::numeric(10,2) as "avg_cost",
+            CASE
+                WHEN inventory.card_variant = 'Foil' THEN
+                    ROUND (100.0 *
+                    (
+                        price.usd_foil::numeric - (AVG(avg_price.total_qty) / SUM(inventory.qty))::numeric
+                    ) /
+                    (
+                        AVG(avg_price.total_qty) / SUM(inventory.qty))::numeric
+                    , 2)
+                WHEN inventory.card_variant = 'Etched' THEN
+                    ROUND (100.0 * (price.usd_etch::numeric - (AVG(avg_price.total_qty) / SUM(inventory.qty))::numeric) / (AVG(avg_price.total_qty) / SUM(inventory.qty))::numeric, 2)
+                ELSE
+                    ROUND (100.0 * (price.usd::numeric - (AVG(avg_price.total_qty) / SUM(inventory.qty))::numeric) / (AVG(avg_price.total_qty) / SUM(inventory.qty))::numeric, 2)
+            END AS "change"
         FROM inventory as inventory
         JOIN card_info.info as info
-            ON info.tcg_id = inventory.tcg_id
+            ON info.uri = inventory.uri
         JOIN card_info.sets as set
             ON info.set = set.set
         JOIN (
             SELECT
-                inventory.tcg_id,
+                inventory.uri,
                 SUM (inventory.qty * inventory.buy_price)::numeric AS total_qty,
                 inventory.card_condition,
                 inventory.card_variant
             FROM inventory
             GROUP BY
-                inventory.tcg_id,
+                inventory.uri,
                 inventory.card_condition,
                 inventory.card_variant
         ) AS avg_price
-            ON avg_price.tcg_id = inventory.tcg_id
+            ON avg_price.uri = inventory.uri
             AND avg_price.card_condition = inventory.card_condition
             AND avg_price.card_variant = inventory.card_variant
+        JOIN (
+            SELECT
+                price.uri,
+                price.usd,
+                PRICE.usd_foil,
+                price.usd_etch
+            FROM card_data AS price
+            WHERE price.date = (SELECT MAX(date) as last_update from card_data)
+        ) AS price
+            ON price.uri = inventory.uri
         GROUP BY
             info.name,
+            info.set,
             set.set_full,
+            inventory.add_date,
+            info.id,
+            info.uri,
+            price.usd,
+            price.usd_foil,
+            price.usd_etch,
             inventory.card_condition,
             inventory.card_variant
     """
@@ -66,105 +102,131 @@ async def get_inventory(response: Response):
     conn.close()
     if inventory:
         response.status_code = status.HTTP_200_OK
-        return InventoryResponse(status=response.status_code, data=inventory).dict()
+        return InventoryResponse(status=response.status_code, data=inventory)
     raise NotFound
 
 
-# ! Disabled for now
-# @router.post("/add")
-# async def add_to_inventory(inventory: ModifyInventory):
-#     current_date = arrow.utcnow().date()
-#     # ? If you have the set and collector number, but not the TCG_ID, it will pull that.
-#     if inventory.set and inventory.col_num and not inventory.tcg_id:
-#         resp = send_response("GET", f'https://api.scryfall.com/cards/{inventory.set.lower()}/{inventory.col_num.lower()}')
-#         if inventory.card_variant == "Etched":
-#             inventory.tcg_id = resp['tcgplayer_etched_id']
-#         else:
-#             inventory.tcg_id = str(resp['tcgplayer_id'])
+@router.post(
+    "/add/",
+    description="Add cards to the inventory.",
+    responses={
+        201: {
+            "model": SuccessfulRequest,
+            "description": "Successfully Added to Inventory.",
+        }
+    },
+)
+async def add_to_inventory(inventory: TableInventory, response: Response):
+    # Could we do this with a single "CASE WHERE..." statement?
+    # Decide if update or add new
+    conn, cur = connect_db()
+    cur.execute(
+        """
+        SELECT
+            EXISTS (
+                SELECT 1
+                FROM inventory
+                WHERE add_date      = %(add_date)s
+                AND uri             = %(uri)s
+                AND card_condition  = %(card_condition)s
+                AND card_variant    = %(card_variant)s
+                AND buy_price       = %(buy_price)s
+            )
+        """,
+        inventory.dict(),
+    )
 
-#     if inventory.tcg_id:
-#         conn, cur = connect_db()
+    if cur.fetchone()["exists"]:
+        cur.execute(
+            """
+            UPDATE inventory
+            SET qty = inventory.qty + %(qty)s
+            WHERE uri = %(uri)s
+            AND card_condition   = %(card_condition)s
+            AND card_variant = %(card_variant)s
+            AND buy_price = %(buy_price)s
+            AND add_date = %(add_date)s
+            """,
+            inventory.dict(),
+        )
+    else:
+        cur.execute(
+            """
+            INSERT INTO inventory
+            VALUES (
+                %(add_date)s,
+                %(uri)s,
+                %(qty)s,
+                %(buy_price)s,
+                %(card_condition)s,
+                %(card_variant)s
+            )
+            """,
+            inventory.dict(),
+        )
 
-#         cur.execute("""
-#             SELECT
-#                 EXISTS (
-#                     SELECT 1
-#                     FROM inventory
-#                     WHERE tcg_id        = %s
-#                     AND card_condition  = %s
-#                     AND card_variant    = %s
-#                     AND buy_price       = %s
-#                     AND add_date        = %s
-#                 )
-#             """, (
-#                     inventory.tcg_id,
-#                     inventory.condition,
-#                     inventory.card_variant,
-#                     inventory.buy_price,
-#                     current_date
-#                 )
-#         )
+    conn.commit()
+    cur.execute(
+        """
+        SELECT
+            EXISTS (
+                SELECT 1
+                FROM inventory
+                WHERE uri           = %(uri)s
+                AND card_condition  = %(card_condition)s
+                AND card_variant    = %(card_variant)s
+                AND buy_price       = %(buy_price)s
+                AND add_date        = %(add_date)s
+            )
+        """,
+        inventory.dict(),
+    )
 
-#         if cur.fetchone()['exists']:
-#             cur.execute("""
-#                 UPDATE inventory
-#                 SET qty = inventory.qty + %s
-#                 WHERE tcg_id = %s
-#                 AND card_condition = %s
-#                 AND card_variant = %s
-#                 AND buy_price = %s
-#                 AND add_date = %s
-#                 """, (
-#                     inventory.qty,
-#                     inventory.tcg_id,
-#                     inventory.condition,
-#                     inventory.card_variant,
-#                     inventory.buy_price,
-#                     current_date
-#                     )
-#             )
-#         else:
-#             cur.execute("""
-#                 INSERT INTO inventory
-#                 VALUES (
-#                     %s,
-#                     %s,
-#                     %s,
-#                     %s,
-#                     %s,
-#                     %s
-#                 )
-#                 """, (
-#                     current_date,
-#                     inventory.tcg_id,
-#                     inventory.qty,
-#                     inventory.buy_price,
-#                     inventory.condition,
-#                     inventory.card_variant
-#                     )
-#             )
-
-#         cur.execute("""
-#             SELECT * FROM inventory
-#             WHERE
-#                 tcg_id = %s
-#                 AND card_condition = %s
-#                 AND card_variant = %s
-#                 AND buy_price = %s
-#                 AND add_date = %s
-#             """, (
-#                 inventory.tcg_id,
-#                 inventory.condition,
-#                 inventory.card_variant,
-#                 inventory.buy_price,
-#                 current_date
-#                 )
-#         )
-#         inventory_check = cur.fetchone()
-#         conn.commit()
-#         return inventory_check
+    if cur.fetchone()["exists"]:
+        response.status_code = status.HTTP_201_CREATED
+        return SuccessfulRequest(status=response.status_code)
 
 
-# @router.delete("/delete")
-# async def remove_from_inventory():
-#     pass
+# Is Delete the correct? Probably.
+@router.post("/delete/", status_code=204)
+async def remove_from_inventory(inventory: TableInventory):
+    conn, cur = connect_db()
+    cur.execute(
+        """
+        SELECT
+            EXISTS (
+                SELECT 1
+                FROM inventory
+                WHERE uri           = %(uri)s
+                AND card_condition  = %(card_condition)s
+                AND qty             = %(qty)s
+                AND card_variant    = %(card_variant)s
+                AND add_date        = %(add_date)s
+            )
+        """,
+        inventory.dict(),
+    )
+    print(inventory.dict())
+    if cur.fetchone()["exists"]:
+        print(inventory.dict())
+        cur.execute(
+            """
+            DELETE FROM inventory
+                WHERE uri           = %(uri)s
+                AND card_condition  = %(card_condition)s
+                AND qty             = %(qty)s
+                AND card_variant    = %(card_variant)s
+                AND add_date        = %(add_date)s
+        """,
+            inventory.dict(),
+        )
+        conn.commit()
+    return
+
+
+@router.delete("/clear/", status_code=status.HTTP_204_NO_CONTENT)
+async def clear_inventory():
+    conn, cur = connect_db()
+    cur.execute("DELETE FROM inventory")
+    conn.commit()
+    return

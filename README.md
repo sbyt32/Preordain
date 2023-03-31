@@ -1,80 +1,76 @@
 # MTG Price Fetcher
 > A simple price and sale fetcher for Magic: The Gathering, powered via Scryfall and TCGPlayer's API and written in Python.
 
-This project contains a group of Python scripts that will allow the user to create a PostgreSQL database, and begin to scrape price data from Scryfall and TCGPlayer. It uses FastAPI to retrieve information from the database and returns in a .json format.
+
 
 
 Start the API with...
 ```
     pip install -r requirements-base.txt
-    python set_up.py
     hypercorn preordain.main:app
 ```
 Written documentation is a WIP. Location is currently [here](docs/api_functions.md). More functions will be added and documented over time.
 
 
 Check out the dashboard @ localhost:8000/docs
-![image](https://user-images.githubusercontent.com/73682114/223646534-da46b06e-622b-41b7-8ec9-ffc54898556e.png)
+
+
 
 ------------
 
 
 - [MTG Price Fetcher](#mtg-price-fetcher)
   - [Features](#features)
-  - [How it works](#how-it-works)
-    - [`set_up.py`](#set_uppy)
-      - [`cfg_setup()`](#cfg_setup)
-      - [`set_up_db()`](#set_up_db)
-    - [`fetch_card_data.py`](#fetch_card_datapy)
-    - [`logging_details.py`](#logging_detailspy)
-    - [Testing (WIP)](#testing-wip)
+  - [**To Do:**](#to-do)
   - [Libraries](#libraries)
+    - [Base](#base)
+    - [Dev](#dev)
 
 ## Features
 *This list is non-exhaustive.*
 - API
-  - Search by Card Groups
-  - Return price data of one or multiple cards
-    - One Card = Last 25 days of Price Data
-    - Multiple Cards = Most Recent Price
-  - Add and remove tracked cards
-  -
-- Server
-  - Tracking TCGP recent purchase data.
-      - Modify card_info.info table columns for TCGP and SF.
-  - Config files are called as needed
-  - Fetch price and sale data from Scryfall and TCGPlayer, respectively.
-  - Automatic setup via `set_up.py`
+  - Organize and track personal inventory
+    - Compare current price vs purchase price.
+    - Add, delete, and clear current inventory.
+  - Fetch fresh price data (provided from Scryfall)
+    - See individual card prices
+      - USD, Euro, and Tix, including Day over Day changes
+    - Examine Top gains / losses over USD / Euro / Tix
+  - View and catagorize various cards as different groups
+- Scraper
+  - Automatically scrape Scryfall price data and TCGPlayer sale data
 
-**To Do:**
+## **To Do:**
 
   Just check [here](https://github.com/sbyt32/mtg_price_fetcher/discussions/22)
 
-## How it works
-
-### [`set_up.py`](set_up.py)
-You should run this first, otherwise nothing will function correctly.<br>
-
-
-
-Example `*.log` output
-```log
-2022-11-23 15:46:13,979 | INFO     | add_remove_db_data.py | Now tracking: Thalia, Guardian of Thraben from Innistrad: Crimson Vow
-```
-
-### [Testing (WIP)](tests/)
-*This is still a WIP* <br>
-
-Invoke with...
-```
-pytest --cov=tests/
-```
 
 ## Libraries
+  ### Base
     arrow
-    requests
-    psycopg[binary]
-    fastapi
     hypercorn
-    pytest
+    psycopg[binary]
+    fastapi<0.95.0
+    python-dateutil
+    requests
     httpx
+    python-dotenv
+  ### Dev
+    flake8
+    black
+    pytest
+    pytest-cov
+    pre-commit
+    pip-tools
+
+
+## Images
+
+### Home
+![home](https://user-images.githubusercontent.com/73682114/227756059-f62f8074-2d80-4c19-b68f-f7df6fc6914b.png)
+
+### Groups
+![groups](https://user-images.githubusercontent.com/73682114/227756063-bbe35141-c3e0-496b-be2d-4f6147d927ae.png)
+![group page](https://user-images.githubusercontent.com/73682114/227756066-9deac17f-12ea-468e-b031-ff262baadd43.png)
+### Search
+![search](https://user-images.githubusercontent.com/73682114/227756068-870dd243-cf9e-489a-9233-69be649b255b.png)

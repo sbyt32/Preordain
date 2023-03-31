@@ -3,11 +3,11 @@ from fastapi.testclient import TestClient
 
 def test_inventory_root(client: TestClient):
     from starlette.config import environ
-    from preordain.models import RespStrings
+    from preordain.inventory.models import RESP_STRING
 
     response = client.get(f'/api/inventory/?access={str(environ["SEC_TOKEN"])}')
     assert response.status_code == 200
-    assert response.json()["resp"] == RespStrings.retrieve_inventory
+    assert response.json()["resp"] == RESP_STRING
 
 
 def test_inventory_root_fail(client: TestClient):
@@ -44,3 +44,29 @@ def test_inventory_bad_validation():
     }
     with pytest.raises(ValidationError):
         InventoryData(**incorrect_variant_data)
+
+
+def test_adding_deleting_from_inventory(client: TestClient):
+    from preordain.inventory.models import RESP_STRING
+    from starlette.config import environ
+
+    # This actually corresponds to a real card
+    sample_uri = "c9f8b8fb-1cd8-450e-a1fe-892e7a323479"
+    json_body = {
+        "add_date": "2023-03-26",
+        "uri": sample_uri,
+        "qty": 1,
+        "buy_price": 20,
+        "card_condition": "NM",
+        "card_variant": "Normal",
+    }
+    response = client.post(
+        f"/api/inventory/add/?access={str(environ['SEC_TOKEN'])}", json=json_body
+    )
+    assert response.status_code == 201
+    insert_json = response.json()
+    assert insert_json["resp"] == RESP_STRING
+    removal = client.post(
+        f"/api/inventory/delete/?access={str(environ['SEC_TOKEN'])}", json=json_body
+    )
+    assert removal.status_code == 204

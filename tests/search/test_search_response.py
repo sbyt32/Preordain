@@ -19,3 +19,11 @@ def test_over_50_char(client: TestClient):
     response = response.json()
     assert response["info"] == InvalidSearchQuery.info
     assert response["resp"] == InvalidSearchQuery.resp
+
+
+def test_no_results(client: TestClient):
+    search_query = "THIS WILL NEVER BE A MAGIC CARD NAME"
+    response = client.get(f"/api/search/{search_query}")
+
+    assert response.status_code == 404
+    assert response.json()["resp"] == "no_results"

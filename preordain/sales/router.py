@@ -5,12 +5,8 @@ from preordain.sales.utils import (
     process_tcgp_data,
     process_tcgp_data_single,
 )
-from preordain.sales.models import CardSaleResponse
-from preordain.models import RespStrings
+from preordain.sales.models import CardSaleResponse, daily_sales_str, recent_sales_str
 from preordain.exceptions import NotFound
-import logging
-
-log = logging.getLogger()
 
 sales_router = APIRouter()
 
@@ -18,11 +14,11 @@ sales_router = APIRouter()
 # * daily_card_sales
 @sales_router.get(
     "/recent/{set}/{col_num}",
-    description="Get the most recent sales from this card. Max 25",
+    description="Get the most recent sales from this card. Max 25.",
     responses={
         200: {
             "model": CardSaleResponse,
-            "description": "Retrieve your inventory.",
+            "description": "Successful Request.",
         },
     },
 )
@@ -66,9 +62,10 @@ async def recent_card_sales_set_id(set: str, col_num: str, response: Response):
         if data:
             response.status_code = status.HTTP_200_OK
             return CardSaleResponse(
+                info={"message": "hello"},
                 status=response.status_code,
                 data=process_tcgp_data(data),
-                resp=RespStrings.recent_card_sales,
+                resp=recent_sales_str,
             )
         raise NotFound
 
@@ -136,7 +133,7 @@ async def get_daily_sales_tcg(set: str, col_num: str, response: Response):
     if data:
         response.status_code = status.HTTP_200_OK
         return CardSaleResponse(
-            resp=RespStrings.daily_card_sales,
+            resp=daily_sales_str,
             status=response.status_code,
             data=process_tcgp_data_single(data),
         )

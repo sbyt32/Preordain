@@ -1,8 +1,9 @@
 arrow
 hypercorn
 psycopg[binary]
-fastapi
+fastapi==0.95.0
 python-dateutil
 requests
 httpx
 python-dotenv
+cachetools

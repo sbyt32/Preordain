@@ -1,5 +1,7 @@
 from starlette.config import Config, environ
 from starlette.datastructures import Secret
+from dateutil.relativedelta import relativedelta
+
 from .logging_details import log_setup
 import logging
 import sys
@@ -25,6 +27,9 @@ try:
     SEC_TOKEN = config("SEC_TOKEN", cast=Secret)
     WRITE_TOKEN = config("WRITE_TOKEN", cast=Secret)
     PRICE_TOKEN = config("PRICE_TOKEN", cast=Secret)
+
+    # * Keep the days the same, this is to make sure that the database has time to scrape the data.
+    UPDATE_OFFSET = relativedelta(days=+1, hour=0, minute=10, second=0, microsecond=0)
 
     TESTING = config("TESTING", cast=bool)
     if TESTING:

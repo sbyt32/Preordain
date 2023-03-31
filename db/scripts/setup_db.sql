@@ -1,13 +1,13 @@
--- Database: price_copy
+-- Database: price_tracker
 
--- DROP DATABASE IF EXISTS price_copy;
+-- DROP DATABASE IF EXISTS price_tracker;
 
-CREATE DATABASE price_copy
+CREATE DATABASE price_tracker
 WITH
     OWNER = postgres ENCODING = 'UTF8' LC_COLLATE = 'en_US.utf8' LC_CTYPE = 'en_US.utf8' TABLESPACE = pg_default CONNECTION
 LIMIT = -1 IS_TEMPLATE = False;
 
-\c price_copy
+\c price_tracker
 
 
 
@@ -38,12 +38,15 @@ CREATE TABLE
         tcg_id text,
         tcg_id_etch text,
         groups text [],
-        new_search boolean
+        new_search boolean DEFAULT true,
+        scrape_sales boolean DEFAULT false,
+        UNIQUE(uri)
 );
 
+CREATE INDEX card_identity ON card_info.info (uri);
+
 CREATE TABLE IF NOT EXISTS card_data (
-        set      varchar(12) NOT NULL,
-        id       text NOT NULL,
+        uri      text NOT NULL,
         date     date NOT NULL,
         usd      float(2),
         usd_foil float(2),
@@ -52,12 +55,16 @@ CREATE TABLE IF NOT EXISTS card_data (
         euro_foil float(2),
         tix float(2)
 );
+CREATE INDEX card_identity ON public.card_data USING btree (uri);
+
 
 CREATE TABLE IF NOT EXISTS card_info.sets (
         set varchar(12) NOT NULL PRIMARY KEY,
-            set_full text NOT NULL,
-            release_date date
+        set_full text NOT NULL,
+        release_date date
 );
+
+CREATE INDEX card_sets ON card_info.sets USING btree (set);
 
 CREATE TABLE IF NOT EXISTS card_info.groups (
         group_name text NOT NULL,
@@ -79,7 +86,7 @@ CREATE TABLE IF NOT EXISTS card_data_tcg (
 
 CREATE TABLE IF NOT EXISTS inventory (
         add_date date,
-        tcg_id text NOT NULL,
+        uri text NOT NULL,
         qty int,
         buy_price float(2),
         card_condition text,

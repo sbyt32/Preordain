@@ -1,8 +1,9 @@
 <script lang="ts">
-import { database } from "../fetch_data"
-import { parsePercentage } from "../assets/functions";
-import { CurrentCard } from "../assets/functions";
-export let col_span: string | number = 1
+import { database } from "../util/fetch_data"
+import { parsePercentage } from "../util/parseValues";
+import { CurrentCard, connectURL } from "../assets/stores";
+export let col_span:number | string = 1
+export let row_span:number | string = 2
 
 
 let selectedClasses = "inline-block p-4 text-blue-600 bg-gray-100 rounded-t-lg active dark:bg-gray-800 dark:text-blue-500"
@@ -16,42 +17,45 @@ const tabs = [
 ]
 
 $: current = tabs[0]
-const connectURL = import.meta.env.VITE_CONNECTION;
 
 </script>
 
-<span style="grid-column: span {col_span} / span {col_span}" class="shadow-2xl h-full component-theme row-span-2">
+<div style="grid-column: span {col_span} / span {col_span}; grid-row: span {row_span} / span {row_span};" class="shadow-2xl min-h-0 component-theme flex flex-col">
 
-    <div class="text-center text-base font-medium border-b-4 border-b-gray-700 py-2">
+    <div class="text-center text-base font-medium border-b-4 border-b-gray-700 py-2 h-fit">
         Top Gains / Losses
     </div>
 
-    <ul class="flex flex-row font-medium text-center text-gray-500 border-b border-gray-200 dark:border-gray-700 dark:text-gray-400">
-        {#each tabs as tab}
-        <li class="mr-2 not-last:border-r-2 dark:border-r-gray-700" >
-            <button class="{current === tab ? selectedClasses: allClasses}" on:click={() => current = tab}>
-                {tab.currency}
-                <span class="text-xs">
-                    ({tab.direction})
-                </span>
-            </button>
-        </li>
-        {/each}
-    </ul>
+    <div class="h-fit">
+        <ul class="flex flex-row font-medium text-sm text-center text-gray-500 border-b border-gray-200 dark:border-gray-700 dark:text-gray-400 overflow-x-auto">
+            {#each tabs as tab}
+            <li class="mr-2 not-last:border-r-2 dark:border-r-gray-700" >
+                <button class="{current === tab ? selectedClasses: allClasses}" on:click={() => current = tab}>
+                    {tab.currency}
+                    <span class="text-xs">
+                        ({tab.direction})
+                    </span>
+                </button>
+            </li>
+            {/each}
+        </ul>
+    </div>
 
-    <table class="flex flex-col">
-        <thead class="px-2 border-b-gray-700 border-b-4 mb-2">
-            <tr class="text-xs uppercase text-gray-700 dark:text-gray-400 flex flex-row">
+
+    <table class="bg-gray-50 dark:bg-gray-700 h-full overflow-hidden rounded-b-md flex flex-col" >
+
+        <thead class="border-b-2 border-black/50 table table-fixed" style="width: calc(100% - .75em);">
+            <tr class="text-xs uppercase text-gray-700 dark:text-gray-400 w-full">
                 {#each ["Name","Set"," % Change"] as titles}
-                    <th scope="col" class="px-2 py-3 first:text-left text-right first:basis-3/6 first:shrink-0 basis-1/6 last:shrink-0 last:grow">
+                    <th scope="col" class="px-6 py-3 first:text-left text-right mx-0">
                         {titles}
                     </th>
                 {/each}
             </tr>
         </thead>
-        <tbody class="bg-white text-gray-200 dark:bg-gray-800 rounded-lg px-2">
+        <tbody class="bg-white text-gray-200 dark:bg-gray-800 overflow-y-auto grow font-light scrollbar rounded-b-lg">
             {#key current}
-                {#await database(`${connectURL}/price/changes/${current.direction}/${current.currency}/`)}
+                {#await database(`${$connectURL}/price/changes/${current.direction.toLowerCase()}/${current.currency.toLowerCase()}/`)}
                 <tr class="table w-full table-fixed dark:border-gray-700 border-b text-sm">
                     <td>
                         Loading...
@@ -59,18 +63,21 @@ const connectURL = import.meta.env.VITE_CONNECTION;
                 </tr>
                 {:then data}
                     {#each data.data as change}
-                    <tr class="flex flex-row dark:border-gray-700 border-b text-sm">
-                        <td class="text-ellipsis whitespace-nowrap overflow-hidden text-left basis-3/6 px-2" >
-                            <button on:click={() => {$CurrentCard = {set_name: change.set, card: change.name, id: change.id}}}>
+                    <tr class="not-last:border-b-2 border-gray-700 w-full table table-fixed">
+                        <th scope="row" class="px-6 py-3 text-gray-900 dark:text-white text-left text-xs font-semi-bold cursor-pointer hover:text-blue-400 transition-colors" on:click={() => {$CurrentCard = {set_name: change.set, card: change.name, id: change.id}}}>
                                 {change.name}
-                            </button>
-                        </td>
+                        </th>
                         <!-- Set Image -->
-                        <td class="text-right basis-1/6 shrink-0">
-                            <i class="ss px-2 text-xl ss-{change.set}"></i>
+                        <td class="px-6 py-2 text-right whitespace-preline tabular-nums">
+                            <div class="text-right font-normal group relative">
+                                <i class="ss text-2xl ss-{change["set"]} ss-rare"></i>
+                                <div class="absolute left-12 -right-8 py-1 mt-8 px-2 z-10 w-full text-base inline-block text-white text-center bg-gray-700 border rounded-md invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-opacity duration-500">
+                                    {change.set_full}
+                                </div>
+                            </div>
                         </td>
-                        <td class="text-right shrink-0 grow px-2">
-                            {@html parsePercentage('usd_change' in change ? change.usd_change : change.euro_change )}
+                        <td class="px-6 py-2 text-right tabular-nums">
+                            {@html parsePercentage('usd_change' in change ? change.usd_change : change.euro_change)}
                         </td>
                     </tr>
                     {/each}
@@ -79,4 +86,4 @@ const connectURL = import.meta.env.VITE_CONNECTION;
         </tbody>
     </table>
 
-</span>
+</div>

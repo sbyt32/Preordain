@@ -3,12 +3,14 @@
     import { Line } from "svelte-chartjs"
     import {parsePriceData} from "./data"
     import 'chart.js/auto';
-    import { database } from "../../fetch_data";
-    import { CurrentCard } from "../../assets/functions";
+    import { database } from "../../util/fetch_data";
+    import { CurrentCard } from "../../assets/stores";
     export let col_span:number | string = 3
+    export let row_span:number | string = 2
 
     $: options = {
         responsive: true,
+        maintainAspectRatio: false,
         color: "#ffffff",
         plugins: {
             tooltip: {
@@ -60,12 +62,13 @@
         }
     }
 
-    $: db_data = database(`http://127.0.0.1:8000/api/price/${$CurrentCard.set_name}/${$CurrentCard.id}?max=25`)
+    const connectURL = import.meta.env.VITE_CONNECTION;
+    $: db_data = database(`${connectURL}/price/${$CurrentCard.set_name}/${$CurrentCard.id}?max=31`)
 </script>
 
 {#key CurrentCard}
     {#await db_data then data}
-        <div style="grid-column: span {col_span} / span {col_span}" class="shadow-2xl w-full row-span-2 component-theme">
+        <div style="grid-column: span {col_span} / span {col_span}; grid-row: span {row_span} / span {row_span};" class="shadow-2xl component-theme min-h-0 w-full">
             <Line
             data={parsePriceData(data)}
             options={options}

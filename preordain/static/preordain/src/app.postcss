@@ -29,6 +29,13 @@ main {
 
 @tailwind components;
 @tailwind utilities;
+@layer base {
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+}
 
 @layer components {
     .component-theme {
@@ -37,16 +44,32 @@ main {
     .empty-space {
         @apply from-gray-800 to-gray-700 bg-gradient-to-b hover:from-gray-700 hover:to-gray-500 text-center
     }
+    button.preordain-button {
+        @apply bg-gray-600 border-black border px-4 rounded-md enabled:hover:bg-indigo-600 transition-colors disabled:opacity-50
+    }
+    button.preordain-button.shop-tcg {
+        @apply enabled:hover:bg-[#4D7C0F] transition-colors disabled:opacity-50
+    }
+    button.preordain-button.shop-mkm {
+        @apply enabled:hover:bg-[#185C9E] transition-colors disabled:opacity-50
+    }
+    button.preordain-button.shop-ch {
+        @apply enabled:hover:bg-[#EA580C] transition-colors disabled:opacity-50
+    }
 
+    button.preordain-button.delete {
+        @apply enabled:hover:bg-red-600 transition-colors disabled:opacity-50
+    }
 }
 
 @layer utilities {
     .scrollbar::-webkit-scrollbar {
         width: .75rem;
-        border-color: black;
+        border-color: rgb(137, 18, 18);
+
     }
     .scrollbar::-webkit-scrollbar-track {
-        @apply bg-gradient-to-b from-gray-700 to-gray-500
+        @apply bg-gradient-to-b from-gray-700 to-gray-500 rounded-tr-md rounded-br-md
     }
 
     /* .scrollbar::-webkit-scrollbar-thumb {
@@ -59,11 +82,15 @@ main {
                 from-indigo-600/80
                 via-indigo-500/80
                 to-purple-600/80
+                border-l-2
+                border-red-600
     } */
     .scrollbar::-webkit-scrollbar-thumb {
         @apply
         border-gray-200
         bg-gray-800
+        rounded-br-md
+        rounded-tr-md
     }
 }
 

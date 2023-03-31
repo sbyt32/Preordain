@@ -1,7 +1,11 @@
 import datetime
 from pydantic import BaseModel, Extra
-from typing import Optional, Any, Union
-from preordain.models import CardConditions, CardVariants, BaseResponse, RespStrings
+from typing import Optional, Union
+from preordain.models import BaseResponse
+from preordain.enums import CardConditions, CardVariants
+
+daily_sales_str: str = "daily_card_sales"  # * /daily/{set}/{col_num}
+recent_sales_str: str = "recent_card_sales"  # * /card/{tcg_id}
 
 
 class RecentSaleData(BaseModel):
@@ -71,5 +75,5 @@ class DailySales(BaseModel):
 
 
 class CardSaleResponse(BaseResponse):
-    resp: RespStrings
-    data: dict[str, str] = DailySales
+    resp: str
+    data: DailySales
