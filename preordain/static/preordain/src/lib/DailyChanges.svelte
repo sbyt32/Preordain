@@ -57,8 +57,8 @@ $: current = tabs[0]
             {#key current}
                 {#await database(`${$connectURL}/price/changes/${current.direction.toLowerCase()}/${current.currency.toLowerCase()}/`)}
                 <tr class="table w-full table-fixed dark:border-gray-700 border-b text-sm">
-                    <td>
-                        Loading...
+                    <td class="px-6 py-3 text-white text-left text-xs font-semi-bold cursor-pointer  transition-colors animate-pulse">
+                        loading...
                     </td>
                 </tr>
                 {:then data}

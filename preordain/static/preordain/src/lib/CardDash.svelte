@@ -13,7 +13,12 @@
 
 
     $: updateData = database(`${connectURL}/price/${$CurrentCard.set_name}/${$CurrentCard.id}?max=1`)
-    $: buyButtons = database(`${connectURL}/card/buylinks/${$CurrentCard.set_name}/${$CurrentCard.id}`)
+    // $: buyButtons = database(`${connectURL}/card/buylinks/${$CurrentCard.set_name}/${$CurrentCard.id}`)
+    async function getImage(set, id) {
+        const cardImg = await fetch(`${connectURL}/card/images/${set}/${id}/`)
+        return await URL.createObjectURL(await cardImg.blob())
+    }
+    $: cardImage = getImage($CurrentCard.set_name, $CurrentCard.id)
 
 </script>
 {#key CurrentCard}
@@ -23,11 +28,13 @@
 
             <div class="flex flex-row w-full h-full p-4" style="{col_span >= 3? 'grid-template-columns: repeat(6, minmax(0, 1fr));': 'grid-template-columns: repeat(5, minmax(0, 1fr));'}">
                 {#if col_span >=3}
+                    {#await cardImage then image}
                     <div class="h-full">
                         <img class="md:overflow-hidden object-contain rounded-2xl bg-inherit place-self-start h-full"
-                        src="./img/{prices.data.set}_{prices.data.id}.jpg"
+                        src="{image}"
                         alt="{prices.data.name} from {prices.data.set_full}">
                     </div>
+                    {/await}
                 {/if}
 
 

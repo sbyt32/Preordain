@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from preordain.models import CardPrices, BaseResponse, BaseCardData
 from typing import Optional
 
-RESP_STRING = card_info = "card_info"
+RESP_STRING = "card_info"
 
 
 class InformationData(BaseCardData):

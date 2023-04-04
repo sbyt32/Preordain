@@ -1,10 +1,14 @@
+import os
+import requests
+import shutil
 from fastapi import APIRouter, Response, status
-
 from preordain.utils.connections import connect_db
 from preordain.utils.parsers import parse_data_for_response
 from preordain.information.models import CardInformation, CardPurchaseLink
 from preordain.exceptions import NotFound
 from preordain.utils.find_missing import get_card_from_set_id
+from fastapi.responses import FileResponse
+
 
 user_router = APIRouter()
 
@@ -66,7 +70,7 @@ async def search_by_set_collector_num(set: str, col_num: str, response: Response
     raise NotFound
 
 
-@user_router.get("/buylinks/{set}/{col_num}")
+@user_router.get("/buylinks/{set}/{col_num}/")
 async def get_purchase_links(set: str, col_num: str, response: Response):
     # Update later
     conn, cur = connect_db()
@@ -81,3 +85,28 @@ async def get_purchase_links(set: str, col_num: str, response: Response):
         response.status_code = status.HTTP_200_OK
         return CardPurchaseLink(status=response.status_code, data=resp.fetchone())
     pass
+
+
+@user_router.get(
+    "/images/{set}/{col_num}/",
+    response_class=FileResponse,
+    status_code=status.HTTP_200_OK,
+)
+async def get_card_image(set: str, col_num: str):
+    uri = get_card_from_set_id(set, col_num)
+    folder_path = f"./preordain/images/{set}/"
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path)
+
+    image_path = f"{folder_path}{uri}.jpg"
+    if not os.path.exists(image_path):
+        card_image = requests.request(
+            method="GET",
+            url=f"https://api.scryfall.com/cards/{set}/{col_num}?format=image",
+            stream=True,
+        )
+        with open(image_path, "wb") as write_img:
+            card_image.raw.decode_content = True
+            shutil.copyfileobj(card_image.raw, write_img)
+
+    return image_path

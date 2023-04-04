@@ -34,9 +34,8 @@ try:
     UPDATE_OFFSET = relativedelta(days=+1, hour=0, minute=10, second=0, microsecond=0)
 
     TESTING = config("TESTING", cast=bool)
-    DASHBOARD = config("DEVELOPMENT", cast=bool, default=True)
+    DASHBOARD = config("DASHBOARD", cast=bool, default=True)
 
-    API_CONFIG = {"title": PROJECT, "description": "Production Build.", "routes": []}
 
 except KeyError as e:
     if not environ.get("TESTING"):
@@ -44,11 +43,14 @@ except KeyError as e:
         sys.exit(1)
 
 
+API_CONFIG = {"title": PROJECT, "description": "Production Build.", "routes": []}
+
+
 if TESTING:
     DB_NAME = Secret("test_" + str(DB_NAME))
     API_CONFIG[
         "description"
-    ] = "Environment for testing. This should be enabled if you are running tests or are needing the testing environment."
+    ] = "Environment for testing. This should be enabled if you are running tests or are needing the testing database."
 
 if DASHBOARD:
     API_CONFIG[
