@@ -13,3 +13,19 @@ class CardVariants(str, Enum):
     Normal = "Normal"
     Foil = "Foil"
     Etched = "Etched"
+
+
+class CardFormatLegalities(str, Enum):
+    legal = "legal"
+    not_legal = "not_legal"
+    banned = "banned"
+    restricted = "restricted"
+
+
+class CardRarity(str, Enum):
+    common = "common"
+    uncommon = "uncommon"
+    rare = "rare"
+    special = "special"
+    mythic = "mythic"
+    bonus = "bonus"

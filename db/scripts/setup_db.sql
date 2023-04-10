@@ -16,31 +16,30 @@ CREATE SCHEMA IF NOT EXISTS card_info;
 DROP TYPE IF EXISTS condition_enum;
 
 CREATE TYPE condition_enum AS ENUM (
-    'NM',
-    'LP',
-    'MP',
-    'HP',
-    'DMG',
-    'SEAL'
+        'NM',
+        'LP',
+        'MP',
+        'HP',
+        'DMG',
+        'SEAL'
 );
-
 
 DROP TYPE IF EXISTS public.variant;
 
-CREATE TYPE variant AS ENUM ( 'Normal', 'Foil', 'Etched');
+CREATE TYPE variant AS ENUM ('Normal', 'Foil', 'Etched');
 
 CREATE TABLE
-    IF NOT EXISTS card_info.info (
-        name varchar(255),
-        set varchar(12),
-        id text,
-        uri text,
-        tcg_id text,
-        tcg_id_etch text,
-        groups text [],
-        new_search boolean DEFAULT true,
-        scrape_sales boolean DEFAULT false,
-        UNIQUE(uri)
+        IF NOT EXISTS card_info.info (
+                name varchar(255),
+                set varchar(12),
+                id text,
+                uri text,
+                tcg_id text,
+                tcg_id_etch text,
+                groups text [],
+                new_search boolean DEFAULT true,
+                scrape_sales boolean DEFAULT false,
+                UNIQUE(uri)
 );
 
 CREATE INDEX card_identity ON card_info.info (uri);
@@ -91,4 +90,46 @@ CREATE TABLE IF NOT EXISTS inventory (
         buy_price float(2),
         card_condition text,
         card_variant text
+);
+
+-- Card Metadata.
+
+CREATE TYPE card_info.rarity AS ENUM (
+        'common',
+        'uncommon',
+        'rare',
+        'special',
+        'mythic',
+        'bonus'
+);
+
+CREATE TABLE IF NOT EXISTS card_info.metadata (
+        uri text PRIMARY KEY,
+        rarity card_info.rarity NOT NULL,
+        mana_cost text,
+        oracle_text text,
+        artist text,
+        UNIQUE(uri)
+);
+
+DROP TYPE IF EXISTS card_info.format_legalities;
+
+CREATE TYPE card_info.format_legalities AS ENUM (
+        'legal',
+        'not_legal',
+        'banned',
+        'restricted'
+);
+
+CREATE TABLE IF NOT EXISTS card_info.formats (
+        uri text PRIMARY KEY,
+        standard card_info.format_legalities NOT NULL,
+        historic card_info.format_legalities NOT NULL,
+        pioneer card_info.format_legalities NOT NULL,
+        modern card_info.format_legalities NOT NULL,
+        legacy card_info.format_legalities NOT NULL,
+        pauper card_info.format_legalities NOT NULL,
+        vintage card_info.format_legalities NOT NULL,
+        commander card_info.format_legalities NOT NULL,
+        UNIQUE(uri)
 );

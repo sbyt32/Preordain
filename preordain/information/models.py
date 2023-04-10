@@ -1,6 +1,7 @@
 import datetime
 from pydantic import BaseModel
-from preordain.models import CardPrices, BaseResponse, BaseCardData
+from preordain.models import CardPrices, BaseResponse, BaseCardData, CardFormats
+from preordain.enums import CardRarity
 from typing import Optional
 
 RESP_STRING = "card_info"
@@ -10,6 +11,14 @@ class InformationData(BaseCardData):
     uri: str
     last_updated: datetime.date
     prices: CardPrices
+
+
+class MetadataData(BaseCardData):
+    rarity: CardRarity
+    mana_cost: Optional[str]
+    oracle_text: Optional[str]
+    artist: Optional[str]
+    legality: CardFormats
 
 
 class CardInformation(BaseResponse):
@@ -47,3 +56,8 @@ class CardTCGID(BaseModel):
 class CardPurchaseLink(BaseResponse):
     resp = RESP_STRING
     data: list[dict[str, CardTCGID]] = CardTCGID
+
+
+class CardMetadata(BaseResponse):
+    resp = RESP_STRING
+    data: MetadataData

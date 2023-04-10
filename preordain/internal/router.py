@@ -3,7 +3,11 @@
 from fastapi import APIRouter, Response, status
 from preordain.utils.connections import connect_db, send_response
 from preordain.internal.util import get_scryfall_bulk
-from preordain.schema import SchemaCardInfoTableInfo
+from preordain.schema import (
+    SchemaCardInfoTableInfo,
+    SchemaCardInfoTableFormat,
+    SchemaCardInfoTableMetadata,
+)
 
 # from functools import lru_cache
 
@@ -32,15 +36,31 @@ async def update_set_info():
 async def update_card_info():
     conn, cur = connect_db()
 
-    query = """
+    card_info_query = """
         INSERT INTO card_info.info (name, set, id, uri, tcg_id, tcg_id_etch, new_search)
         VALUES (%(name)s,%(set)s,%(id)s,%(uri)s,%(tcg_id)s,%(tcg_id_etch)s,%(new_search)s)
 
         ON CONFLICT DO NOTHING
     """
+    card_format_query = """
+        INSERT INTO card_info.formats
+            (uri, standard, historic, pioneer, modern, legacy, pauper, vintage, commander)
+        VALUES
+            (%(uri)s,%(standard)s,%(historic)s,%(pioneer)s,%(modern)s,%(legacy)s,%(pauper)s,%(vintage)s,%(commander)s)
+        ON CONFLICT DO NOTHING
+    """
+
+    card_metadata_query = """
+        INSERT INTO card_info.metadata
+            (uri, rarity, mana_cost, oracle_text, artist)
+        VALUES
+            (%(uri)s,%(rarity)s, %(mana_cost)s,%(oracle_text)s,%(artist)s)
+        ON CONFLICT DO NOTHING
+    """
 
     cards = get_scryfall_bulk()[0]
 
+    # No new updates. This isn't a great way to check tbh.
     if (
         len(cards)
         == cur.execute("SELECT COUNT(*) FROM CARD_INFO.INFO").fetchone()["count"]
@@ -48,18 +68,43 @@ async def update_card_info():
         return
 
     for card in cards:
+        uri = card["id"]
         cur.execute(
-            query,
+            card_info_query,
             SchemaCardInfoTableInfo(
                 name=card["name"],
                 set=card["set"],
                 id=card["collector_number"],
-                uri=card["id"],
+                uri=uri,
                 tcg_id=card.get("tcgplayer_id", None),
                 tcg_id_etch=card.get("tcgplayer_etched_id", None),
                 groups=[],
                 new_search=True,
                 scrape_sales=False,
-            ),
+            ).dict(),
+        )
+        cur.execute(
+            card_format_query,
+            SchemaCardInfoTableFormat(
+                uri=uri,
+                standard=card["legalities"]["standard"],
+                historic=card["legalities"]["historic"],
+                pioneer=card["legalities"]["pioneer"],
+                modern=card["legalities"]["modern"],
+                legacy=card["legalities"]["legacy"],
+                pauper=card["legalities"]["pauper"],
+                vintage=card["legalities"]["vintage"],
+                commander=card["legalities"]["commander"],
+            ).dict(),
+        )
+        cur.execute(
+            card_metadata_query,
+            SchemaCardInfoTableMetadata(
+                uri=uri,
+                rarity=card["rarity"],
+                mana_cost=card.get("mana_cost", None),
+                oracle_text=card.get("oracle_text", None),
+                artist=card.get("artist", None),
+            ).dict(),
         )
     conn.commit()
