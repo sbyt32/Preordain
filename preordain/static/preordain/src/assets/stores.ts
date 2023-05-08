@@ -4,7 +4,18 @@ import CardDash from "../lib/CardDash.svelte"
 
 
 // Store
-export const CurrentCard = writable({set_name: "vow", id: "38", card: "Thalia, Guardian of Thraben"})
+export const CurrentCard = writable({
+    set_name: "vow",
+    id: "38",
+    card: "Thalia, Guardian of Thraben",
+    prices: {
+        usd: "",
+        usd_foil: "",
+        euro: "",
+        euro_foil: "",
+        tix: ""
+    }
+})
 export const connectURL = readable(import.meta.env.VITE_CONNECTION)
 export const projectName = readable(import.meta.env.VITE_PROJECT)
 const envIsTest = readable(import.meta.env.DEV)

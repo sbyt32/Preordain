@@ -67,7 +67,7 @@
 
 </script>
 
-    {#await database(`${connectURL}/price/${set}/${id}?max=31`) then data}
+    {#await database(`/price/${set}/${id}?max=31`) then data}
             <Line
             data={parsePriceData(data)}
             options={options}

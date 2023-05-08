@@ -14,7 +14,7 @@
 
 </script>
 {#if params.cn && params.set}
-    {#await database(`${$connectURL}/card/metadata/${params.set}/${params.cn}`) then data}
+    {#await database(`/card/metadata/${params.set}/${params.cn}`) then data}
     <div class="gap-4 flex flex-col h-full">
 
         <!-- Card information -->
@@ -81,7 +81,7 @@
                     </thead>
 
                     <tbody>
-                        {#await database(`${$connectURL}/price/variants/${params.set}/${params.cn}`)}
+                        {#await database(`/price/variants/${params.set}/${params.cn}`)}
                             <tr>
                                 <td class="text-left">Loading...</td>
                                 <td class="text-right">Loading...</td>

@@ -53,7 +53,7 @@ export function parseRow(value: ResponseData, header: string) {
 export async function parseData() {
 
     let resp:ResponseData[] = []
-    let data:InventoryResponse = await database(`${get(connectURL)}/inventory/?access=testing`)
+    let data:InventoryResponse = await database(`/inventory/?access=testing`)
     if (data)
     data.data.forEach(card => {
         resp.push(

@@ -5,7 +5,7 @@
     import Table from '../lib/groups/Table.svelte';
     import GroupSelectedContainer from "../lib/groups/selected/GroupSelectedContainer.svelte";
     import GroupSelectedBanner from "../lib/groups/selected/GroupSelectedBanner.svelte";
-    import { connectURL, projectTitle } from "../assets/stores";
+    import { projectTitle } from "../assets/stores";
     import testThalia from '/test_thalia.jpg';
     import { database } from "../util/fetch_data";
 
@@ -17,7 +17,7 @@
 </script>
 
 
-{#await database(`${$connectURL}/groups/${params.group}`) then groupData}
+{#await database(`/groups/${params.group}`) then groupData}
     <Row row_span={4} col_span={4}>
         <svelte:fragment slot="Component">
             <GroupSelectedBanner img={testThalia} groupInfo={groupData.info}/>

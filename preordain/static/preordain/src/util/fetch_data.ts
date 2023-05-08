@@ -1,5 +1,8 @@
+import { connectURL } from "../assets/stores"
+import { get } from "svelte/store"
+
 export async function database(link:string, headers: HeadersInit = {'accept': 'application/json'}, method:string = "GET") {
-  let resp = await fetch(link, {
+  let resp = await fetch(`${get(connectURL)}${link}`, {
     headers,
     method
   })

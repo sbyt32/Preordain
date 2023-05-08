@@ -1,7 +1,8 @@
 <script lang="ts">
 import { database } from "../util/fetch_data"
 import { parsePercentage } from "../util/dataFormatter";
-import { CurrentCard, connectURL } from "../assets/stores";
+import { CurrentCard } from "../assets/stores";
+    import { push } from "svelte-spa-router";
 export let col_span:number | string = 1
 export let row_span:number | string = 2
 
@@ -55,7 +56,7 @@ $: current = tabs[0]
         </thead>
         <tbody class="bg-white text-gray-200 dark:bg-gray-800 overflow-y-auto grow font-light scrollbar rounded-b-lg">
             {#key current}
-                {#await database(`${$connectURL}/price/changes/${current.direction.toLowerCase()}/${current.currency.toLowerCase()}/`)}
+                {#await database(`/price/changes/${current.direction.toLowerCase()}/${current.currency.toLowerCase()}/`)}
                 <tr class="table w-full table-fixed dark:border-gray-700 border-b text-sm">
                     <td class="px-6 py-3 text-white text-left text-xs font-semi-bold cursor-pointer  transition-colors animate-pulse">
                         loading...
@@ -64,7 +65,7 @@ $: current = tabs[0]
                 {:then data}
                     {#each data.data as change}
                     <tr class="not-last:border-b-2 border-gray-700 w-full table table-fixed">
-                        <th scope="row" class="px-6 py-3 text-gray-900 dark:text-white text-left text-xs font-semi-bold cursor-pointer hover:text-blue-400 transition-colors" on:click={() => {$CurrentCard = {set_name: change.set, card: change.name, id: change.id}}}>
+                        <th scope="row" class="px-6 py-3 text-gray-900 dark:text-white text-left text-xs font-semi-bold cursor-pointer hover:text-blue-400 transition-colors" on:click={() => push(`/card/${change["set"]}/${change["id"]}`)}>
                                 {change.name}
                         </th>
                         <!-- Set Image -->

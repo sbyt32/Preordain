@@ -5,8 +5,6 @@
 
     import { push } from 'svelte-spa-router';
 
-
-
     function onKeyPress(e: KeyboardEvent, str: string) {
         if (e.code === 'Enter') push(`#/search/${str}`);
 }
