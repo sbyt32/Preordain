@@ -1,8 +1,9 @@
 import { database } from "../../util/fetch_data";
 import type { InventoryBody, InventoryResponse, ResponseData } from "./interfaces";
-import { parseCurrency, connectURL } from "../../assets/stores"
-import { parsePercentage } from "../../util/parseValues";
+import { connectURL } from "../../assets/stores"
+import { parsePercentage, parseCurrency } from "../../util/dataFormatter";
 import { get } from "svelte/store";
+
 const verboseConditions = {
     NM: "Near Mint",
     LP: "Lightly Played",

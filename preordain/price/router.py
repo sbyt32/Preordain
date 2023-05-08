@@ -169,11 +169,18 @@ async def show_price_variants(
     cur.execute(
         """
     SELECT
-        card_info.info.set, card_info.sets.set_full, card_data.usd, card_data.usd_foil
+        card_info.info.set,
+        card_info.info.id,
+        card_info.metadata.rarity,
+        card_info.sets.set_full,
+        card_data.usd,
+        card_data.usd_foil
     FROM
         card_info.info
     JOIN card_data
         ON card_info.info.uri = card_data.uri
+    JOIN card_info.metadata
+        ON card_info.info.uri = card_info.metadata.uri
     JOIN card_info.sets
         ON card_info.info.set = card_info.sets.set
     WHERE card_info.info.name = (SELECT name FROM card_info.info where set = %s and id = %s)

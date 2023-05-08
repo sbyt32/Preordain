@@ -98,6 +98,8 @@ class PriceChange(BaseResponse):
 class PriceVariantData(BaseModel):
     set: str
     set_full: str
+    rarity: str
+    id: str
     usd: Optional[float]
     usd_foil: Optional[float]
 

@@ -3,7 +3,8 @@
 
     import {handleSubmit, untrackOldCard} from "../util/search"
     const priceHeaders = ["usd", "usd_foil", "euro", "euro_foil", "tix"]
-    import { currentTab, parseCurrency, projectTitle, showPopup } from "../assets/stores";
+    import { currentTab, projectTitle, showPopup } from "../assets/stores";
+    import { parseCurrency } from "../util/dataFormatter";
     import {trackNewCard} from "../util/search"
     import Error from "../lib/Error.svelte";
     import { onDestroy } from "svelte";

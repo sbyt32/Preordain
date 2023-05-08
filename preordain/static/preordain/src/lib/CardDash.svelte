@@ -4,8 +4,8 @@
 </script>
 <script lang="ts">
     const connectURL = import.meta.env.VITE_CONNECTION;
-    import { parseCurrency, CurrentCard } from "../assets/stores"
-    import { parsePercentage } from "../util/parseValues"
+    import { CurrentCard } from "../assets/stores"
+    import { parsePercentage, parseCurrency } from "../util/dataFormatter"
     import { database } from "../util/fetch_data";
 
     export let col_span:number = 3

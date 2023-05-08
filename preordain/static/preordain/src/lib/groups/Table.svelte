@@ -17,7 +17,7 @@
 <script lang="ts">
 
     import { updateCardDash } from "../../util/updateCardDashValue"
-    import { parseCurrency} from "../../assets/stores"
+    import { parseCurrency } from "../../util/dataFormatter"
     import type { GetCardGroup} from "./interfaces"
     export let col_span:number | string = 3
     export let row_span:number | string = 2

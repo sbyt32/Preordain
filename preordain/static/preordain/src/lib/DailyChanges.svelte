@@ -1,6 +1,6 @@
 <script lang="ts">
 import { database } from "../util/fetch_data"
-import { parsePercentage } from "../util/parseValues";
+import { parsePercentage } from "../util/dataFormatter";
 import { CurrentCard, connectURL } from "../assets/stores";
 export let col_span:number | string = 1
 export let row_span:number | string = 2
