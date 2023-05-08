@@ -134,3 +134,14 @@ CREATE TABLE IF NOT EXISTS card_info.formats (
         commander card_info.format_legalities NOT NULL,
         UNIQUE(uri)
 );
+
+CREATE SCHEMA event_data;
+
+CREATE TABLE IF NOT EXISTS event_data.events (
+        format text NOT NULL,
+        url text NOT NULL,
+        event_name text NOT NULL,
+        event_date date NOT NULL,
+        event_type text NOT NULL,
+        UNIQUE(url)
+);

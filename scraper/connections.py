@@ -5,14 +5,16 @@ import logging
 from typing import Union
 import os
 
+# import dotenv
+# dotenv.load_dotenv("./scraper/.env")
 log = logging.getLogger()
 
 
 def connect_db():
-    DB_HOST = os.environ.get("DB_HOST") or "plateau"
-    DB_USER = os.environ.get("DB_USER") or "coyote"
-    DB_PASS = os.environ.get("DB_PASS") or "whywhy22"
-    DB_NAME = os.environ.get("DB_NAME") or "test_ratio_lol"
+    DB_HOST = os.environ.get("DB_HOST")
+    DB_USER = os.environ.get("DB_USER")
+    DB_PASS = os.environ.get("DB_PASS")
+    DB_NAME = os.environ.get("DB_NAME")
 
     """Always have two variables into this, connection and cursor. Default to `conn, cur = connect_db`
     \n[More info about psycopg](https://www.psycopg.org/psycopg3/docs/api/connections.html#psycopg.Connection)
