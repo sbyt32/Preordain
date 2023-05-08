@@ -8,15 +8,15 @@
     import { parsePercentage } from "../util/parseValues"
     import { database } from "../util/fetch_data";
 
-    export let col_span:number | string = 3
-    export let row_span:number | string = 1
+    export let col_span:number = 3
+    export let row_span:number = 1
 
 
     $: updateData = database(`${connectURL}/price/${$CurrentCard.set_name}/${$CurrentCard.id}?max=1`)
     // $: buyButtons = database(`${connectURL}/card/buylinks/${$CurrentCard.set_name}/${$CurrentCard.id}`)
-    async function getImage(set, id) {
+    async function getImage(set:string, id:string) {
         const cardImg = await fetch(`${connectURL}/card/images/${set}/${id}/`)
-        return await URL.createObjectURL(await cardImg.blob())
+        return URL.createObjectURL(await cardImg.blob())
     }
     $: cardImage = getImage($CurrentCard.set_name, $CurrentCard.id)
 

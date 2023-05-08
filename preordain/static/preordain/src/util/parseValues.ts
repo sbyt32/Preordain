@@ -16,5 +16,6 @@ export function parsePercentage(percent:string) {
         emoji = "📉"
         classes = "text-rose-500 tabular-nums"
     }
-    return `<p class="${classes}">${emoji}${change}%</p>`
+    return `<span class=" tabular-nums">${emoji}</span>
+        <p class="${classes} text-right">${change}%</p>`
 }

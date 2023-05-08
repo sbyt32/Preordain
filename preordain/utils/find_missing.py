@@ -2,6 +2,7 @@ from preordain.utils.connections import connect_db
 
 
 def get_card_from_set_id(set: str, id: str):
+    "Returns card URI"
     conn, cur = connect_db()
 
     cur.execute(
@@ -15,7 +16,17 @@ def get_card_from_set_id(set: str, id: str):
     return cur.fetchone()["uri"]
 
 
-# def get_set_id_from_uri(uri)
+def get_set_id_from_uri(uri: str):
+    "Returns Set and Collector Number"
+    conn, cur = connect_db()
+
+    cur.execute(
+        "SELECT set, id FROM card_info.info where uri = %s",
+        (uri,),
+    )
+    data = cur.fetchone()
+
+    return data["set"], data["id"]
 
 
 def validate_card_exists_from_uri(uri: str):

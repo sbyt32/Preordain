@@ -1,6 +1,3 @@
-import os
-import requests
-import shutil
 from fastapi import APIRouter, Response, status
 from preordain.config import FOLDER_PATH
 from preordain.utils.connections import connect_db
@@ -11,6 +8,8 @@ from preordain.information.models import (
     CardMetadata,
     MetadataData,
 )
+from preordain.images.enums import ImageTypes
+from preordain.images.utils import get_img_path
 from preordain.models import CardFormats
 from preordain.exceptions import NotFound
 from preordain.utils.find_missing import get_card_from_set_id
@@ -99,24 +98,8 @@ async def get_purchase_links(set: str, col_num: str, response: Response):
     response_class=FileResponse,
     status_code=status.HTTP_200_OK,
 )
-async def get_card_image(set: str, col_num: str):
-    uri = get_card_from_set_id(set, col_num)
-    folder_path = FOLDER_PATH.format(set=set)
-    if not os.path.exists(folder_path):
-        os.makedirs(folder_path)
-
-    image_path = f"{folder_path}{uri}.jpg"
-    if not os.path.exists(image_path):
-        card_image = requests.request(
-            method="GET",
-            url=f"https://api.scryfall.com/cards/{set}/{col_num}?format=image",
-            stream=True,
-        )
-        with open(image_path, "wb") as write_img:
-            card_image.raw.decode_content = True
-            shutil.copyfileobj(card_image.raw, write_img)
-
-    return image_path
+async def get_card_image(set: str, col_num: str, type: ImageTypes = ImageTypes.cards):
+    return get_img_path(set, col_num, type)
 
 
 @user_router.get("/metadata/{set}/{col_num}/", status_code=status.HTTP_200_OK)

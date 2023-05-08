@@ -7,3 +7,4 @@ class GroupInfoGroupName(BaseModel):
 
 class GroupInfoTable(GroupInfoGroupName):
     description: str
+    banner_uri: str

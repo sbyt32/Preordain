@@ -1,6 +1,6 @@
 # This is just not enabled rn
 
-from fastapi import APIRouter, Response, status
+from fastapi import APIRouter, status
 from preordain.utils.connections import connect_db, send_response
 from preordain.internal.util import get_scryfall_bulk
 from preordain.schema import (
@@ -8,8 +8,6 @@ from preordain.schema import (
     SchemaCardInfoTableFormat,
     SchemaCardInfoTableMetadata,
 )
-
-# from functools import lru_cache
 
 admin_route = APIRouter()
 
@@ -70,7 +68,13 @@ async def update_card_info():
     for card in cards:
         uri = card["id"]
         cur.execute(
-            card_info_query,
+            """
+            INSERT INTO card_info.info
+                (name, set, id, uri, tcg_id, tcg_id_etch, new_search)
+            VALUES
+                (%(name)s,%(set)s,%(id)s,%(uri)s,%(tcg_id)s,%(tcg_id_etch)s,%(new_search)s)
+            ON CONFLICT DO NOTHING
+            """,
             SchemaCardInfoTableInfo(
                 name=card["name"],
                 set=card["set"],
@@ -84,7 +88,13 @@ async def update_card_info():
             ).dict(),
         )
         cur.execute(
-            card_format_query,
+            """
+            INSERT INTO card_info.formats
+                (uri, standard, historic, pioneer, modern, legacy, pauper, vintage, commander)
+            VALUES
+                (%(uri)s,%(standard)s,%(historic)s,%(pioneer)s,%(modern)s,%(legacy)s,%(pauper)s,%(vintage)s,%(commander)s)
+            ON CONFLICT DO NOTHING
+            """,
             SchemaCardInfoTableFormat(
                 uri=uri,
                 standard=card["legalities"]["standard"],
@@ -98,7 +108,13 @@ async def update_card_info():
             ).dict(),
         )
         cur.execute(
-            card_metadata_query,
+            """
+            INSERT INTO card_info.metadata
+                (uri, rarity, mana_cost, oracle_text, artist)
+            VALUES
+                (%(uri)s,%(rarity)s, %(mana_cost)s,%(oracle_text)s,%(artist)s)
+            ON CONFLICT DO NOTHING
+            """,
             SchemaCardInfoTableMetadata(
                 uri=uri,
                 rarity=card["rarity"],

@@ -68,6 +68,7 @@ CREATE INDEX card_sets ON card_info.sets USING btree (set);
 CREATE TABLE IF NOT EXISTS card_info.groups (
         group_name text NOT NULL,
         description text NOT NULL,
+        banner_uri text NOT NULL,
         UNIQUE(group_name)
 );
 

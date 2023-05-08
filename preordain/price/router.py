@@ -1,8 +1,7 @@
 from cachetools import cached, TTLCache
 
 # from asyncache import cached
-from fastapi import APIRouter, HTTPException, Response, status, Depends
-from psycopg.errors import DatetimeFieldOverflow
+from fastapi import APIRouter, Response, status, Depends
 from typing import Optional
 from preordain.price.utils import (
     parse_data_single_card,
@@ -13,12 +12,11 @@ from preordain.price.models import (
     PriceDataMultiple,
     PriceDataSingle,
     PriceChange,
+    PriceVariantResponse,
 )
 from preordain.utils.get_last_update import get_last_update, to_tomorrow
-from preordain.utils.timer import timer
 from preordain.price.enums import GrowthCurrency, GrowthDirections
 from preordain.exceptions import NotFound
-from datetime import datetime
 from preordain.config import UPDATE_OFFSET
 import logging
 
@@ -160,3 +158,28 @@ async def get_biggest_gains(
         return PriceChange(status=response.status_code, data=info)
     response.status_code = status.HTTP_404_NOT_FOUND
     return NotFound
+
+
+@cached(cache=TTLCache(maxsize=1024, ttl=to_tomorrow()))
+@price_router.get("/variants/{set}/{id}")
+async def show_price_variants(
+    set: str, id: str, last_update: str = Depends(get_last_update)
+):
+    conn, cur = connect_db()
+    cur.execute(
+        """
+    SELECT
+        card_info.info.set, card_info.sets.set_full, card_data.usd, card_data.usd_foil
+    FROM
+        card_info.info
+    JOIN card_data
+        ON card_info.info.uri = card_data.uri
+    JOIN card_info.sets
+        ON card_info.info.set = card_info.sets.set
+    WHERE card_info.info.name = (SELECT name FROM card_info.info where set = %s and id = %s)
+    AND card_data.date = %s
+    """,
+        (set, id, last_update),
+    )
+
+    return PriceVariantResponse(data=cur.fetchall())
