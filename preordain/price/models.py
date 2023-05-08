@@ -93,3 +93,18 @@ class PriceChange(BaseResponse):
     resp = RESP_STRING
     status = 200
     data: list[dict[PriceChangePercent]] = PriceChangePercent
+
+
+class PriceVariantData(BaseModel):
+    set: str
+    set_full: str
+    rarity: str
+    id: str
+    usd: Optional[float]
+    usd_foil: Optional[float]
+
+
+class PriceVariantResponse(BaseResponse):
+    resp = RESP_STRING
+    status = 200
+    data: list[PriceVariantData]

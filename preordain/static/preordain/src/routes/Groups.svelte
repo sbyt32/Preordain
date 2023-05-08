@@ -1,13 +1,13 @@
 <script lang="ts">
     import GroupContainer from '../lib/groups/GroupContainer.svelte';
 
-    import { connectURL, currentTab, projectTitle, showPopup } from "../assets/stores";
+    import { currentTab, projectTitle, showPopup } from "../assets/stores";
     import { database } from "../util/fetch_data";
     import PopupModifyGroup from '../lib/groups/PopupModifyGroups.svelte';
     import { onDestroy } from 'svelte';
     let filterInUse = false
 
-    $: groupInfo = database(`${$connectURL}/groups/?in_use=${filterInUse}`)
+    $: groupInfo = database(`/groups/?in_use=${filterInUse}`)
 
     export const params = {}
 

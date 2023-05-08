@@ -4,11 +4,12 @@
     import {parsePriceData} from "./data"
     import 'chart.js/auto';
     import { database } from "../../util/fetch_data";
-    import { CurrentCard } from "../../assets/stores";
-    export let col_span:number | string = 3
-    export let row_span:number | string = 2
+    export let set: string
+    export let id: string
+    export let cardName: string
 
-    $: options = {
+
+    const options = {
         responsive: true,
         maintainAspectRatio: false,
         color: "#ffffff",
@@ -35,7 +36,7 @@
             },
             title: {
                 display: true,
-                text: `Price History for ${$CurrentCard.card}`,
+                text: `Price History for ${cardName}`,
                 color: `#ffffff`
             },
             legend: {
@@ -63,16 +64,12 @@
     }
 
     const connectURL = import.meta.env.VITE_CONNECTION;
-    $: db_data = database(`${connectURL}/price/${$CurrentCard.set_name}/${$CurrentCard.id}?max=31`)
+
 </script>
 
-{#key CurrentCard}
-    {#await db_data then data}
-        <div style="grid-column: span {col_span} / span {col_span}; grid-row: span {row_span} / span {row_span};" class="shadow-2xl component-theme min-h-0 w-full">
+    {#await database(`/price/${set}/${id}?max=31`) then data}
             <Line
             data={parsePriceData(data)}
             options={options}
             />
-        </div>
     {/await}
-{/key}

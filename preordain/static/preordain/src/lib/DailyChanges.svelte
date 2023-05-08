@@ -1,7 +1,8 @@
 <script lang="ts">
 import { database } from "../util/fetch_data"
-import { parsePercentage } from "../util/parseValues";
-import { CurrentCard, connectURL } from "../assets/stores";
+import { parsePercentage } from "../util/dataFormatter";
+import { CurrentCard } from "../assets/stores";
+    import { push } from "svelte-spa-router";
 export let col_span:number | string = 1
 export let row_span:number | string = 2
 
@@ -47,7 +48,7 @@ $: current = tabs[0]
         <thead class="border-b-2 border-black/50 table table-fixed" style="width: calc(100% - .75em);">
             <tr class="text-xs uppercase text-gray-700 dark:text-gray-400 w-full">
                 {#each ["Name","Set"," % Change"] as titles}
-                    <th scope="col" class="px-6 py-3 first:text-left text-right mx-0">
+                    <th scope="col" class="px-6 py-3 first:text-left text-right">
                         {titles}
                     </th>
                 {/each}
@@ -55,28 +56,29 @@ $: current = tabs[0]
         </thead>
         <tbody class="bg-white text-gray-200 dark:bg-gray-800 overflow-y-auto grow font-light scrollbar rounded-b-lg">
             {#key current}
-                {#await database(`${$connectURL}/price/changes/${current.direction.toLowerCase()}/${current.currency.toLowerCase()}/`)}
+                {#await database(`/price/changes/${current.direction.toLowerCase()}/${current.currency.toLowerCase()}/`)}
                 <tr class="table w-full table-fixed dark:border-gray-700 border-b text-sm">
-                    <td>
-                        Loading...
+                    <td class="px-6 py-3 text-white text-left text-xs font-semi-bold cursor-pointer  transition-colors animate-pulse">
+                        loading...
                     </td>
                 </tr>
                 {:then data}
                     {#each data.data as change}
                     <tr class="not-last:border-b-2 border-gray-700 w-full table table-fixed">
-                        <th scope="row" class="px-6 py-3 text-gray-900 dark:text-white text-left text-xs font-semi-bold cursor-pointer hover:text-blue-400 transition-colors" on:click={() => {$CurrentCard = {set_name: change.set, card: change.name, id: change.id}}}>
+                        <th scope="row" class="px-6 py-3 text-gray-900 dark:text-white text-left text-xs font-semi-bold cursor-pointer hover:text-blue-400 transition-colors" on:click={() => push(`/card/${change["set"]}/${change["id"]}`)}>
                                 {change.name}
                         </th>
                         <!-- Set Image -->
-                        <td class="px-6 py-2 text-right whitespace-preline tabular-nums">
-                            <div class="text-right font-normal group relative">
-                                <i class="ss text-2xl ss-{change["set"]} ss-rare"></i>
-                                <div class="absolute left-12 -right-8 py-1 mt-8 px-2 z-10 w-full text-base inline-block text-white text-center bg-gray-700 border rounded-md invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-opacity duration-500">
-                                    {change.set_full}
+                        <td class="px-5 py-2 text-right whitespace-preline tabular-nums">
+                            <div class=" font-normal group relative">
+                                <i class="ss text-2xl ss-{change["set"]} ss-rare ss-fw"></i>
+                                <div class="absolute py-1 px-2 z-10 w-fit text-base h-min text-white text-center bg-gray-700 border rounded-md invisible opacity-0 transition-opacity duration-500 group-hover:visible group-hover:opacity-100 ">
+
+                                    <p class="relative">{change.set_full}</p>
                                 </div>
                             </div>
                         </td>
-                        <td class="px-6 py-2 text-right tabular-nums">
+                        <td class="px-5 py-2 text-right text-base">
                             {@html parsePercentage('usd_change' in change ? change.usd_change : change.euro_change)}
                         </td>
                     </tr>

@@ -1,8 +1,9 @@
 import { database } from "../../util/fetch_data";
 import type { InventoryBody, InventoryResponse, ResponseData } from "./interfaces";
-import { parseCurrency, connectURL } from "../../assets/stores"
-import { parsePercentage } from "../../util/parseValues";
+import { connectURL } from "../../assets/stores"
+import { parsePercentage, parseCurrency } from "../../util/dataFormatter";
 import { get } from "svelte/store";
+
 const verboseConditions = {
     NM: "Near Mint",
     LP: "Lightly Played",
@@ -52,7 +53,7 @@ export function parseRow(value: ResponseData, header: string) {
 export async function parseData() {
 
     let resp:ResponseData[] = []
-    let data:InventoryResponse = await database(`${get(connectURL)}/inventory/?access=testing`)
+    let data:InventoryResponse = await database(`/inventory/?access=testing`)
     if (data)
     data.data.forEach(card => {
         resp.push(

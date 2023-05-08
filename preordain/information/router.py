@@ -1,10 +1,20 @@
 from fastapi import APIRouter, Response, status
-
+from preordain.config import FOLDER_PATH
 from preordain.utils.connections import connect_db
 from preordain.utils.parsers import parse_data_for_response
-from preordain.information.models import CardInformation, CardPurchaseLink
+from preordain.information.models import (
+    CardInformation,
+    CardPurchaseLink,
+    CardMetadata,
+    MetadataData,
+)
+from preordain.images.enums import ImageTypes
+from preordain.images.utils import get_img_path
+from preordain.models import CardFormats
 from preordain.exceptions import NotFound
 from preordain.utils.find_missing import get_card_from_set_id
+from fastapi.responses import FileResponse
+
 
 user_router = APIRouter()
 
@@ -66,7 +76,7 @@ async def search_by_set_collector_num(set: str, col_num: str, response: Response
     raise NotFound
 
 
-@user_router.get("/buylinks/{set}/{col_num}")
+@user_router.get("/buylinks/{set}/{col_num}/")
 async def get_purchase_links(set: str, col_num: str, response: Response):
     # Update later
     conn, cur = connect_db()
@@ -81,3 +91,75 @@ async def get_purchase_links(set: str, col_num: str, response: Response):
         response.status_code = status.HTTP_200_OK
         return CardPurchaseLink(status=response.status_code, data=resp.fetchone())
     pass
+
+
+@user_router.get(
+    "/images/{set}/{col_num}/",
+    response_class=FileResponse,
+    status_code=status.HTTP_200_OK,
+)
+async def get_card_image(set: str, col_num: str, type: ImageTypes = ImageTypes.cards):
+    return get_img_path(set, col_num, type)
+
+
+@user_router.get("/metadata/{set}/{col_num}/", status_code=status.HTTP_200_OK)
+async def get_card_metadata(set: str, col_num: str, response: Response):
+    uri = get_card_from_set_id(set, col_num)
+    conn, cur = connect_db()
+
+    cur.execute(
+        """
+        SELECT
+            info.name,
+            info.set,
+            sets.set_full,
+            info.id,
+            metadata.rarity,
+            metadata.mana_cost,
+            metadata.oracle_text,
+            metadata.artist,
+            formats.standard,
+            formats.historic,
+            formats.pioneer,
+            formats.modern,
+            formats.legacy,
+            formats.pauper,
+            formats.vintage,
+            formats.commander
+        FROM card_info.info AS info
+        JOIN card_info.metadata AS metadata
+            ON info.uri = metadata.uri
+        JOIN card_info.formats AS formats
+            ON info.uri = formats.uri
+        JOIN card_info.sets AS sets
+            ON info.set = sets.set
+        WHERE info.uri = %s
+        LIMIT 1
+    """,
+        (uri,),
+    )
+
+    data = cur.fetchone()
+    return CardMetadata(
+        status=200,
+        data=MetadataData(
+            name=data["name"],
+            set=data["set"],
+            set_full=data["set_full"],
+            id=data["id"],
+            rarity=data["rarity"],
+            mana_cost=data["mana_cost"],
+            oracle_text=data["oracle_text"],
+            artist=data["artist"],
+            legality=CardFormats(
+                standard=data["standard"],
+                historic=data["historic"],
+                pioneer=data["pioneer"],
+                modern=data["modern"],
+                legacy=data["legacy"],
+                pauper=data["pauper"],
+                vintage=data["vintage"],
+                commander=data["commander"],
+            ),
+        ),
+    )

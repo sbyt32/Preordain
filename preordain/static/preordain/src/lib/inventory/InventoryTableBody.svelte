@@ -5,7 +5,7 @@
 
 <script lang="ts">
     import { onMount, createEventDispatcher } from "svelte";
-    import {  parseRow, parseData } from "./functions";
+    import { parseRow, parseData } from "./functions";
     import type { ResponseData } from "./interfaces";
 
     export let selected = []

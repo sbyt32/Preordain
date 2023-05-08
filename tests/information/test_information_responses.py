@@ -12,3 +12,7 @@ def test_info_single(client: TestClient):
 
     assert response["resp"] == RESP_STRING
     assert response["status"] == 200
+
+
+# def test_get_image(client: TestClient):
+#     response

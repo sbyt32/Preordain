@@ -16,7 +16,8 @@
 </script>
 
 <script lang="ts">
-    import { connectURL, parseCurrency } from "../../assets/stores";
+    import { connectURL } from "../../assets/stores";
+    import { parseCurrency } from "../../util/dataFormatter";
     import { database } from "../../util/fetch_data";
     import type { InventoryBody, SingleCardResponse } from "./interfaces";
     export let col_span = 4;

@@ -28,7 +28,9 @@ def test_insert_and_removal(client: TestClient):
 
     test_group_name = "TEST_GROUP_NAME"
     test_group_desc = "TEST_GROUP_DESC"
-    test_body = GroupInfoTable(group_name=test_group_name, description=test_group_desc)
+    test_body = GroupInfoTable(
+        group_name=test_group_name, description=test_group_desc, banner_uri=""
+    )
     new_resp = client.post("/api/groups/new/", json=test_body.dict())
     assert new_resp.status_code == 201
     new_resp_json = new_resp.json()

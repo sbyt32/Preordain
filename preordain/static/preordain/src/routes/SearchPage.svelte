@@ -1,14 +1,14 @@
 <script lang="ts">
-    export let params;
+    export let params = {"query": ""};
 
     import {handleSubmit, untrackOldCard} from "../util/search"
     const priceHeaders = ["usd", "usd_foil", "euro", "euro_foil", "tix"]
-    import { currentTab, parseCurrency, projectTitle, showPopup } from "../assets/stores";
+    import { currentTab, projectTitle, showPopup } from "../assets/stores";
+    import { parseCurrency } from "../util/dataFormatter";
     import {trackNewCard} from "../util/search"
     import Error from "../lib/Error.svelte";
-    import { displayCardDashPopup } from "../assets/popup";
     import { onDestroy } from "svelte";
-
+    import { link, push } from "svelte-spa-router";
     projectTitle.set(`Search: ${params.query}`)
     $currentTab = "Search"
     onDestroy(() => {
@@ -45,14 +45,14 @@
                 </tr>
             </thead>
 
-            <tbody class="bg-white text-gray-200 dark:bg-gray-800">
+            <tbody class="text-gray-200 bg-gray-800">
                 {#each results as result}
                     <tr class="text-left not-last:border-b-2 border-gray-700 py-3 hover:bg-gray-700">
 
-                        <th scope="row" class="px-4 py-2 font-medium text-gray-900 dark:text-white text-left">
-                            <button on:click={() => displayCardDashPopup(result)}>
+                        <th scope="row" class="px-4 py-2 font-medium text-white text-left">
+                            <a href="/card/{result.set}/{result.id}" use:link class="hover:text-indigo-500 transition-colors">
                                 {result.name}
-                            </button>
+                            </a>
                         </th>
 
                         <td class="px-6 py-2 white text-right">

@@ -9,8 +9,13 @@ from preordain.groups.models import SingleGroupResponse
 from preordain.groups.schema import GroupInfoTable
 from preordain.groups.util import validate_group
 from preordain.exceptions import NotFound
+from preordain.utils.find_missing import get_set_id_from_uri
 from preordain.utils.connections import connect_db
 from preordain.utils.parsers import parse_data_for_response
+from preordain.images.utils import get_img_path
+from preordain.images.enums import ImageTypes
+from fastapi.responses import FileResponse
+
 
 user_groups = APIRouter()
 
@@ -31,7 +36,8 @@ async def get_group_names(response: Response, in_use: Optional[bool] = False):
         SELECT
             DISTINCT(group_in_use) AS "group",
             groups.description,
-            a.qty as cards_in_group
+            a.qty as cards_in_group,
+            groups.banner_uri
         FROM (
             SELECT
                 UNNEST(groups),
@@ -145,6 +151,16 @@ async def find_by_group(group: str, response: Response):
         )
 
     raise NotFound
+
+
+@user_groups.get(
+    "/images/{uri}",
+    response_class=FileResponse,
+    status_code=status.HTTP_200_OK,
+)
+async def get_card_image(uri: str):
+    set, col_num = get_set_id_from_uri(uri)
+    return get_img_path(set, col_num, type=ImageTypes.banner)
 
 
 @user_groups.post("/new/")

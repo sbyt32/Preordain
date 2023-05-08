@@ -9,6 +9,7 @@
 
     import { modifyInventory, parseRow, parseData } from "./functions";
     import type { ResponseData } from "./interfaces";
+    import { link, push } from "svelte-spa-router";
     export let col_span:number | string = 3
     export let row_span:number | string = 2
 
@@ -71,8 +72,11 @@
 
                         {#each headers as data_type}
                             {#if data_type === "Name"}
-                                <th scope="row" class="px-6 py-3 text-gray-900 dark:text-white text-left whitespace-preline cursor-pointer hover:text-blue-400 transition-colors">
-                                    {card_data["Name"]}
+                                <th scope="row" class="px-6 py-3 text-gray-900 dark:text-white text-left whitespace-preline cursor-pointer hover:text-blue-400 transition-colors" >
+                                    <a href="/card/{card_data._set_short}/{card_data["Collector No."]}" use:link>
+                                        {card_data["Name"]}
+                                    </a>
+                                    <!-- on:click={() => push(`/card/${card_data._set_short}/${card_data["Collector No."]}`)} -->
                                 </th>
                             {:else}
                             <td class="px-6 py-2 whitespace-preline text-right">

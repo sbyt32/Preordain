@@ -2,6 +2,7 @@ from typing import TypeVar, Generic, Optional
 from pydantic import BaseModel, validator, root_validator, Field
 from pydantic.generics import GenericModel
 from enum import Enum
+from preordain.enums import CardFormatLegalities
 import datetime
 from typing import Any
 from preordain.config import PROJECT
@@ -35,6 +36,17 @@ class BaseCardData(BaseModel):
     set: str = Field(max_length=12)
     set_full: str
     id: str
+
+
+class CardFormats(BaseModel):
+    standard: CardFormatLegalities = Field(default=CardFormatLegalities.not_legal)
+    historic: CardFormatLegalities = Field(default=CardFormatLegalities.not_legal)
+    pioneer: CardFormatLegalities = Field(default=CardFormatLegalities.not_legal)
+    modern: CardFormatLegalities = Field(default=CardFormatLegalities.not_legal)
+    legacy: CardFormatLegalities = Field(default=CardFormatLegalities.not_legal)
+    pauper: CardFormatLegalities = Field(default=CardFormatLegalities.not_legal)
+    vintage: CardFormatLegalities = Field(default=CardFormatLegalities.not_legal)
+    commander: CardFormatLegalities = Field(default=CardFormatLegalities.not_legal)
 
 
 class RespStrings(str, Enum):
