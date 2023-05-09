@@ -3,6 +3,7 @@ from preordain.dependencies import select_token, write_token
 from preordain.utils.find_missing import validate_table_data
 from preordain.models import BaseError, RespStrings, RootResponse
 from preordain.exceptions import RootException
+from preordain.events.router import router as events_router
 from preordain.groups.router import user_groups as groups_user_router
 from preordain.price.router import price_router
 from preordain.price.models import PriceDataMultiple, PriceDataSingle, PriceChange
@@ -107,6 +108,8 @@ api_router.include_router(
     tags=["Administrative Stuff"],
     dependencies=[Depends(write_token)],
 )
+
+api_router.include_router(events_router, prefix="/events", tags=["Get Event Data"])
 
 
 @api_router.get(

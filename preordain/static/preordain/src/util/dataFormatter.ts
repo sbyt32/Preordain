@@ -39,19 +39,19 @@ export function parseOracleText(oracle: string): string {
 export function parseFormatLegality(format: string): string{
     switch (format) {
         case "legal":
-            return `<span class="bg-green-600/80 text-black border-2 border-black rounded-xl text-lg font-normal">
+            return `<span class="bg-green-500/80 text-white border-2 border-black rounded-xl text-sm font-normal">
                 Legal
             </span>`
         case "restricted":
-            return `<span class="bg-orange-500   text-white border-2 border-black rounded-xl text-lg font-normal">
+            return `<span class="bg-orange-500   text-white border-2 border-black rounded-xl text-sm font-normal">
                 Restricted
             </span>`
         case "banned":
-            return `<span class="bg-red-500/80   text-white border-2 border-black rounded-xl text-lg font-normal">
+            return `<span class="bg-red-500/80   text-white border-2 border-black rounded-xl text-sm font-normal">
                 Banned
             </span>`
         default:
-            return `<span class="bg-gray-500     text-black border-2 border-black rounded-xl text-lg font-normal">
+            return `<span class="bg-gray-500     text-black border-2 border-black rounded-xl text-sm font-normal">
                 Not Legal
             </span>`
     }

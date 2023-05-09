@@ -1,3 +1,4 @@
 # Place the path to the directory in the commands
 @daily cd / && python -m app.price_scrape
+@daily cd / && python -m app.event_scrape
 @weekly cd / && python -m app.sale_scrape

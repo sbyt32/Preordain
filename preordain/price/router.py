@@ -1,6 +1,5 @@
 from cachetools import cached, TTLCache
 
-# from asyncache import cached
 from fastapi import APIRouter, Response, status, Depends
 from typing import Optional
 from preordain.price.utils import (
@@ -9,7 +8,6 @@ from preordain.price.utils import (
 from preordain.utils.connections import connect_db
 from preordain.utils.get_last_update import get_last_update
 from preordain.price.models import (
-    PriceDataMultiple,
     PriceDataSingle,
     PriceChange,
     PriceVariantResponse,
@@ -185,6 +183,8 @@ async def show_price_variants(
         ON card_info.info.set = card_info.sets.set
     WHERE card_info.info.name = (SELECT name FROM card_info.info where set = %s and id = %s)
     AND card_data.date = %s
+    ORDER BY card_info.sets.release_date DESC
+    LIMIT 10
     """,
         (set, id, last_update),
     )

@@ -64,8 +64,6 @@
 </script>
 
 <div style="grid-column: span {col_span} / span {col_span}; grid-row: span {row_span} / span {row_span};">
-
-
     <table class="bg-gray-50 dark:bg-gray-700 h-full component-theme rounded-b-md flex flex-col" >
 
         <thead class="border-b-2 border-black/50 table table-fixed" style="width: calc(100% - .75em);">
@@ -102,5 +100,4 @@
 
 
     </table>
-
 </div>

@@ -11,8 +11,6 @@
     export let row_span:number = 1
 
 
-    // $: updateData = database(`/price/${$CurrentCard.set_name}/${$CurrentCard.id}?max=1`)
-    // $: buyButtons = database(`${connectURL}/card/buylinks/${$CurrentCard.set_name}/${$CurrentCard.id}`)
     async function getImage(set:string, id:string) {
         const cardImg = await fetch(`${connectURL}/card/images/${set}/${id}/`)
         return URL.createObjectURL(await cardImg.blob())
@@ -56,7 +54,6 @@
                                     {parseCurrency($CurrentCard.prices[price], price)}
                                 </p>
 
-                                <!-- {@html parsePercentage($CurrentCard.prices[0][`${price}_change`])} -->
 
                                 <button class="preordain-button shop-tcg w-fit px-3 py-1 mt-2 mx-auto text-base">
                                     <a target="_blank" rel="noreferrer" href="https://www.tcgplayer.com/product/">
