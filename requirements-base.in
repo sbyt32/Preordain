@@ -8,3 +8,4 @@ httpx
 python-dotenv
 cachetools
 beautifulsoup4
+sqlalchemy

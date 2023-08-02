@@ -12,7 +12,7 @@ from preordain.exceptions import (
 from preordain.v1.search.exceptions import InvalidSearchQuery, invalid_search_handler
 from preordain.logging_details import log_setup
 from preordain.config import API_CONFIG
-from preordain.v1.api import api_router
+# from preordain.v1.api import api_router
 from preordain.v2.api import api_router_v2
 
 # * Logging Information

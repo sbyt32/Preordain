@@ -7,8 +7,11 @@ from sqlalchemy import (
     Boolean,
     Float,
     Date,
+    Enum
 )
 from sqlalchemy.dialects.postgresql import ARRAY
+from preordain.v2.enums import FormatLegalities
+
 
 main_metadata = MetaData()
 
@@ -38,4 +41,28 @@ price_table = Table(
     Column("euro", Float(2)),
     Column("euro_foil", Float(2)),
     Column("tix", Float(2)),
+)
+
+card_information_metadata = MetaData("card_information")
+
+card_format_table = Table(
+    "formats",
+    card_information_metadata,
+    Column("uniq_id", Text, nullable=False),
+    Column("standard", Enum(FormatLegalities), nullable=False),
+    Column("historic", Enum(FormatLegalities), nullable=False),
+    Column("pioneer", Enum(FormatLegalities), nullable=False),
+    Column("modern", Enum(FormatLegalities), nullable=False),
+    Column("legacy", Enum(FormatLegalities), nullable=False),
+    Column("pauper", Enum(FormatLegalities), nullable=False),
+    Column("vintage", Enum(FormatLegalities), nullable=False),
+    Column("commander", Enum(FormatLegalities), nullable=False)
+)
+
+card_set_table = Table(
+    "sets",
+    card_information_metadata,
+    Column("set_code", String(12), nullable=False, primary_key=True),
+    Column("set_name", Text, nullable=False),
+    Column("release_date", Date)
 )
