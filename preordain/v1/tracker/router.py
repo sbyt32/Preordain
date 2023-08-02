@@ -4,8 +4,8 @@ log = logging.getLogger()
 from preordain.utils.connections import connect_db
 from preordain.utils.find_missing import validate_card_exists_from_uri
 from preordain.exceptions import NotFound
-from preordain.tracker.schema import CardInfoModel
-from preordain.tracker.models import SuccessfulRequest
+from preordain.v1.tracker.schema import CardInfoModel
+from preordain.v1.tracker.models import SuccessfulRequest
 
 # from preordain.trackers.dependencies import duplicate_card
 from fastapi import APIRouter, Response, status

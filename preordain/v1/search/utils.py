@@ -1,4 +1,4 @@
-from preordain.search.models import CardSearchData
+from preordain.v1.search.models import CardSearchData
 
 
 def parse_data_for_response(data: list):

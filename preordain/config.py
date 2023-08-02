@@ -44,7 +44,7 @@ except KeyError as e:
 
 
 API_CONFIG = {"title": PROJECT, "description": "Production Build.", "routes": []}
-FOLDER_PATH = "./preordain/images/{type}/{set}/"
+FOLDER_PATH = "./preordain/v1/images/{type}/{set}/"
 
 if TESTING:
     DB_NAME = Secret("test_" + str(DB_NAME))
@@ -59,7 +59,7 @@ if DASHBOARD:
     API_CONFIG["routes"] = [
         Mount(
             "/dash",
-            app=StaticFiles(directory="preordain/static/preordain/dist", html=True),
+            app=StaticFiles(directory="preordain/v1/static/preordain/dist", html=True),
             name="dashboard",
         )
     ]

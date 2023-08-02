@@ -1,19 +1,19 @@
 from fastapi import APIRouter, Response, status
 from typing import Optional
-from preordain.groups.models import (
+from ..groups.models import (
     ShowGroupResponse,
     CardInGroupInfo,
     SuccessfulRequest,
 )
-from preordain.groups.models import SingleGroupResponse
-from preordain.groups.schema import GroupInfoTable
-from preordain.groups.util import validate_group
+from ..groups.models import SingleGroupResponse
+from ..groups.schema import GroupInfoTable
+from ..groups.util import validate_group
 from preordain.exceptions import NotFound
 from preordain.utils.find_missing import get_set_id_from_uri
 from preordain.utils.connections import connect_db
 from preordain.utils.parsers import parse_data_for_response
-from preordain.images.utils import get_img_path
-from preordain.images.enums import ImageTypes
+from ..images.utils import get_img_path
+from ..images.enums import ImageTypes
 from fastapi.responses import FileResponse
 
 

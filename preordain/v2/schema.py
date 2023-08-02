@@ -1,6 +1,4 @@
 from sqlalchemy import (
-    create_engine,
-    select,
     Table,
     MetaData,
     Column,

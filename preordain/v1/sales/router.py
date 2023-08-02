@@ -1,11 +1,15 @@
 from fastapi import APIRouter, Response, status
 from preordain.utils.connections import connect_db
-from preordain.sales.utils import (
+from preordain.v1.sales.utils import (
     check_card_exists,
     process_tcgp_data,
     process_tcgp_data_single,
 )
-from preordain.sales.models import CardSaleResponse, daily_sales_str, recent_sales_str
+from preordain.v1.sales.models import (
+    CardSaleResponse,
+    daily_sales_str,
+    recent_sales_str,
+)
 from preordain.exceptions import NotFound
 
 sales_router = APIRouter()

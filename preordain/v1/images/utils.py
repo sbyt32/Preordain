@@ -1,6 +1,6 @@
 from preordain.config import FOLDER_PATH
 from preordain.utils.find_missing import get_card_from_set_id
-from preordain.images.enums import ImageTypes
+from preordain.v1.images.enums import ImageTypes
 import requests, os, shutil
 
 

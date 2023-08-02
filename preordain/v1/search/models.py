@@ -2,7 +2,7 @@ import datetime
 from pydantic import BaseModel
 from preordain.models import CardPrices, BaseResponse, BaseCardData
 from pydantic import BaseModel
-from preordain.search.exceptions import InvalidSearchQuery
+from preordain.v1.search.exceptions import InvalidSearchQuery
 
 resp_string: str = "search_query"  # * /search/{query}
 

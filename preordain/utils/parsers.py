@@ -1,4 +1,4 @@
-from preordain.information.models import InformationData
+from preordain.v1.information.models import InformationData
 
 
 # To Do, add group info into groups.

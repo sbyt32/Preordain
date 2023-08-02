@@ -24,7 +24,7 @@ log.setLevel(logging.DEBUG)
 
 app = FastAPI(**API_CONFIG)
 
-app.include_router(api_router, prefix="/v1")
+# app.include_router(api_router, prefix="/v1")
 app.include_router(api_router_v2, prefix="/v2")
 
 # ? I really don't like this out in the open, but I'm leaving it here for testing.

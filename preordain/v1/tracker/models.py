@@ -1,5 +1,5 @@
 from preordain.models import BaseResponse
-from preordain.tracker.schema import CardInfoModel
+from preordain.v1.tracker.schema import CardInfoModel
 
 RESP_STRING: str = "tracker_update"
 

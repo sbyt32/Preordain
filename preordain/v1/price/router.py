@@ -2,18 +2,18 @@ from cachetools import cached, TTLCache
 
 from fastapi import APIRouter, Response, status, Depends
 from typing import Optional
-from preordain.price.utils import (
+from preordain.v1.price.utils import (
     parse_data_single_card,
 )
 from preordain.utils.connections import connect_db
 from preordain.utils.get_last_update import get_last_update
-from preordain.price.models import (
+from preordain.v1.price.models import (
     PriceDataSingle,
     PriceChange,
     PriceVariantResponse,
 )
 from preordain.utils.get_last_update import get_last_update, to_tomorrow
-from preordain.price.enums import GrowthCurrency, GrowthDirections
+from preordain.v1.price.enums import GrowthCurrency, GrowthDirections
 from preordain.exceptions import NotFound
 from preordain.config import UPDATE_OFFSET
 import logging

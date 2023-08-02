@@ -2,9 +2,9 @@ import logging
 
 from preordain.utils.connections import connect_db
 from fastapi import APIRouter, Response, status, Depends
-from preordain.search.utils import parse_data_for_response
-from preordain.search.models import SearchInformation
-from preordain.search.models import SearchQuery
+from preordain.v1.search.utils import parse_data_for_response
+from preordain.v1.search.models import SearchInformation
+from preordain.v1.search.models import SearchQuery
 from preordain.exceptions import NotFound
 from preordain.utils.get_last_update import get_last_update
 

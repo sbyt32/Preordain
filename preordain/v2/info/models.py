@@ -3,12 +3,12 @@ import datetime
 
 
 class PriceData(BaseModel):
-    name: str
-    set: str
-    id: str
+    scryfall_uri: str
+    # set: str
+    # id: str
     date: datetime.date
-    usd: float(2)
-    usd_foil: float(2)
-    euro: float(2)
-    euro_foil: float(2)
-    tix: float(2)
+    usd: int
+    usd_foil: int
+    euro: int
+    euro_foil: int
+    tix: int
