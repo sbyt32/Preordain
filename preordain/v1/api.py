@@ -3,20 +3,20 @@ from preordain.dependencies import select_token, write_token
 from preordain.utils.find_missing import validate_table_data
 from preordain.models import BaseError, RespStrings, RootResponse
 from preordain.exceptions import RootException
-from preordain.events.router import router as events_router
-from preordain.groups.router import user_groups as groups_user_router
-from preordain.price.router import price_router
-from preordain.price.models import PriceDataMultiple, PriceDataSingle, PriceChange
-from preordain.internal.router import admin_route as internal_router
-from preordain.information.router import user_router as info_user_router
-from preordain.information.models import CardInformation
-from preordain.inventory.router import router as inventory_router
-from preordain.inventory.router import InventoryResponse
-from preordain.sales.router import sales_router
-from preordain.sales.models import CardSaleResponse
-from preordain.search.router import search_router
-from preordain.search.models import SearchInformation
-from preordain.tracker.router import router as tracker_router
+from .events.router import router as events_router
+from .groups.router import user_groups as groups_user_router
+from .price.router import price_router
+from .price.models import PriceDataMultiple, PriceDataSingle, PriceChange
+from .internal.router import admin_route as internal_router
+from .information.router import user_router as info_user_router
+from .information.models import CardInformation
+from .inventory.router import router as inventory_router
+from .inventory.router import InventoryResponse
+from .sales.router import sales_router
+from .sales.models import CardSaleResponse
+from .search.router import search_router
+from .search.models import SearchInformation
+from .tracker.router import router as tracker_router
 from preordain.config import PROJECT
 from typing import Union
 

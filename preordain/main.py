@@ -9,10 +9,10 @@ from preordain.exceptions import (
     NotFound,
     not_found_exception_handler,
 )
-from preordain.search.exceptions import InvalidSearchQuery, invalid_search_handler
+from preordain.v1.search.exceptions import InvalidSearchQuery, invalid_search_handler
 from preordain.logging_details import log_setup
 from preordain.config import API_CONFIG
-from preordain.api import api_router
+from preordain.v1.api import api_router
 
 # * Logging Information
 log_setup()
@@ -23,7 +23,7 @@ log.setLevel(logging.DEBUG)
 
 app = FastAPI(**API_CONFIG)
 
-app.include_router(api_router, prefix="/api")
+app.include_router(api_router, prefix="/api_v1")
 
 # ? I really don't like this out in the open, but I'm leaving it here for testing.
 origins = ["*"]

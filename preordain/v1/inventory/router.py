@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, Response, status
 from preordain.utils.connections import connect_db, send_response
-from preordain.inventory.models import InventoryResponse, SuccessfulRequest
-from preordain.inventory.schema import TableInventory
+from inventory.models import InventoryResponse, SuccessfulRequest
+from inventory.schema import TableInventory
 from preordain.models import BaseResponse
 from preordain.exceptions import NotFound
 import arrow
