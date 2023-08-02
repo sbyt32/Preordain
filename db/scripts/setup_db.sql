@@ -7,7 +7,7 @@
 
 -- DROP DATABASE IF EXISTS price_tracker;
 
-CREATE DATABASE price_tracker
+CREATE DATABASE price_tracker_v2
 WITH
     OWNER = postgres
     ENCODING = 'UTF8'
@@ -21,26 +21,28 @@ WITH
 CREATE TABLE IF NOT EXISTS card_key_index (
     scryfall_uri text NOT NULL,
     uniq_id text NOT NULL,
-    set_code text NOT NULL,
-    group text [],
+    card_id text NOT NULL,
+    groups text[],
     tcg_id text,
     tcg_id_etched text,
     new_search boolean DEFAULT true,
     scraper boolean DEFAULT false
-)
+);
 
 CREATE SCHEMA IF NOT EXISTS card_information;
 
 -- Card Information
 CREATE TABLE IF NOT EXISTS card_information.metadata (
-    card_id text NOT NULL PRIMARY KEY,
+    uniq_id text NOT NULL PRIMARY KEY,
+    card_name text NOT NULL,
+    set_code text NOT NULL,
     mana_cost text,
     oracle_text text,
     artist text,
-    UNIQUE(uri)
+    UNIQUE(uniq_id)
 );
 
-CREATE TYPE card_info.format_legalities AS ENUM (
+CREATE TYPE card_information.format_legalities AS ENUM (
         'legal',
         'not_legal',
         'banned',
@@ -48,25 +50,25 @@ CREATE TYPE card_info.format_legalities AS ENUM (
 );
 
 CREATE TABLE IF NOT EXISTS card_information.formats (
-    card_id text NOT NULL PRIMARY KEY,
-    standard card_info.format_legalities NOT NULL,
-    historic card_info.format_legalities NOT NULL,
-    pioneer card_info.format_legalities NOT NULL,
-    modern card_info.format_legalities NOT NULL,
-    legacy card_info.format_legalities NOT NULL,
-    pauper card_info.format_legalities NOT NULL,
-    vintage card_info.format_legalities NOT NULL,
-    commander card_info.format_legalities NOT NULL,
-    UNIQUE(uri)
+    uniq_id text NOT NULL PRIMARY KEY,
+    standard card_information.format_legalities NOT NULL,
+    historic card_information.format_legalities NOT NULL,
+    pioneer card_information.format_legalities NOT NULL,
+    modern card_information.format_legalities NOT NULL,
+    legacy card_information.format_legalities NOT NULL,
+    pauper card_information.format_legalities NOT NULL,
+    vintage card_information.format_legalities NOT NULL,
+    commander card_information.format_legalities NOT NULL,
+    UNIQUE(uniq_id)
 );
 
-CREATE TABLE IF NOT EXISTS card_info.sets (
+CREATE TABLE IF NOT EXISTS card_information.sets (
     set_code        varchar(12)     NOT NULL PRIMARY KEY,
     set_name        text            NOT NULL,
     release_date    date
 );
 
-CREATE INDEX card_sets ON card_info.sets USING btree (set);
+CREATE INDEX card_sets ON card_information.sets USING btree (set_code);
 
 -- Card Groups? IDK what to name it
 
@@ -88,7 +90,8 @@ CREATE TABLE IF NOT EXISTS card_price_data.orders (
 );
 
 CREATE TABLE IF NOT EXISTS card_price_data.price (
-    uniq_id     text NOT NULL PRIMARY KEY
+    scryfall_uri     text NOT NULL PRIMARY KEY,
+    date        date,
     usd         float(2),
     usd_foil    float(2),
     usd_etch    float(2),
@@ -113,7 +116,7 @@ CREATE TABLE IF NOT EXISTS event_info.decklists (
     deck_name text NOT NULL,
     main_deck text[][],
     side_deck text[][]
-)
+);
 
 -- -- DROP DATABASE IF EXISTS price_tracker;
 
