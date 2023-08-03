@@ -1,16 +1,4 @@
-from sqlalchemy import (
-    Table,
-    MetaData,
-    Column,
-    Text,
-    String,
-    Boolean,
-    Float,
-    Date,
-    Enum,
-    FLOAT,
-    ForeignKey,
-)
+from sqlalchemy import MetaData, String, FLOAT, ForeignKey
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm import (
     Mapped,
@@ -18,7 +6,6 @@ from sqlalchemy.orm import (
     relationship,
     DeclarativeBase,
     Mapped,
-    Session,
 )
 import datetime
 
@@ -41,18 +28,17 @@ class CardIndex(MainBase):
     new_search: Mapped[bool] = mapped_column(default=True)
     scraper: Mapped[bool] = mapped_column(default=False)
 
+    prices: Mapped[list["PriceTable"]] = relationship(back_populates="card")
 
-price_metadata = MetaData("card_price_data")
 
-
-class CardPriceDataBase(DeclarativeBase):
+class PriceTable(MainBase):
+    __tablename__ = "price"
     __table_args__ = {"schema": "card_price_data"}
 
-
-class PriceTable(CardPriceDataBase):
-    __tablename__ = "price"
-    scryfall_uri: Mapped[str] = mapped_column(primary_key=True)
-    date: Mapped[datetime.date] = mapped_column()
+    scryfall_uri: Mapped[str] = mapped_column(
+        ForeignKey("card_key_index.scryfall_uri"), primary_key=True
+    )
+    date: Mapped[datetime.date] = mapped_column(primary_key=True)
     usd: Mapped[float] = mapped_column()
     usd_foil: Mapped[float] = mapped_column(FLOAT(2))
     usd_etch: Mapped[float] = mapped_column(FLOAT(2))
@@ -60,40 +46,8 @@ class PriceTable(CardPriceDataBase):
     euro_foil: Mapped[float] = mapped_column(FLOAT(2))
     tix: Mapped[float] = mapped_column(FLOAT(2))
 
+    card: Mapped["CardIndex"] = relationship(back_populates="prices")
 
-# price_table = Table(
-#     "price",
-#     price_metadata,
-#     Column("scryfall_uri", Text, nullable=False, primary_key=True),
-#     Column("date", Date),
-#     Column("usd", Float(2)),
-#     Column("usd_foil", Float(2)),
-#     Column("usd_etch", Float(2)),
-#     Column("euro", Float(2)),
-#     Column("euro_foil", Float(2)),
-#     Column("tix", Float(2)),
-# )
-
-# card_information_metadata = MetaData("card_information")
-
-# card_format_table = Table(
-#     "formats",
-#     card_information_metadata,
-#     Column("uniq_id", Text, nullable=False),
-#     Column("standard", Enum(FormatLegalities), nullable=False),
-#     Column("historic", Enum(FormatLegalities), nullable=False),
-#     Column("pioneer", Enum(FormatLegalities), nullable=False),
-#     Column("modern", Enum(FormatLegalities), nullable=False),
-#     Column("legacy", Enum(FormatLegalities), nullable=False),
-#     Column("pauper", Enum(FormatLegalities), nullable=False),
-#     Column("vintage", Enum(FormatLegalities), nullable=False),
-#     Column("commander", Enum(FormatLegalities), nullable=False)
-# )
-
-# card_set_table = Table(
-#     "sets",
-#     card_information_metadata,
-#     Column("set_code", String(12), nullable=False, primary_key=True),
-#     Column("set_name", Text, nullable=False),
-#     Column("release_date", Date)
-# )
+    # def __repr__(self) -> str:
+    #     return f"<PriceTable ('{self.date}', '{self.usd}', '{self.usd_foil}', '{self.usd_etch}', '{self.euro}', '{self.euro_foil}', '{self.tix}')>"
+    # return super().__repr__()
