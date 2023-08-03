@@ -2,7 +2,6 @@
 
 -- -- Database: price_tracker
 
-
 -- Database: price_tracker
 
 -- DROP DATABASE IF EXISTS price_tracker;
@@ -20,8 +19,6 @@ WITH
 
 CREATE TABLE IF NOT EXISTS card_key_index (
     scryfall_uri text NOT NULL,
-    uniq_id text NOT NULL,
-    card_id text NOT NULL,
     groups text[],
     tcg_id text,
     tcg_id_etched text,
@@ -33,13 +30,14 @@ CREATE SCHEMA IF NOT EXISTS card_information;
 
 -- Card Information
 CREATE TABLE IF NOT EXISTS card_information.metadata (
-    uniq_id text NOT NULL PRIMARY KEY,
+    scryfall_uri text NOT NULL PRIMARY KEY,
     card_name text NOT NULL,
     set_code text NOT NULL,
+    collector_number text,
     mana_cost text,
     oracle_text text,
     artist text,
-    UNIQUE(uniq_id)
+    UNIQUE(scryfall_uri)
 );
 
 CREATE TYPE card_information.format_legalities AS ENUM (
@@ -50,7 +48,7 @@ CREATE TYPE card_information.format_legalities AS ENUM (
 );
 
 CREATE TABLE IF NOT EXISTS card_information.formats (
-    uniq_id text NOT NULL PRIMARY KEY,
+    scryfall_uri text NOT NULL PRIMARY KEY,
     standard card_information.format_legalities NOT NULL,
     historic card_information.format_legalities NOT NULL,
     pioneer card_information.format_legalities NOT NULL,

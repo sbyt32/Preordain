@@ -29,6 +29,26 @@ class CardIndex(MainBase):
     scraper: Mapped[bool] = mapped_column(default=False)
 
     prices: Mapped[list["PriceTable"]] = relationship(back_populates="card")
+    card_metadata: Mapped[list["CardMetadataTable"]] = relationship(
+        back_populates="card"
+    )
+
+
+class CardMetadataTable(MainBase):
+    __tablename__ = "metadata"
+    __table_args__ = {"schema": "card_information"}
+
+    scryfall_uri: Mapped[str] = mapped_column(
+        ForeignKey("card_key_index.scryfall_uri"), primary_key=True
+    )
+    card_name: Mapped[str] = mapped_column(default=None)
+    set_code: Mapped[str] = mapped_column(default=None)
+    collector_number: Mapped[str] = mapped_column(default=None)
+    mana_cost: Mapped[str] = mapped_column(default=None)
+    oracle_text: Mapped[str] = mapped_column(default=None)
+    artist: Mapped[str] = mapped_column(default=None)
+
+    card: Mapped["CardIndex"] = relationship(back_populates="card_metadata")
 
 
 class PriceTable(MainBase):
