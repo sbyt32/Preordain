@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Extra
-from preordain.v2.schema import PriceTable
+from preordain.v2.models import PreordainResponse
 import datetime
 
 
@@ -22,9 +22,7 @@ class CardMetadata(BaseModel):
     artist: str | None
 
 
-class PriceData(BaseModel):
+class CardData(BaseModel):
     scryfall_uri: str
     card_data: CardMetadata
     prices: Prices
-    # set: str
-    # id: str
