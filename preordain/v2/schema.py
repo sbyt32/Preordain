@@ -12,11 +12,11 @@ import datetime
 main_metadata = MetaData()
 
 
-class MainBase(DeclarativeBase):
+class PreordainBase(DeclarativeBase):
     pass
 
 
-class CardIndex(MainBase):
+class CardIndex(PreordainBase):
     __tablename__ = "card_key_index"
 
     scryfall_uri: Mapped[str] = mapped_column(primary_key=True)
@@ -34,7 +34,7 @@ class CardIndex(MainBase):
     )
 
 
-class CardMetadataTable(MainBase):
+class CardMetadataTable(PreordainBase):
     __tablename__ = "metadata"
     __table_args__ = {"schema": "card_information"}
 
@@ -51,7 +51,7 @@ class CardMetadataTable(MainBase):
     card: Mapped["CardIndex"] = relationship(back_populates="card_metadata")
 
 
-class PriceTable(MainBase):
+class PriceTable(PreordainBase):
     __tablename__ = "price"
     __table_args__ = {"schema": "card_price_data"}
 

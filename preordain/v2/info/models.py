@@ -1,16 +1,6 @@
-from pydantic import BaseModel, Extra
-from preordain.v2.models import PreordainResponse
+from preordain.v2.models import PreordainData, CardPrices
+from pydantic import BaseModel
 import datetime
-
-
-class Prices(BaseModel):
-    date: datetime.date | None
-    usd: float | None
-    usd_foil: float | None
-    usd_etch: float | None
-    euro: float | None
-    euro_foil: float | None
-    tix: float | None
 
 
 class CardMetadata(BaseModel):
@@ -22,7 +12,7 @@ class CardMetadata(BaseModel):
     artist: str | None
 
 
-class CardData(BaseModel):
+class CardData(PreordainData):
     scryfall_uri: str
     card_data: CardMetadata
-    prices: Prices
+    prices: CardPrices
