@@ -1,4 +1,6 @@
-from sqlalchemy import MetaData, String, FLOAT, ForeignKey
+import datetime
+from sqlalchemy import MetaData, String, FLOAT, ForeignKey, Enum
+from typing import get_args, Literal
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm import (
     Mapped,
@@ -7,9 +9,12 @@ from sqlalchemy.orm import (
     DeclarativeBase,
     Mapped,
 )
-import datetime
 
+# from preordain.v2.enums import FormatLegalities
 main_metadata = MetaData()
+
+
+FormatLegalities = Literal["legal", "not_legal", "restricted", "banned"]
 
 
 class PreordainBase(DeclarativeBase):
@@ -32,6 +37,7 @@ class CardIndex(PreordainBase):
     card_metadata: Mapped[list["CardMetadataTable"]] = relationship(
         back_populates="card"
     )
+    legality: Mapped["CardFormatTable"] = relationship(back_populates="legality")
 
 
 class CardMetadataTable(PreordainBase):
@@ -85,3 +91,78 @@ class SetTable(PreordainBase):
     release_date: Mapped[datetime.date] = mapped_column()
 
     set: Mapped["CardMetadataTable"] = relationship(back_populates="set")
+
+
+class CardFormatTable(PreordainBase):
+    __tablename__ = "formats"
+    __table_args__ = {"schema": "card_information"}
+
+    scryfall_uri: Mapped[str] = mapped_column(
+        ForeignKey("card_key_index.scryfall_uri"), primary_key=True
+    )
+    standard: Mapped[FormatLegalities] = mapped_column(
+        Enum(
+            *get_args(FormatLegalities),
+            name="format_legalities",
+            create_constraint=True,
+            validate_strings=True
+        )
+    )
+    historic: Mapped[FormatLegalities] = mapped_column(
+        Enum(
+            *get_args(FormatLegalities),
+            name="format_legalities",
+            create_constraint=True,
+            validate_strings=True
+        )
+    )
+    pioneer: Mapped[FormatLegalities] = mapped_column(
+        Enum(
+            *get_args(FormatLegalities),
+            name="format_legalities",
+            create_constraint=True,
+            validate_strings=True
+        )
+    )
+
+    modern: Mapped[FormatLegalities] = mapped_column(
+        Enum(
+            *get_args(FormatLegalities),
+            name="format_legalities",
+            create_constraint=True,
+            validate_strings=True
+        )
+    )
+    legacy: Mapped[FormatLegalities] = mapped_column(
+        Enum(
+            *get_args(FormatLegalities),
+            name="format_legalities",
+            create_constraint=True,
+            validate_strings=True
+        )
+    )
+    pauper: Mapped[FormatLegalities] = mapped_column(
+        Enum(
+            *get_args(FormatLegalities),
+            name="format_legalities",
+            create_constraint=True,
+            validate_strings=True
+        )
+    )
+    vintage: Mapped[FormatLegalities] = mapped_column(
+        Enum(
+            *get_args(FormatLegalities),
+            name="format_legalities",
+            create_constraint=True,
+            validate_strings=True
+        )
+    )
+    commander: Mapped[FormatLegalities] = mapped_column(
+        Enum(
+            *get_args(FormatLegalities),
+            name="format_legalities",
+            create_constraint=True,
+            validate_strings=True
+        )
+    )
+    legality: Mapped["CardIndex"] = relationship(back_populates="legality")

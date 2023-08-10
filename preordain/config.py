@@ -50,12 +50,12 @@ if TESTING:
     DB_NAME = Secret("test_" + str(DB_NAME))
     API_CONFIG[
         "description"
-    ] = "Environment for testing. This should be enabled if you are running tests or are needing the testing database."
+    ] = "Environment for testing. This should be enabled if you are running tests or are needing the testing database. "
 
 if DASHBOARD:
     API_CONFIG[
         "description"
-    ] = "Dashboard Enabled, the dashboard should be available on the /dash part."
+    ] += "Dashboard Enabled, the dashboard should be available on the /dash part."
     API_CONFIG["routes"] = [
         Mount(
             "/dash",

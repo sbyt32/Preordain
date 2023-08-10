@@ -10,8 +10,8 @@
             "request": "launch",
             "module": "hypercorn",
             "args": [
-                // "preordain.main:app", "--bind", "127.0.0.0:8000"
-                "preordain.main:app"
+                "preordain.main:app", "--bind", "0.0.0.0:8000"
+                // "preordain.main:app"
             ],
         }
     ]
