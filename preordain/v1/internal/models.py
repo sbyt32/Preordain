@@ -1,5 +1,5 @@
 # from pydantic import BaseModel
-from preordain.models import BaseResponse
+from preordain.v1.models import BaseResponse
 
 RESP_STRING = "internal_routes"
 

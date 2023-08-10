@@ -1,5 +1,5 @@
 from pydantic import BaseModel, validator
-from preordain.models import BaseResponse, BaseCardData, CardPrices
+from preordain.v1.models import BaseResponse, BaseCardData, CardPrices
 import datetime
 from preordain.utils.find_missing import get_card_from_set_id
 from typing import Optional

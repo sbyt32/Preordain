@@ -1,5 +1,5 @@
-from preordain.models import BaseResponse, BaseCardData
-from preordain.enums import CardConditions, CardVariants
+from preordain.v1.models import BaseResponse, BaseCardData
+from preordain.v1.enums import CardConditions, CardVariants
 
 # from pydantic import BaseModel
 import datetime

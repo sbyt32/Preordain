@@ -1,6 +1,6 @@
 import datetime
 from pydantic import BaseModel
-from preordain.models import CardPrices, BaseResponse, BaseCardData
+from preordain.v1.models import CardPrices, BaseResponse, BaseCardData
 from pydantic import BaseModel
 from preordain.v1.search.exceptions import InvalidSearchQuery
 

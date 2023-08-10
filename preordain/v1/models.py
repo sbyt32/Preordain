@@ -2,7 +2,7 @@ from typing import TypeVar, Generic, Optional
 from pydantic import BaseModel, validator, root_validator, Field
 from pydantic.generics import GenericModel
 from enum import Enum
-from preordain.enums import CardFormatLegalities
+from preordain.v1.enums import CardFormatLegalities
 import datetime
 from typing import Any
 from preordain.config import PROJECT

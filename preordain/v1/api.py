@@ -1,8 +1,8 @@
 from fastapi import Depends, APIRouter
-from preordain.dependencies import select_token, write_token
+from preordain.v1.dependencies import select_token, write_token
 from preordain.utils.find_missing import validate_table_data
-from preordain.models import BaseError, RespStrings, RootResponse
-from preordain.exceptions import RootException
+from preordain.v1.models import BaseError, RespStrings, RootResponse
+from preordain.v1.exceptions import RootException
 from .events.router import router as events_router
 from .groups.router import user_groups as groups_user_router
 from .price.router import price_router

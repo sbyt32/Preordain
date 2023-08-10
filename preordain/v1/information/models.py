@@ -1,7 +1,7 @@
 import datetime
 from pydantic import BaseModel
-from preordain.models import CardPrices, BaseResponse, BaseCardData, CardFormats
-from preordain.enums import CardRarity
+from preordain.v1.models import CardPrices, BaseResponse, BaseCardData, CardFormats
+from preordain.v1.enums import CardRarity
 from typing import Optional
 
 RESP_STRING = "card_info"

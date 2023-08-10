@@ -1,9 +1,9 @@
 import logging
-from .logging_details import log_setup
+from ..logging_details import log_setup
 from fastapi import Request, status
 from fastapi.responses import JSONResponse
 
-from preordain.models import BaseError, RespStrings
+from preordain.v1.models import BaseError, RespStrings
 
 log_setup()
 log = logging.getLogger("preordain")

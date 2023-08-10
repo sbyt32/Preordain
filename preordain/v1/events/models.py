@@ -1,5 +1,5 @@
 from pydantic import BaseModel, validator
-from preordain.models import BaseResponse
+from preordain.v1.models import BaseResponse
 from .enums import EventFormat
 from datetime import date
 from typing import Union

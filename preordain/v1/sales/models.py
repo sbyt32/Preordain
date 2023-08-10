@@ -1,8 +1,8 @@
 import datetime
 from pydantic import BaseModel, Extra
 from typing import Optional, Union
-from preordain.models import BaseResponse
-from preordain.enums import CardConditions, CardVariants
+from preordain.v1.models import BaseResponse
+from preordain.v1.enums import CardConditions, CardVariants
 
 daily_sales_str: str = "daily_card_sales"  # * /daily/{set}/{col_num}
 recent_sales_str: str = "recent_card_sales"  # * /card/{tcg_id}

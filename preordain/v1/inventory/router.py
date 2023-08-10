@@ -2,8 +2,8 @@ from fastapi import APIRouter, Depends, Response, status
 from preordain.utils.connections import connect_db, send_response
 from preordain.v1.inventory.models import InventoryResponse, SuccessfulRequest
 from preordain.v1.inventory.schema import TableInventory
-from preordain.models import BaseResponse
-from preordain.exceptions import NotFound
+from preordain.v1.models import BaseResponse
+from preordain.v1.exceptions import NotFound
 import arrow
 import logging
 

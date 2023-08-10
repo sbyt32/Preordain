@@ -1,7 +1,7 @@
 import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from preordain.exceptions import (
+from preordain.v1.exceptions import (
     InvalidToken,
     token_exception_handler,
     RootException,

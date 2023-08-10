@@ -1,8 +1,8 @@
-from preordain.exceptions import PreordainException
+from preordain.v1.exceptions import PreordainException
 import logging
 from fastapi import Request, status
 from fastapi.responses import JSONResponse
-from preordain.models import BaseError
+from preordain.v1.models import BaseError
 
 log = logging.getLogger()
 

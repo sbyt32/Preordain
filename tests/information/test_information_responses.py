@@ -1,4 +1,4 @@
-from preordain.models import RespStrings
+from preordain.v1.models import RespStrings
 from fastapi.testclient import TestClient
 
 

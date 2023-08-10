@@ -3,7 +3,7 @@
 from fastapi import APIRouter, status
 from preordain.utils.connections import connect_db, send_response
 from preordain.v1.internal.util import get_scryfall_bulk
-from preordain.schema import (
+from preordain.v1.schema import (
     SchemaCardInfoTableInfo,
     SchemaCardInfoTableFormat,
     SchemaCardInfoTableMetadata,

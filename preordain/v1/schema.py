@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
-from preordain.enums import CardFormatLegalities, CardRarity
-from preordain.models import CardFormats
+from preordain.v1.enums import CardFormatLegalities, CardRarity
+from preordain.v1.models import CardFormats
 from typing import Optional
 
 

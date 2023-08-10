@@ -1,7 +1,7 @@
 import datetime
 from pydantic import BaseModel
 from typing import Optional, Union
-from preordain.models import CardPrices, CardPricesSingle, BaseResponse
+from preordain.v1.models import CardPrices, CardPricesSingle, BaseResponse
 
 RESP_STRING: str = "price_data"
 

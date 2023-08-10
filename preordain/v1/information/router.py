@@ -10,8 +10,8 @@ from .models import (
 )
 from ..images.enums import ImageTypes
 from ..images.utils import get_img_path
-from preordain.models import CardFormats
-from preordain.exceptions import NotFound
+from preordain.v1.models import CardFormats
+from preordain.v1.exceptions import NotFound
 from preordain.utils.find_missing import get_card_from_set_id
 from fastapi.responses import FileResponse
 
