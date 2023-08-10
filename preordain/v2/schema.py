@@ -42,13 +42,16 @@ class CardMetadataTable(PreordainBase):
         ForeignKey("card_key_index.scryfall_uri"), primary_key=True
     )
     card_name: Mapped[str] = mapped_column(default=None)
-    set_code: Mapped[str] = mapped_column(default=None)
+    set_code: Mapped[str] = mapped_column(
+        ForeignKey("card_information.sets.set_code"), default=None
+    )
     collector_number: Mapped[str] = mapped_column(default=None)
     mana_cost: Mapped[str] = mapped_column(default=None)
     oracle_text: Mapped[str] = mapped_column(default=None)
     artist: Mapped[str] = mapped_column(default=None)
 
     card: Mapped["CardIndex"] = relationship(back_populates="card_metadata")
+    set: Mapped["SetTable"] = relationship(back_populates="set")
 
 
 class PriceTable(PreordainBase):
@@ -71,3 +74,14 @@ class PriceTable(PreordainBase):
     # def __repr__(self) -> str:
     #     return f"<PriceTable ('{self.date}', '{self.usd}', '{self.usd_foil}', '{self.usd_etch}', '{self.euro}', '{self.euro_foil}', '{self.tix}')>"
     # return super().__repr__()
+
+
+class SetTable(PreordainBase):
+    __tablename__ = "sets"
+    __table_args__ = {"schema": "card_information"}
+
+    set_code: Mapped[str] = mapped_column(primary_key=True, nullable=False)
+    set_name: Mapped[str] = mapped_column(nullable=False)
+    release_date: Mapped[datetime.date] = mapped_column()
+
+    set: Mapped["CardMetadataTable"] = relationship(back_populates="set")
