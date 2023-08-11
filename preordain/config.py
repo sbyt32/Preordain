@@ -45,6 +45,7 @@ except KeyError as e:
 
 API_CONFIG = {"title": PROJECT, "description": "Production Build.", "routes": []}
 FOLDER_PATH = "./preordain/v1/images/{type}/{set}/"
+IMG_FOLDER_PATH_V2 = "./preordain/v2/images/{scryfall_uri}"
 
 if TESTING:
     DB_NAME = Secret("test_" + str(DB_NAME))
