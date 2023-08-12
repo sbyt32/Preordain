@@ -23,33 +23,34 @@ default_card_updated_at = (
 
 
 for card_data in requests.get(default_cards_data["download_uri"]).json():
-    prices: dict[int | None] = card_data["prices"]
-    session.add(
-        PriceTable(
-            scryfall_uri=card_data["id"],
-            date=default_card_updated_at,
-            usd=prices["usd"],
-            usd_foil=prices["usd_foil"],
-            usd_etch=prices.get("usd_etched", None),
-            euro=prices["eur"],
-            euro_foil=prices["eur_foil"],
-            tix=prices["tix"],
+    if "paper" not in card_data["games"] or "mtgo" not in card_data["games"]:
+        prices: dict[int | None] = card_data["prices"]
+        session.add(
+            PriceTable(
+                scryfall_uri=card_data["id"],
+                date=default_card_updated_at,
+                usd=prices["usd"],
+                usd_foil=prices["usd_foil"],
+                usd_etch=prices.get("usd_etched", None),
+                euro=prices["eur"],
+                euro_foil=prices["eur_foil"],
+                tix=prices["tix"],
+            )
         )
-    )
-    legalities = card_data["legalities"]
-    session.add(
-        CardFormatTable(
-            scryfall_uri=card_data["id"],
-            standard=legalities["standard"],
-            historic=legalities["historic"],
-            pioneer=legalities["pioneer"],
-            modern=legalities["modern"],
-            legacy=legalities["legacy"],
-            pauper=legalities["pauper"],
-            vintage=legalities["vintage"],
-            commander=legalities["commander"],
-        )
-    )
+    # legalities = card_data["legalities"]
+    # session.add(
+    #     CardFormatTable(
+    #         scryfall_uri=card_data["id"],
+    #         standard=legalities["standard"],
+    #         historic=legalities["historic"],
+    #         pioneer=legalities["pioneer"],
+    #         modern=legalities["modern"],
+    #         legacy=legalities["legacy"],
+    #         pauper=legalities["pauper"],
+    #         vintage=legalities["vintage"],
+    #         commander=legalities["commander"],
+    #     )
+    # )
 
 # * Sets
 # for set in requests.get("https://api.scryfall.com/sets").json()["data"]:

@@ -14,7 +14,7 @@ from preordain.v1.price.models import (
 )
 from preordain.utils.get_last_update import get_last_update, to_tomorrow
 from preordain.v1.price.enums import GrowthCurrency, GrowthDirections
-from preordain.exceptions import NotFound
+from preordain.v1.exceptions import NotFound
 from preordain.config import UPDATE_OFFSET
 import logging
 
