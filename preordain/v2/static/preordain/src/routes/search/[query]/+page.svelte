@@ -6,9 +6,8 @@
 
 </script>
 
-<!-- {data.post[0].} -->
 
-<div class="mx-12">
+<div class="max-sm:mx-0 mx-12 my-2">
 
     <div class="py-4">
         <h1 class="text-2xl">
@@ -16,19 +15,19 @@
         </h1>
     </div>
 
-    <table class="table-auto w-full border border-black rounded-lg ">
+    <table class="table-auto w-full border border-black rounded-lg  max-sm:text-xs">
         <thead>
             <tr class="text-left">
-                <th class="px-6">Name</th>
+                <th class="max-sm:px-2 px-6">Name</th>
                 <th>Set</th>
-                <th>Collector #</th>
+                <th class="max-sm:after:content-['Col._#'] md:after:content-['Collector_#']"></th>
                 <th>Current Price</th>
             </tr>
         </thead>
         <tbody class="divide-y divide-dashed divide-black">
             {#each data.post as cardData}
                 <tr class="">
-                    <td class="px-6">{cardData.card_data.card_name}</td>
+                    <td class="max-sm:px-2 px-6">{cardData.card_data.card_name}</td>
                     <td class="uppercase">{cardData.card_data.set_code}</td>
                     <td>{cardData.card_data.collector_number}</td>
                     <td class="tabular-nums">{cardData.prices.usd == null ? "N/A" : `$${cardData.prices.usd}`}</td>
@@ -37,5 +36,3 @@
         </tbody>
     </table>
 </div>
-
-<!-- {data.} -->

@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Response, status
-from preordain.config import FOLDER_PATH
 from preordain.utils.connections import connect_db
 from preordain.utils.parsers import parse_data_for_response
 from .models import (

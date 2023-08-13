@@ -3,7 +3,6 @@
   import Icon from '@iconify/svelte';
   import {displaySidebar} from "$lib/stores"
   import NavigatonSidebar from '../components/NavigatonSidebar.svelte';
-  import { connectURL } from "$lib";
   import { goto } from "$app/navigation";
   $: query = ""
 
