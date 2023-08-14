@@ -12,10 +12,11 @@ price_cls = aliased(PriceTable, name="prices")
 metadata_cls = aliased(CardMetadataTable, name="card_data")
 
 
-@price_router.get(
-    "/price/{set_code}/{collector_number}", response_model=list[PriceData]
-)
-async def get_card_prices(set_code: str, collector_number: str):
+@price_router.get("/{set_code}/{collector_number}", response_model=list[PriceData])
+async def get_card_prices(set_code: str, collector_number: str, days: int = 30):
+    if days > 30:
+        days = 30
+
     result = session.execute(
         select(price_cls)
         .where(metadata_cls.set_code == set_code)

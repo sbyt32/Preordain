@@ -24,7 +24,7 @@ class PreordainBase(DeclarativeBase):
 class CardIndex(PreordainBase):
     __tablename__ = "card_key_index"
 
-    scryfall_uri: Mapped[str] = mapped_column(primary_key=True)
+    scryfall_uri: Mapped[str] = mapped_column(primary_key=True, index=True)
     uniq_id: Mapped[str] = mapped_column(nullable=False)
     card_id: Mapped[str] = mapped_column(nullable=False)
     groups: Mapped[list[str]] = mapped_column(ARRAY(String))
@@ -45,7 +45,7 @@ class CardMetadataTable(PreordainBase):
     __table_args__ = {"schema": "card_information"}
 
     scryfall_uri: Mapped[str] = mapped_column(
-        ForeignKey("card_key_index.scryfall_uri"), primary_key=True
+        ForeignKey("card_key_index.scryfall_uri"), primary_key=True, index=True
     )
     card_name: Mapped[str] = mapped_column(default=None)
     set_code: Mapped[str] = mapped_column(
@@ -65,9 +65,9 @@ class PriceTable(PreordainBase):
     __table_args__ = {"schema": "card_price_data"}
 
     scryfall_uri: Mapped[str] = mapped_column(
-        ForeignKey("card_key_index.scryfall_uri"), primary_key=True
+        ForeignKey("card_key_index.scryfall_uri"), primary_key=True, index=True
     )
-    date: Mapped[datetime.date] = mapped_column(primary_key=True)
+    date: Mapped[datetime.date] = mapped_column(primary_key=True, index=True)
     usd: Mapped[float] = mapped_column()
     usd_foil: Mapped[float] = mapped_column(FLOAT(2))
     usd_etch: Mapped[float] = mapped_column(FLOAT(2))
@@ -86,7 +86,7 @@ class SetTable(PreordainBase):
     __tablename__ = "sets"
     __table_args__ = {"schema": "card_information"}
 
-    set_code: Mapped[str] = mapped_column(primary_key=True, nullable=False)
+    set_code: Mapped[str] = mapped_column(primary_key=True, nullable=False, index=True)
     set_name: Mapped[str] = mapped_column(nullable=False)
     release_date: Mapped[datetime.date] = mapped_column()
 
@@ -98,7 +98,7 @@ class CardFormatTable(PreordainBase):
     __table_args__ = {"schema": "card_information"}
 
     scryfall_uri: Mapped[str] = mapped_column(
-        ForeignKey("card_key_index.scryfall_uri"), primary_key=True
+        ForeignKey("card_key_index.scryfall_uri"), primary_key=True, index=True
     )
     standard: Mapped[FormatLegalities] = mapped_column(
         Enum(

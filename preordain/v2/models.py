@@ -43,3 +43,5 @@ class CardPrices(BaseModel):
     euro: float | None
     euro_foil: float | None
     tix: float | None
+
+    # @validator("")

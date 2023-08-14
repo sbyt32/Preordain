@@ -60,6 +60,8 @@ CREATE TABLE IF NOT EXISTS card_information.formats (
     UNIQUE(uniq_id)
 );
 
+CREATE INDEX card_formats on card_information.formats using btree (scryfall_uri);
+
 CREATE TABLE IF NOT EXISTS card_information.sets (
     set_code        varchar(12)     NOT NULL PRIMARY KEY,
     set_name        text            NOT NULL,
@@ -97,6 +99,9 @@ CREATE TABLE IF NOT EXISTS card_price_data.price (
     euro_foil   float(2),
     tix         float(2)
 );
+
+CREATE INDEX card_price ON card_price_data.price USING btree (scryfall_uri);
+CREATE INDEX card_price_date ON card_price_data.price USING btree (date);
 
 -- Event Info
 CREATE SCHEMA IF NOT EXISTS event_info;
