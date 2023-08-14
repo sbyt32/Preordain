@@ -1,5 +1,5 @@
 import datetime
-from pydantic import BaseModel
+from pydantic import ConfigDict, BaseModel
 from typing import Optional, Union
 from preordain.v1.models import CardPrices, CardPricesSingle, BaseResponse
 
@@ -11,16 +11,15 @@ class PriceData(BaseModel):
     set: str
     set_full: str
     id: str
-    date: Optional[datetime.date]
+    date: Optional[datetime.date] = None
     prices: Union[CardPrices, CardPricesSingle]
 
 
 class PriceDataMultiple(BaseResponse):
     resp = RESP_STRING
     data: list[dict[PriceData]] = PriceData
-
-    class Config:
-        schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "resp": "price_data",
                 "status": 200,
@@ -39,14 +38,14 @@ class PriceDataMultiple(BaseResponse):
                 },
             }
         }
+    )
 
 
 class PriceDataSingle(BaseResponse):
     resp = RESP_STRING
     data: dict[PriceData] = PriceData
-
-    class Config:
-        schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "resp": "price_data",
                 "status": 200,
@@ -75,6 +74,7 @@ class PriceDataSingle(BaseResponse):
                 ],
             }
         }
+    )
 
 
 class PriceChangePercent(BaseModel):
@@ -83,10 +83,10 @@ class PriceChangePercent(BaseModel):
     set_full: str
     id: str
     date: datetime.date
-    usd: Optional[float]
-    usd_change: Optional[int]
-    euro: Optional[float]
-    euro_change: Optional[int]
+    usd: Optional[float] = None
+    usd_change: Optional[int] = None
+    euro: Optional[float] = None
+    euro_change: Optional[int] = None
 
 
 class PriceChange(BaseResponse):
@@ -100,8 +100,8 @@ class PriceVariantData(BaseModel):
     set_full: str
     rarity: str
     id: str
-    usd: Optional[float]
-    usd_foil: Optional[float]
+    usd: Optional[float] = None
+    usd_foil: Optional[float] = None
 
 
 class PriceVariantResponse(BaseResponse):

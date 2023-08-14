@@ -1,5 +1,5 @@
 import datetime
-from pydantic import BaseModel
+from pydantic import ConfigDict, BaseModel
 from preordain.v1.models import CardPrices, BaseResponse, BaseCardData, CardFormats
 from preordain.v1.enums import CardRarity
 from typing import Optional
@@ -15,18 +15,17 @@ class InformationData(BaseCardData):
 
 class MetadataData(BaseCardData):
     rarity: CardRarity
-    mana_cost: Optional[str]
-    oracle_text: Optional[str]
-    artist: Optional[str]
+    mana_cost: Optional[str] = None
+    oracle_text: Optional[str] = None
+    artist: Optional[str] = None
     legality: CardFormats
 
 
 class CardInformation(BaseResponse):
     resp = RESP_STRING
     data: InformationData
-
-    class Config:
-        schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "resp": "card_info",
                 "status": 200,
@@ -45,8 +44,9 @@ class CardInformation(BaseResponse):
                     },
                 },
             }
-        }
-        use_enum_values = True
+        },
+        use_enum_values=True,
+    )
 
 
 class CardTCGID(BaseModel):

@@ -1,4 +1,4 @@
-from pydantic import BaseModel, validator
+from pydantic import field_validator, ConfigDict, BaseModel, validator
 import datetime
 from typing import Optional
 
@@ -14,20 +14,21 @@ class PreordainInfo(BaseModel):
 class PreordainResponse(BaseModel):
     resp: str
     status: int
-    info: Optional[dict]
-    data: Optional[list | dict]
-
-    class Config:
-        use_enum_values = True
+    info: Optional[dict] = None
+    data: Optional[list | dict] = None
+    model_config = ConfigDict(use_enum_values=True)
 
     # Makes sure that either info or data is returned.
+    # TODO[pydantic]: We couldn't refactor the `validator`, please replace it by `field_validator` manually.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-validators for more information.
     @validator("info")
     def check_for_info_or_data(cls, v, values):
         if v is None and values.get("data") is None:
             raise ValueError("must return either values and/or info")
         return v
 
-    @validator("data")
+    @field_validator("data")
+    @classmethod
     def validate_if_data(cls, val):
         if issubclass(type(val), PreordainData):
             return val
@@ -36,12 +37,12 @@ class PreordainResponse(BaseModel):
 
 
 class CardPrices(BaseModel):
-    date: datetime.date | None
-    usd: float | None
-    usd_foil: float | None
-    usd_etch: float | None
-    euro: float | None
-    euro_foil: float | None
-    tix: float | None
+    date: datetime.date | None = None
+    usd: float | None = None
+    usd_foil: float | None = None
+    usd_etch: float | None = None
+    euro: float | None = None
+    euro_foil: float | None = None
+    tix: float | None = None
 
     # @validator("")

@@ -1,11 +1,11 @@
 from typing import TypeVar, Generic, Optional
-from pydantic import BaseModel, validator, root_validator, Field
-from pydantic.generics import GenericModel
+from pydantic import ConfigDict, BaseModel, FieldValidationInfo, Field, model_validator
 from enum import Enum
 from preordain.v1.enums import CardFormatLegalities
 import datetime
 from typing import Any
 from preordain.config import PROJECT
+from typing import Union
 
 
 class CardPrices(BaseModel):
@@ -56,9 +56,7 @@ class RespStrings(str, Enum):
     no_results = "no_results"  # * No results      | 404
     root_error = "root_error"  # * Access root     | 403
     validation_error = "validation_error"  # * validation_error | 422
-
-    class Config:
-        use_enum_values = True
+    model_config = ConfigDict(use_enum_values=True)
 
 
 ResponseDataTypes = TypeVar("ResponseDataTypes", list, dict)
@@ -68,7 +66,7 @@ class BaseInfo(BaseModel):
     message: str = "undefined error"
 
 
-class BaseResponse(GenericModel, Generic[ResponseDataTypes]):
+class BaseResponse(BaseModel, Generic[ResponseDataTypes]):
     def __init__(self, **data) -> None:
         super().__init__(**data)
         if self.info == None:
@@ -80,25 +78,34 @@ class BaseResponse(GenericModel, Generic[ResponseDataTypes]):
     status: int
     info: Optional[dict]
     data: Optional[ResponseDataTypes]
+    model_config = ConfigDict(use_enum_values=True)
 
-    class Config:
-        use_enum_values = True
+    # TODO[pydantic]: We couldn't refactor the `validator`, please replace it by `field_validator` manually.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-validators for more information.
+    # @validator("info")
+    # def check_for_info_or_data(cls, v, values):
+    #     if v is None and values.get("data") is None:
+    #         raise ValueError("must return either values and/or info")
+    #     return v
 
-    @validator("info")
-    def check_for_info_or_data(cls, v, values):
-        if v is None and values.get("data") is None:
+    # * This is probably correct ?
+    @model_validator(mode="before")
+    def check_for_info_or_data(self) -> "BaseResponse":
+        if self.info is None and self.data is None:
             raise ValueError("must return either values and/or info")
-        return v
+        return self
 
 
-class BaseError(GenericModel):
+class BaseError(BaseModel):
     resp: RespStrings
     status: int
     info: BaseInfo
-
-    class Config:
-        fields = {"__module__": {"exclude": True}, "__doc__": {"exclude": True}}
-        use_enum_values = True
+    # TODO[pydantic]: The following keys were removed: `fields`.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-config for more information.
+    model_config = ConfigDict(
+        fields={"__module__": {"exclude": True}, "__doc__": {"exclude": True}},
+        use_enum_values=True,
+    )
 
 
 class RootChecks(BaseModel):
@@ -115,9 +122,8 @@ class RootResponse(BaseResponse):
     resp = "root_test"
     status = 200
     info = RootInfo
-
-    class Config:
-        schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "resp": "root_test",
                 "status": 200,
@@ -130,3 +136,4 @@ class RootResponse(BaseResponse):
                 },
             }
         }
+    )

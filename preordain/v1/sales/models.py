@@ -1,5 +1,5 @@
 import datetime
-from pydantic import BaseModel, Extra
+from pydantic import ConfigDict, BaseModel
 from typing import Optional, Union
 from preordain.v1.models import BaseResponse
 from preordain.v1.enums import CardConditions, CardVariants
@@ -15,10 +15,9 @@ class RecentSaleData(BaseModel):
     quantity: int
     buy_price: float
     ship_price: float
-
-    class Config:
-        use_enum_values = True
-        schema_extra = {
+    model_config = ConfigDict(
+        use_enum_values=True,
+        json_schema_extra={
             "example": {
                 "resp": "price_data",
                 "status": 200,
@@ -33,17 +32,17 @@ class RecentSaleData(BaseModel):
                     }
                 ],
             }
-        }
+        },
+    )
 
 
 class DailySaleData(BaseModel):
     day: datetime.date
     sales: int
     avg_cost: float
-    day_change: Optional[str]
-
-    class Config:
-        schema_extra = {
+    day_change: Optional[str] = None
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "resp": "daily_card_sales",
                 "status": 200,
@@ -62,6 +61,7 @@ class DailySaleData(BaseModel):
                 },
             }
         }
+    )
 
 
 class DailySales(BaseModel):
@@ -69,9 +69,7 @@ class DailySales(BaseModel):
     set: str
     id: str
     sales: list[Union[DailySaleData, RecentSaleData]]
-
-    class Config:
-        extra = Extra.forbid
+    model_config = ConfigDict(extra="forbid")
 
 
 class CardSaleResponse(BaseResponse):

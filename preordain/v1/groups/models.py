@@ -1,4 +1,4 @@
-from pydantic import BaseModel, validator
+from pydantic import ConfigDict, BaseModel, validator
 from preordain.v1.models import BaseResponse, BaseCardData, CardPrices
 import datetime
 from preordain.utils.find_missing import get_card_from_set_id
@@ -9,15 +9,15 @@ RESP_STRING = "group_info"
 
 # This one is for request format.
 class CardInGroupInfo(BaseModel):
-    set: Optional[str]
-    id: Optional[str]
-    uri: Optional[str]
+    set: Optional[str] = None
+    id: Optional[str] = None
+    uri: Optional[str] = None
     group: str
-
-    class Config:
-        validate_assignment = True
+    model_config = ConfigDict(validate_assignment=True)
 
     # If missing uri
+    # TODO[pydantic]: We couldn't refactor the `validator`, please replace it by `field_validator` manually.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-validators for more information.
     @validator("uri", pre=True)
     def check_uri_or_set_id(cls, v, values):
         if not v:
@@ -37,9 +37,8 @@ class GroupInformation(BaseModel):
 class ShowGroupResponse(BaseResponse):
     resp = RESP_STRING
     data: list[GroupInformation]
-
-    class Config:
-        schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "resp": "group_info",
                 "status": 200,
@@ -52,14 +51,14 @@ class ShowGroupResponse(BaseResponse):
                 ],
             }
         }
+    )
 
 
 class SuccessfulRequest(BaseResponse):
     resp = RESP_STRING
     info = {"message": ""}
-
-    class Config:
-        schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "resp": "group_info",
                 "status": 201,
@@ -70,12 +69,13 @@ class SuccessfulRequest(BaseResponse):
                 },
             }
         }
+    )
 
 
 class CardGroupsData(BaseCardData):
     uri: str
     last_updated: datetime.date
-    groups: Optional[list[str]]
+    groups: Optional[list[str]] = None
     prices: CardPrices
 
 
@@ -83,9 +83,8 @@ class SingleGroupResponse(BaseResponse):
     resp = RESP_STRING
     info = {"message": ""}
     data = list[CardGroupsData]
-
-    class Config:
-        schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "resp": RESP_STRING,
                 "status": 200,
@@ -114,3 +113,4 @@ class SingleGroupResponse(BaseResponse):
                 ],
             }
         }
+    )

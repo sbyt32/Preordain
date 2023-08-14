@@ -8,9 +8,9 @@ class CardMetadata(BaseModel):
     card_name: str
     set_code: str
     collector_number: str
-    mana_cost: str | None
-    oracle_text: str | None
-    artist: str | None
+    mana_cost: str | None = None
+    oracle_text: str | None = None
+    artist: str | None = None
 
 
 class CardFormatLegalities(BaseModel):

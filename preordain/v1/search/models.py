@@ -1,5 +1,5 @@
 import datetime
-from pydantic import BaseModel
+from pydantic import ConfigDict, BaseModel
 from preordain.v1.models import CardPrices, BaseResponse, BaseCardData
 from pydantic import BaseModel
 from preordain.v1.search.exceptions import InvalidSearchQuery
@@ -28,9 +28,8 @@ class CardSearchData(BaseCardData):
 class SearchInformation(BaseResponse):
     resp = resp_string
     data: list[CardSearchData]
-
-    class Config:
-        schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "resp": "search_query",
                 "status": 200,
@@ -49,5 +48,6 @@ class SearchInformation(BaseResponse):
                     },
                 },
             }
-        }
-        use_enum_values = True
+        },
+        use_enum_values=True,
+    )

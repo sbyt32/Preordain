@@ -1,4 +1,4 @@
-from pydantic import BaseModel, validator
+from pydantic import field_validator, BaseModel
 from preordain.v1.models import BaseResponse
 from .enums import EventFormat
 from datetime import date
@@ -12,7 +12,8 @@ class EventData(BaseModel):
     event_date: date
     event_type: str
 
-    @validator("format", pre=True)
+    @field_validator("format", mode="before")
+    @classmethod
     def parse_format_data(cls, v):
         if v == EventFormat.Standard:
             v = "Standard"

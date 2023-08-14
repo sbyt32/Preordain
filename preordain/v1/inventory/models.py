@@ -3,6 +3,7 @@ from preordain.v1.enums import CardConditions, CardVariants
 
 # from pydantic import BaseModel
 import datetime
+from pydantic import ConfigDict
 
 RESP_STRING = "inventory_data"  # * /inventory/...
 
@@ -15,17 +16,14 @@ class InventoryData(BaseCardData):
     card_variant: CardVariants
     avg_cost: float
     change: str
-
-    class Config:
-        use_enum_values = True
+    model_config = ConfigDict(use_enum_values=True)
 
 
 class InventoryResponse(BaseResponse):
     resp = RESP_STRING
     data: list[InventoryData]
-
-    class Config:
-        schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "resp": RESP_STRING,
                 "status": 200,
@@ -43,9 +41,9 @@ class InventoryResponse(BaseResponse):
                     }
                 ],
             }
-        }
-
-        use_enum_values = True
+        },
+        use_enum_values=True,
+    )
 
 
 class SuccessfulRequest(BaseResponse):
