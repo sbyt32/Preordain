@@ -3,10 +3,10 @@ from fastapi.staticfiles import StaticFiles
 from starlette.config import Config, environ
 from starlette.datastructures import Secret
 from dateutil.relativedelta import relativedelta
-
 from .logging_details import log_setup
 import logging
 import sys
+import os
 
 log_setup()
 log = logging.getLogger("preordain")
@@ -43,8 +43,16 @@ except KeyError as e:
         sys.exit(1)
 
 
-API_CONFIG = {"title": PROJECT, "description": "Production Build.", "routes": []}
+API_CONFIG: dict[list | str] = {
+    "title": PROJECT,
+    "description": "Production Build.",
+    "routes": [],
+}
+# V1
+V1_DASHBOARD = "preordain/v1/static/preordain/dist"
 FOLDER_PATH = "./preordain/v1/images/{type}/{set}/"
+
+# V2
 IMG_FOLDER_PATH_V2 = "./preordain/v2/images/files/{scryfall_uri}"
 
 if TESTING:
@@ -54,13 +62,19 @@ if TESTING:
     ] = "Environment for testing. This should be enabled if you are running tests or are needing the testing database. "
 
 if DASHBOARD:
-    API_CONFIG[
-        "description"
-    ] += "Dashboard Enabled, the dashboard should be available on the /dash part."
-    API_CONFIG["routes"] = [
-        Mount(
-            "/dash",
-            app=StaticFiles(directory="preordain/v1/static/preordain/dist", html=True),
-            name="dashboard",
+    if os.path.exists(V1_DASHBOARD):
+        API_CONFIG[
+            "description"
+        ] += "Dashboard Enabled, the dashboard should be available on the /dash part."
+        API_CONFIG["routes"].append(
+            Mount(
+                "/dash",
+                app=StaticFiles(
+                    directory="preordain/v1/static/preordain/dist", html=True
+                ),
+                name="dashboard",
+            )
         )
-    ]
+    else:
+        log.warning("Dashboard failed to load! It is not built, please run npm run dev")
+        API_CONFIG["description"] += "Dashboard Enabled but not build!"

@@ -24,3 +24,13 @@ interface CardLegalities {
     vintage: Legality
     commander: Legality
 }
+
+export interface PriceData {
+    // date?: string
+    usd: number
+    usd_foil: number
+    usd_etch: number
+    euro: number
+    euro_foil: number
+    tix: number
+}

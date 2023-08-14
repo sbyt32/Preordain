@@ -119,9 +119,9 @@ class RootInfo(BaseModel):
 
 
 class RootResponse(BaseResponse):
-    resp = "root_test"
-    status = 200
-    info = RootInfo
+    resp: str = "root_test"
+    status: int = 200
+    info: Optional[RootInfo] = RootInfo
     model_config = ConfigDict(
         json_schema_extra={
             "example": {

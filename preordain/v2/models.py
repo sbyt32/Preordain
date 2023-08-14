@@ -37,6 +37,11 @@ class PreordainResponse(BaseModel):
 
 
 class CardPrices(BaseModel):
+    def __init__(self, **data) -> None:
+        super().__init__(**data)
+        if self.date == None:
+            del self.date
+
     date: datetime.date | None = None
     usd: float | None = None
     usd_foil: float | None = None
@@ -44,5 +49,3 @@ class CardPrices(BaseModel):
     euro: float | None = None
     euro_foil: float | None = None
     tix: float | None = None
-
-    # @validator("")
