@@ -1,6 +1,6 @@
 import type { PriceData } from "./models";
 
 export interface PriceResponse {
-    date?: string
+    date: string
     prices: PriceData
 }

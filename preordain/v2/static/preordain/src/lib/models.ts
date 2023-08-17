@@ -26,7 +26,7 @@ interface CardLegalities {
 }
 
 export interface PriceData {
-    // date?: string
+    date?: string
     usd: number
     usd_foil: number
     usd_etch: number
