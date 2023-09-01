@@ -27,7 +27,7 @@
         <tbody class="divide-y divide-dashed divide-black">
             {#each data.post as cardData}
                 <tr class="">
-                    <td class="max-sm:px-2 px-6">{cardData.card_data.card_name}</td>
+                    <td class="max-sm:px-2 px-6"><a href="/card/{cardData.card_data.set_code}/{cardData.card_data.collector_number}">{cardData.card_data.card_name}</a></td>
                     <td class="uppercase">{cardData.card_data.set_code}</td>
                     <td>{cardData.card_data.collector_number}</td>
                     <td class="tabular-nums">{cardData.prices.usd == null ? "N/A" : `$${cardData.prices.usd}`}</td>

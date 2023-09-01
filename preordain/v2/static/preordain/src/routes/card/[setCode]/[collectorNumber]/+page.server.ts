@@ -15,3 +15,4 @@ export const load: PageServerLoad = async ({ params }) => {
 }
 
 export const ssr = false
+// export const prerender = true
