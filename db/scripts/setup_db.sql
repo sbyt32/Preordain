@@ -108,17 +108,24 @@ CREATE SCHEMA IF NOT EXISTS event_info;
 
 CREATE TABLE IF NOT EXISTS event_info.metadata (
     event_uri text NOT NULL PRIMARY KEY,
-    name TEXT NOT NULL,
+    event_name TEXT NOT NULL,
     event_date date NOT NULL,
-    type text NOT NULL,
-    format text NOT NULL
+    event_type text NOT NULL,
+    event_format text NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS event_info.decklists (
+CREATE TABLE IF NOT EXISTS event_info.deck_list_metadata (
     event_uri text NOT NULL PRIMARY KEY,
-    deck_name text NOT NULL,
-    main_deck text[][],
-    side_deck text[][]
+    deck_id   text NOT NULL,
+    deck_name text NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS event_info.deck_list (
+    deck_id text NOT NULL,
+    quantity smallint NOT NULL,
+    scryfall_uri TEXT NOT NULL,
+    mainboard boolean,
+    companion boolean DEFAULT FALSE
 );
 
 -- -- DROP DATABASE IF EXISTS price_tracker;

@@ -20,7 +20,7 @@ def send_request(method: str, url: str, **kwargs) -> Union[list, dict, None]:
 
 
 try:
-    __database_connection_v2 = create_engine(
+    database_engine_v2 = create_engine(
         URL.create(
             "postgresql+psycopg",
             username=str(DB_USER),
@@ -30,7 +30,7 @@ try:
         )
     )
 
-    session = Session(__database_connection_v2)
+    session = Session(database_engine_v2)
     log.info("Database Connection should be successful!")
 except Exception as e:
     log.critical(f"Database Connection Failed! Error: {e}")

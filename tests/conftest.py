@@ -13,9 +13,15 @@ environ["DASHBOARD"] = "False"
 from preordain import config
 
 
-@pytest.fixture
-def client():
-    from preordain.main import app
+# This is for
+@pytest.fixture(scope="session")
+def db():
+    pass
 
-    with TestClient(app) as test_client:
-        yield test_client
+
+# @pytest.fixture
+# def client():
+#     from preordain.main import app
+
+#     with TestClient(app) as test_client:
+#         yield test_client
