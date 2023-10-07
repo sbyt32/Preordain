@@ -46,7 +46,7 @@ class CardMetadataTable(PreordainBase):
     )
     card_name: Mapped[str] = mapped_column(default=None)
     set_code: Mapped[str] = mapped_column(
-        ForeignKey("card_information.sets.set_code"), default=None
+        ForeignKey("card_metadata.sets.set_code"), default=None
     )
     collector_number: Mapped[str] = mapped_column(default=None)
     mana_cost: Mapped[str] = mapped_column(default=None)
@@ -81,7 +81,7 @@ class PriceTable(PreordainBase):
 
 class SetTable(PreordainBase):
     __tablename__ = "sets"
-    __table_args__ = {"schema": "card_information"}
+    __table_args__ = {"schema": "card_metadata"}
 
     set_code: Mapped[str] = mapped_column(primary_key=True, nullable=False, index=True)
     set_name: Mapped[str] = mapped_column(nullable=False)
@@ -92,7 +92,7 @@ class SetTable(PreordainBase):
 
 class CardFormatTable(PreordainBase):
     __tablename__ = "formats"
-    __table_args__ = {"schema": "card_information"}
+    __table_args__ = {"schema": "card_metadata"}
 
     scryfall_uri: Mapped[str] = mapped_column(
         ForeignKey("card_key_index.scryfall_uri"), primary_key=True, index=True
