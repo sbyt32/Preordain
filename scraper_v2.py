@@ -1,8 +1,8 @@
 import requests
 import re
 from sqlalchemy import insert
-from preordain.v2.database import session
-from preordain.v2.schema import SetTable, PriceTable, CardFormatTable
+from preordain.database import session
+from preordain.schema import SetTable, PriceTable, CardFormatTable
 
 # Regex Pattern for Date
 regex_pattern = re.compile(

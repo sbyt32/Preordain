@@ -21,13 +21,6 @@ try:
     DB_PASS = config("DB_PASS", cast=Secret)
     DB_NAME = config("DB_NAME", cast=Secret)
 
-    TCG_SALES = config("TCG_SALES", cast=str)
-    # ? So, it's first a string, then needs to be cast as a datetime
-
-    SEC_TOKEN = config("SEC_TOKEN", cast=Secret)
-    WRITE_TOKEN = config("WRITE_TOKEN", cast=Secret)
-    PRICE_TOKEN = config("PRICE_TOKEN", cast=Secret)
-
     # * Keep the days the same, this is to make sure that the database has time to scrape the data.
     UPDATE_OFFSET = relativedelta(days=+1, hour=0, minute=10, second=0, microsecond=0)
 
@@ -46,13 +39,9 @@ API_CONFIG: dict[list | str] = {
     "description": "Production Build.",
     "routes": [],
 }
-# V1
-V1_DASHBOARD = "preordain/v1/static/preordain/dist"
-FOLDER_PATH = "./preordain/v1/images/{type}/{set}/"
-
 # V2
-IMG_FOLDER_PATH_V2 = "./preordain/v2/images/files/{scryfall_uri}"
-V2_DASHBOARD = "preordain/v2/static/preordain/dist"
+IMG_FOLDER_PATH_V2 = "./preordain/images/files/{scryfall_uri}"
+V2_DASHBOARD = "preordain/static/preordain/dist"
 
 if TESTING:
     DB_NAME = Secret("test_" + str(DB_NAME))

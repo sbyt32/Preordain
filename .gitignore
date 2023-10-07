@@ -41,3 +41,5 @@ dist-ssr
 img/
 preordain/static/preordain/src/lib/charts/test_data.js
 test_*.jpg
+
+.static_old
