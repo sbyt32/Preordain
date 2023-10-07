@@ -19,17 +19,16 @@ WITH
 
 CREATE TABLE IF NOT EXISTS card_key_index (
     scryfall_uri text NOT NULL,
-    groups text[],
     tcg_id text,
     tcg_id_etched text,
     new_search boolean DEFAULT true,
     scraper boolean DEFAULT false
 );
 
-CREATE SCHEMA IF NOT EXISTS card_information;
+CREATE SCHEMA IF NOT EXISTS card_metadata;
 
 -- Card Information
-CREATE TABLE IF NOT EXISTS card_information.metadata (
+CREATE TABLE IF NOT EXISTS card_metadata.metadata (
     scryfall_uri text NOT NULL PRIMARY KEY,
     card_name text NOT NULL,
     set_code text NOT NULL,
@@ -40,35 +39,35 @@ CREATE TABLE IF NOT EXISTS card_information.metadata (
     UNIQUE(scryfall_uri)
 );
 
-CREATE TYPE card_information.format_legalities AS ENUM (
+CREATE TYPE card_metadata.format_legalities AS ENUM (
         'legal',
         'not_legal',
         'banned',
         'restricted'
 );
 
-CREATE TABLE IF NOT EXISTS card_information.formats (
+CREATE TABLE IF NOT EXISTS card_metadata.formats (
     scryfall_uri text NOT NULL PRIMARY KEY,
-    standard card_information.format_legalities NOT NULL,
-    historic card_information.format_legalities NOT NULL,
-    pioneer card_information.format_legalities NOT NULL,
-    modern card_information.format_legalities NOT NULL,
-    legacy card_information.format_legalities NOT NULL,
-    pauper card_information.format_legalities NOT NULL,
-    vintage card_information.format_legalities NOT NULL,
-    commander card_information.format_legalities NOT NULL,
+    standard card_metadata.format_legalities NOT NULL,
+    historic card_metadata.format_legalities NOT NULL,
+    pioneer card_metadata.format_legalities NOT NULL,
+    modern card_metadata.format_legalities NOT NULL,
+    legacy card_metadata.format_legalities NOT NULL,
+    pauper card_metadata.format_legalities NOT NULL,
+    vintage card_metadata.format_legalities NOT NULL,
+    commander card_metadata.format_legalities NOT NULL,
     UNIQUE(uniq_id)
 );
 
-CREATE INDEX card_formats on card_information.formats using btree (scryfall_uri);
+CREATE INDEX card_formats on card_metadata.formats using btree (scryfall_uri);
 
-CREATE TABLE IF NOT EXISTS card_information.sets (
+CREATE TABLE IF NOT EXISTS card_metadata.sets (
     set_code        varchar(12)     NOT NULL PRIMARY KEY,
     set_name        text            NOT NULL,
     release_date    date
 );
 
-CREATE INDEX card_sets ON card_information.sets USING btree (set_code);
+CREATE INDEX card_sets ON card_metadata.sets USING btree (set_code);
 
 -- Card Groups? IDK what to name it
 
