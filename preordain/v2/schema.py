@@ -25,9 +25,6 @@ class CardIndex(PreordainBase):
     __tablename__ = "card_key_index"
 
     scryfall_uri: Mapped[str] = mapped_column(primary_key=True, index=True)
-    uniq_id: Mapped[str] = mapped_column(nullable=False)
-    card_id: Mapped[str] = mapped_column(nullable=False)
-    groups: Mapped[list[str]] = mapped_column(ARRAY(String))
     tcg_id: Mapped[str] = mapped_column()
     tcg_id_etched: Mapped[str] = mapped_column()
     new_search: Mapped[bool] = mapped_column(default=True)
@@ -42,7 +39,7 @@ class CardIndex(PreordainBase):
 
 class CardMetadataTable(PreordainBase):
     __tablename__ = "metadata"
-    __table_args__ = {"schema": "card_information"}
+    __table_args__ = {"schema": "card_metadata"}
 
     scryfall_uri: Mapped[str] = mapped_column(
         ForeignKey("card_key_index.scryfall_uri"), primary_key=True, index=True
