@@ -13,8 +13,6 @@ interface chartPrice {
 export async function processPriceData(query:queryCard) {
     let data = await database(`price/${query.set}/${query.id}?days=30`)
 
-
-
     let priceData:chartPrice[] = []
     data.forEach(e => {
         let currentDate = new Date(e.date)

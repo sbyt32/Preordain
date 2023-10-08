@@ -1,19 +1,22 @@
 <script lang="ts">
     import {processPriceData, type queryCard} from './data_processing';
     import {database, fetchImageFromDatabase} from "../../lib/connection"
-    import PlotPriceGraph from '../../lib/components/PlotPriceGraph.svelte';
-    export let params: queryCard
+    import PlotPriceGraph from '../../lib/components/card_page/PlotPriceGraph.svelte';
+    import CardMetadata from '../../lib/components/card_page/CardMetadata.svelte';
+    export let params = null
+
 
 </script>
 
 <div class="m-8">
     <span class="inline-block border w-full p-4">
-        {#await fetchImageFromDatabase("c9f8b8fb-1cd8-450e-a1fe-892e7a323479") then cardImg}
+        {#await fetchImageFromDatabase("") then cardImg}
             <img src="{cardImg}" alt="" class="h-96 inline-block align-top">
         {/await}
-        {#await processPriceData({set: "vow", id: "38"}) then priceData}
+
+        <!-- {#await processPriceData({set: "vow", id: "38"}) then priceData}
             <PlotPriceGraph {priceData}/>
-        {/await}
+        {/await} -->
 
     </span>
 
@@ -30,7 +33,7 @@
             </tr>
         </thead>
         <tbody>
-        {#await database(`price/${params.set}/${params.id}?days=30`) then data}
+        <!-- {#await database(`price/${params.set}/${params.id}?days=30`) then data}
             {#each data as card}
             <tr>
                 <td>{card.date}</td>
@@ -39,14 +42,9 @@
                 {/each}
             </tr>
             {/each}
-        {/await}
+        {/await} -->
 
         </tbody>
     </table>
 
 </div>
-<!-- <style>
-    p {
-        width:auto;
-    }
-</style> -->

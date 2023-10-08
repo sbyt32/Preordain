@@ -45,9 +45,15 @@ base_statement = (
 
 
 @info_router.get("/search/{query}", response_model=list[CardData])
-async def get_card_info(query: str):
+async def search_db_for_cards(query: str):
     result = session.execute(
         base_statement.where(metadata_cls.card_name.icontains(query)).limit(10)
     )
 
     return jsonable_encoder(result.mappings().fetchall())
+
+
+@info_router.get("/card/{uri}")
+async def search_db_for_single_card(uri: str = "c9f8b8fb-1cd8-450e-a1fe-892e7a323479"):
+    result = session.execute(base_statement.where(CardIndex.scryfall_uri.__eq__(uri)))
+    return jsonable_encoder(result.mappings().fetchone())
