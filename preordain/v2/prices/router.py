@@ -27,6 +27,7 @@ async def get_card_prices(set_code: str, collector_number: str, days: int = 30):
         .where(CardIndex.scryfall_uri == metadata_cls.scryfall_uri)
         .distinct(price_cls.date)
         .order_by(price_cls.date.desc())
+        .limit(days)
     )
 
     price_data = []
