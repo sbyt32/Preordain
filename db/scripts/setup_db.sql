@@ -15,7 +15,7 @@ WITH
     TABLESPACE = pg_default CONNECTION
     LIMIT = -1 IS_TEMPLATE = False;
 
-\c price_tracker
+\c price_tracker_v2
 
 CREATE TABLE IF NOT EXISTS card_key_index (
     scryfall_uri text NOT NULL,
@@ -25,10 +25,10 @@ CREATE TABLE IF NOT EXISTS card_key_index (
     scraper boolean DEFAULT false
 );
 
-CREATE SCHEMA IF NOT EXISTS card_metadata;
+CREATE SCHEMA card_metadata;
 
 -- Card Information
-CREATE TABLE IF NOT EXISTS card_metadata.metadata (
+CREATE TABLE card_metadata.metadata (
     scryfall_uri text NOT NULL PRIMARY KEY,
     card_name text NOT NULL,
     set_code text NOT NULL,
@@ -46,7 +46,7 @@ CREATE TYPE card_metadata.format_legalities AS ENUM (
         'restricted'
 );
 
-CREATE TABLE IF NOT EXISTS card_metadata.formats (
+CREATE TABLE card_metadata.formats (
     scryfall_uri text NOT NULL PRIMARY KEY,
     standard card_metadata.format_legalities NOT NULL,
     historic card_metadata.format_legalities NOT NULL,
@@ -61,7 +61,7 @@ CREATE TABLE IF NOT EXISTS card_metadata.formats (
 
 CREATE INDEX card_formats on card_metadata.formats using btree (scryfall_uri);
 
-CREATE TABLE IF NOT EXISTS card_metadata.sets (
+CREATE TABLE card_metadata.sets (
     set_code        varchar(12)     NOT NULL PRIMARY KEY,
     set_name        text            NOT NULL,
     release_date    date
@@ -76,9 +76,9 @@ CREATE INDEX card_sets ON card_metadata.sets USING btree (set_code);
 -- CREATE TABLE IF NOT EXISTS ()
 
 -- Price Data
-CREATE SCHEMA IF NOT EXISTS card_price_data;
+CREATE SCHEMA card_price_data;
 
-CREATE TABLE IF NOT EXISTS card_price_data.orders (
+CREATE TABLE card_price_data.orders (
     tcg_id      text NOT NULL PRIMARY KEY,
     order_date  timestamptz NOT NULL,
     condition   text        NOT NULL,
@@ -88,7 +88,7 @@ CREATE TABLE IF NOT EXISTS card_price_data.orders (
     ship_price  float(2)    NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS card_price_data.price (
+CREATE TABLE card_price_data.price (
     scryfall_uri     text NOT NULL PRIMARY KEY,
     date        date,
     usd         float(2),
@@ -103,9 +103,9 @@ CREATE INDEX card_price ON card_price_data.price USING btree (scryfall_uri);
 CREATE INDEX card_price_date ON card_price_data.price USING btree (date);
 
 -- Event Info
-CREATE SCHEMA IF NOT EXISTS event_info;
+CREATE SCHEMA event_info;
 
-CREATE TABLE IF NOT EXISTS event_info.metadata (
+CREATE TABLE event_info.metadata (
     event_uri text NOT NULL PRIMARY KEY,
     event_name TEXT NOT NULL,
     event_date date NOT NULL,
@@ -113,13 +113,13 @@ CREATE TABLE IF NOT EXISTS event_info.metadata (
     event_format text NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS event_info.deck_list_metadata (
+CREATE TABLE event_info.deck_list_metadata (
     event_uri text NOT NULL PRIMARY KEY,
     deck_id   text NOT NULL,
     deck_name text NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS event_info.deck_list (
+CREATE TABLE event_info.deck_list (
     deck_id text NOT NULL,
     quantity smallint NOT NULL,
     scryfall_uri TEXT NOT NULL,
