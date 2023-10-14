@@ -17,6 +17,7 @@ Written documentation is a WIP. Location is currently [here](docs/api_functions.
   - [Features](#features)
   - [To Do:](#to-do)
   - [Libraries](#libraries)
+    - [**Minimum Python Version is: 3.10**](#minimum-python-version-is-310)
     - [Base](#base)
     - [Dev](#dev)
   - [Images (of V1)](#images-of-v1)
@@ -51,6 +52,7 @@ Written documentation is a WIP. Location is currently [here](docs/api_functions.
 
 
 ## Libraries
+  ### **Minimum Python Version is: 3.10**
   ### Base
     arrow
     hypercorn
