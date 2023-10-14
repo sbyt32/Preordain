@@ -76,11 +76,8 @@ services:
     build:
       context: ./app
       dockerfile: Dockerfile
-    # image: node
-    # build:
-      # args:
     ports:
-      - 5173:5173
+      - 5173:3000
     depends_on:
       - db
       - api

@@ -13,5 +13,7 @@ function toggleSidebarViewStatus() {
     }
 }
 
-export const connectURL = readable("http://api:8000")
+// If Developing, should use the localhost aka 127.0.0.1 endpoint. If it's deployed, likely through Docker, should use the latter.
+export const connectURL = readable(import.meta.env.DEV ?  "http://127.0.0.1:8000": "http://api:8000")
+
 export const sidebarViewStatus = toggleSidebarViewStatus();

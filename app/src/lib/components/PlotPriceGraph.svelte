@@ -1,11 +1,11 @@
 <script lang="ts">
     // IDK why this is giving an error
-    // @ts-ignore
     import * as d3 from "d3"
     import * as Plot from '@observablehq/plot'
     import type { PriceResponse } from "$lib/responses";
-    let div: HTMLSpanElement;
     export let data:PriceResponse[];
+    let div: HTMLSpanElement;
+    let parsedChartData:ChartPrice[] = []
 
     interface ChartPrice {
         Date: Date
@@ -13,13 +13,12 @@
         Currency: string
         Price: string | number | null
     }
-    let parsedChartData:ChartPrice[] = []
 
     data.forEach(e => {
         let currentDate = new Date(e.date)
         parsedChartData.push(
             {"Date": currentDate, "Type": "USD", "Currency": "USD", "Price": e.prices.usd},
-            {"Date": currentDate, "Type": "USD", "Currency": "USD", "Price": e.prices.usd_foil}
+            {"Date": currentDate, "Type": "USD (Foil)", "Currency": "USD", "Price": e.prices.usd_foil}
             )
     })
 
