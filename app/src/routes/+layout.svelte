@@ -15,8 +15,8 @@
 {#if $sidebarViewStatus}
   <NavigatonSidebar/>
 {/if}
-
-<div class="w-screen bg-indigo-700 py-2 text-white inline-flex drop-shadow-lg px-4">
+<!--
+<div class="w-screen bg-gray-600 py-2 text-white inline-flex drop-shadow-lg px-4">
 
   <button on:click={() => sidebarViewStatus.toggleSidebar()} class="pr-2">
     <Icon icon="material-symbols:density-medium-rounded" height=32 width=32/>
@@ -36,7 +36,7 @@
     >
   </h1>
 
-</div>
+</div> -->
 
 <main>
   <slot />

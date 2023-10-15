@@ -7,6 +7,9 @@
     let div: HTMLSpanElement;
     let parsedChartData:ChartPrice[] = []
 
+    // $: pageWindowX = 0
+    // $: pageWindowY = 0
+
     interface ChartPrice {
         Date: Date
         Type: string
@@ -23,29 +26,31 @@
     })
 
     const chartVisual = Plot.plot({
-        height: window.screenY,
-        width: window.screenX * .58,
+        width: 1800,
 
         // margin: 32,
+
+        marginTop: 24,
+        marginRight: 48,
+        marginBottom: 48,
+        marginLeft: 48,
         title: "Price History",
         color: {legend: true},
-        style: "overflow: visible; font-size: 13px;",
+        style: `overflow: visible;`,
         y: {grid: true, label: "Price", tickFormat: d3.format("$,.2f") },
         marks: [
 
             // TODO: Add BG
-            // Plot.frame({fill: "#"}),
+            Plot.frame(),
             Plot.ruleY([0]),
-
             Plot.axisX({ticks:"week"}), // Set X axis to break up by week
             Plot.gridX({ticks: "month", strokeWidth: 2, stroke: "blue", strokeOpacity: .2}),
-
             Plot.lineY(parsedChartData, {x: "Date", y: "Price", stroke: "Type", strokeWidth: 2}),
             Plot.text(parsedChartData, Plot.selectFirst({x: "Date", y: "Price", z: "Type", text: "Type", textAnchor:"start", dx: 3})),
 
             Plot.crosshair(parsedChartData, {x: "Date", y: "Price"}),
             Plot.tip(parsedChartData, Plot.pointerX(
-                {x: 'Date', y: "Price", channels: {Date: "Date", Currency: "Currency", Price: "Price" }}
+                {x: 'Date', y: "Price", channels: {Date: "Date",  Type: "Type", Price: "Price",}}
             ))
         ]
     })
@@ -56,5 +61,6 @@
     }
 
 </script>
-
-<div bind:this={div} role="img" class="inline-block align-top w-fit"/>
+<!-- {pageWindowX}
+<svelte:window bind:innerWidth={pageWindowX} bind:innerHeight={pageWindowY}/> -->
+<div bind:this={div} role="img" class="inline-block align-top "/>

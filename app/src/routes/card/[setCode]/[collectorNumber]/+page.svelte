@@ -12,8 +12,9 @@
 
 <div class="m-8">
 
-
-    <PlotPriceGraph data={data.price}/>
+    <div>
+        <PlotPriceGraph data={data.price}/>
+    </div>
 
     <table class="table-auto w-full">
         <thead>
