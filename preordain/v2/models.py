@@ -7,8 +7,8 @@ class PreordainData(BaseModel):
     pass
 
 
-class PreordainInfo(BaseModel):
-    pass
+# class PreordainInfo(BaseModel):
+#     pass
 
 
 class PreordainResponse(BaseModel):

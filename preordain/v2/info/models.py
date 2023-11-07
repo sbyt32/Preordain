@@ -29,3 +29,6 @@ class CardData(PreordainData):
     card_data: CardMetadata
     legalities: CardFormatLegalities
     prices: CardPrices
+
+
+# class

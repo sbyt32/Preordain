@@ -1,7 +1,8 @@
 import datetime
-from sqlalchemy import MetaData, String, FLOAT, ForeignKey, Enum
+from sqlalchemy import MetaData, FLOAT, ForeignKey, Enum
 from typing import get_args, Literal
-from sqlalchemy.dialects.postgresql import ARRAY
+
+# from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm import (
     Mapped,
     mapped_column,
