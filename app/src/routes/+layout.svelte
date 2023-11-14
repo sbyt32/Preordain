@@ -15,6 +15,8 @@
 {#if $sidebarViewStatus}
   <NavigatonSidebar/>
 {/if}
+
+<!-- ! Header -->
 <!--
 <div class="w-screen bg-gray-600 py-2 text-white inline-flex drop-shadow-lg px-4">
 

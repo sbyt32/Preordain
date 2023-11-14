@@ -53,7 +53,7 @@ async def get_card_info(query: str):
     return jsonable_encoder(result.mappings().fetchall())
 
 
-@info_router.get("/card/{uri}")
+@info_router.get("/card/{uri}", response_model=CardData)
 async def search_db_for_single_card(uri: str = "c9f8b8fb-1cd8-450e-a1fe-892e7a323479"):
     result = session.execute(base_statement.where(CardIndex.scryfall_uri.__eq__(uri)))
     return jsonable_encoder(result.mappings().fetchone())

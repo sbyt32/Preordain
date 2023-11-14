@@ -17,18 +17,21 @@ export async function database(link:string, headers: HeadersInit = {'accept': 'a
 
 export enum APIRoutes {
   Search,
-  Price
+  Price,
+  Image,
+  Card
 }
 
-export interface searchOptions {
+export interface SearchOptions {
   query? : string
   setCode? : string
   collectorNumber? : string
+  cardURI?: string
 }
 
 function getAPILink(
     route: APIRoutes,
-    options:searchOptions
+    options: SearchOptions
   ) {
 
 
@@ -37,6 +40,10 @@ function getAPILink(
       return `info/search/${options.query}`
     case APIRoutes.Price:
       return `price/${options.setCode}/${options.collectorNumber}`
+    case  APIRoutes.Image:
+      return `images/${options.cardURI}`
+    case APIRoutes.Card:
+      return `info/card/${options.cardURI}`
     default:
       break;
   }
@@ -44,16 +51,20 @@ function getAPILink(
 
 export async function queryAPI(
   route: APIRoutes,
-  options: searchOptions,
+  options: SearchOptions,
   headers: HeadersInit = {'accept': 'application/json'},
-  method:string = "GET"
+  method: string = "GET"
   ) {
   let resp = await fetch(`${get(connectURL)}/v2/${getAPILink(route, options)}`, {
     headers,
     method
   })
   if (resp.status == 200) {
-    return await resp.json()
+    if (route == APIRoutes.Image) {
+      return resp.url
+    } else {
+      return await resp.json()
+    }
   } else {
     // throw new Error(`Status Code: ${resp.status}`);
     console.error(await resp.json())

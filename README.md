@@ -20,6 +20,7 @@ Written documentation is a WIP. Location is currently [here](docs/api_functions.
     - [**Minimum Python Version is: 3.10**](#minimum-python-version-is-310)
     - [Base](#base)
     - [Dev](#dev)
+  - [Images (of V2)](#images-of-v2)
   - [Images (of V1)](#images-of-v1)
     - [Home](#home)
     - [Groups](#groups)
@@ -72,6 +73,8 @@ Written documentation is a WIP. Location is currently [here](docs/api_functions.
     pre-commit
     pip-tools
 
+
+## Images (of V2)
 
 ## Images (of V1)
 

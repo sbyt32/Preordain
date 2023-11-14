@@ -1,4 +1,4 @@
-interface CardMetadata {
+export interface CardMetadata {
     card_name: string
     set_code: string
     collector_number: string
@@ -14,7 +14,7 @@ enum Legality {
     banned
 }
 
-interface CardLegalities {
+export interface CardLegalities {
     standard: Legality
     historic: Legality
     pioneer: Legality

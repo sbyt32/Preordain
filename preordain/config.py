@@ -51,7 +51,7 @@ V1_DASHBOARD = "preordain/v1/static/preordain/dist"
 FOLDER_PATH = "./preordain/v1/images/{type}/{set}/"
 
 # V2
-IMG_FOLDER_PATH_V2 = "./preordain/v2/images/files/{scryfall_uri}"
+IMG_FOLDER_PATH_V2 = "preordain/v2/images/files/{scryfall_uri}"
 V2_DASHBOARD = "./app/dist/"
 
 if TESTING:
