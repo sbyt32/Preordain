@@ -75,6 +75,7 @@ Written documentation is a WIP. Location is currently [here](docs/api_functions.
 
 
 ## Images (of V2)
+![CardData](https://github.com/sbyt32/Preordain/assets/73682114/d8171d3c-2a56-4af6-b49f-6fb097a3eeab)
 
 ## Images (of V1)
 
