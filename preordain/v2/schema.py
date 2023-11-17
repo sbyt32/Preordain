@@ -46,6 +46,8 @@ class CardMetadataTable(PreordainBase):
         ForeignKey("card_key_index.scryfall_uri"), primary_key=True, index=True
     )
     card_name: Mapped[str] = mapped_column(default=None)
+    card_rarity: Mapped[str] = mapped_column()
+    card_typeline: Mapped[str] = mapped_column()
     set_code: Mapped[str] = mapped_column(
         ForeignKey("card_metadata.sets.set_code"), default=None
     )
@@ -74,10 +76,6 @@ class PriceTable(PreordainBase):
     tix: Mapped[float] = mapped_column(FLOAT(2))
 
     card: Mapped["CardIndex"] = relationship(back_populates="prices")
-
-    # def __repr__(self) -> str:
-    #     return f"<PriceTable ('{self.date}', '{self.usd}', '{self.usd_foil}', '{self.usd_etch}', '{self.euro}', '{self.euro_foil}', '{self.tix}')>"
-    # return super().__repr__()
 
 
 class SetTable(PreordainBase):
@@ -164,3 +162,35 @@ class CardFormatTable(PreordainBase):
         )
     )
     legality: Mapped["CardIndex"] = relationship(back_populates="legality")
+
+
+class EventInfoMetadata(PreordainBase):
+    __tablename__ = "metadata"
+    __table_args__ = {"schema": "event_info"}
+
+    event_uri: Mapped[str] = mapped_column(primary_key=True, nullable=False, index=True)
+    event_name: Mapped[str] = mapped_column(nullable=False)
+    event_date: Mapped[datetime.date] = mapped_column(nullable=False)
+    event_type: Mapped[str] = mapped_column(nullable=False)
+    event_format: Mapped[str] = mapped_column(nullable=False)
+
+
+class EventInfoDeckListMetadata(PreordainBase):
+    __tablename__ = "deck_list_metadata"
+    __table_args__ = {"schema": "event_info"}
+
+    event_uri: Mapped[str] = mapped_column(primary_key=True, nullable=False, index=True)
+    deck_id: Mapped[str] = mapped_column(nullable=False)
+    deck_name: Mapped[str] = mapped_column(nullable=False)
+    deck_player: Mapped[str] = mapped_column(default="Unknown")
+
+
+class EventInfoDeckList(PreordainBase):
+    __tablename__ = "deck_list"
+    __table_args__ = {"schema": "event_info"}
+
+    deck_id: Mapped[str] = mapped_column(nullable=False)
+    quantity: Mapped[int] = mapped_column(nullable=False)
+    scryfall_uri: Mapped[str] = mapped_column(nullable=False)
+    mainboard: Mapped[bool] = mapped_column(default=True, nullable=False)
+    companion: Mapped[bool] = mapped_column(default=False, nullable=False)

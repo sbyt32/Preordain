@@ -1,5 +1,4 @@
 <script lang="ts">
-    // IDK why this is giving an error
     import * as d3 from "d3"
     import * as Plot from '@observablehq/plot'
     import type { PriceResponse } from "$lib/responses";
@@ -7,8 +6,6 @@
     let div: HTMLSpanElement;
     let parsedChartData:ChartPrice[] = []
 
-    // $: pageWindowX = 0
-    // $: pageWindowY = 0
 
     interface ChartPrice {
         Date: Date
@@ -26,7 +23,7 @@
     })
 
     const chartVisual = Plot.plot({
-        width: 1800,
+        width: 1480,
 
         // margin: 32,
 

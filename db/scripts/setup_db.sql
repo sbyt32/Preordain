@@ -31,6 +31,8 @@ CREATE SCHEMA card_metadata;
 CREATE TABLE card_metadata.metadata (
     scryfall_uri text NOT NULL PRIMARY KEY,
     card_name text NOT NULL,
+    card_rarity text NOT NULL,
+    card_typeline text NOT NULL,
     set_code text NOT NULL,
     collector_number text,
     mana_cost text,
@@ -116,7 +118,8 @@ CREATE TABLE event_info.metadata (
 CREATE TABLE event_info.deck_list_metadata (
     event_uri text NOT NULL PRIMARY KEY,
     deck_id   text NOT NULL,
-    deck_name text NOT NULL
+    deck_name text NOT NULL,
+    deck_player text DEFAULT 'unknown'
 );
 
 CREATE TABLE event_info.deck_list (

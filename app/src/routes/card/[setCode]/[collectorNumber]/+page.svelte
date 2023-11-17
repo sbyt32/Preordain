@@ -27,8 +27,11 @@
         <!-- <img src="{data.image}" alt=""> -->
     <CardMetadataDisplayer imgURL={data.image} cardData={data.card}/>
 
-    <div>
+    <div class="outline outline-1 shadow-2xl px-5 pt-3 pb-2 rounded-md flex">
         <PlotPriceGraph data={data.price}/>
+        <div class="w-96 rounded-md px-5 pt-3 pb-2">
+            asd
+        </div>
     </div>
 
     <table class="table-auto w-full">

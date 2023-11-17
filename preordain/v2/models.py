@@ -1,4 +1,4 @@
-from pydantic import field_validator, ConfigDict, BaseModel, validator
+from pydantic import field_validator, ConfigDict, BaseModel
 import datetime
 from typing import Optional
 
@@ -21,7 +21,8 @@ class PreordainResponse(BaseModel):
     # Makes sure that either info or data is returned.
     # TODO[pydantic]: We couldn't refactor the `validator`, please replace it by `field_validator` manually.
     # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-validators for more information.
-    @validator("info")
+    @field_validator("info")
+    @classmethod
     def check_for_info_or_data(cls, v, values):
         if v is None and values.get("data") is None:
             raise ValueError("must return either values and/or info")
