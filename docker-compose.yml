@@ -30,7 +30,6 @@ services:
     volumes:
       - ./db/scripts:/docker-entrypoint-initdb.d # run scripts on startup (BIND MOUNT)
 
-
       # Database data persistence
 
       # persist data in /db/data folder (BIND MOUNT)
@@ -72,3 +71,13 @@ services:
       - ${API_PORT:-8000}:8000 # expose port to host (0.0.0.0:80)
     depends_on:
       - db # will not start until db is live
+
+  app:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    ports:
+      - 5173:3000
+    depends_on:
+      - db
+      - api

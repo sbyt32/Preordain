@@ -51,8 +51,8 @@ V1_DASHBOARD = "preordain/v1/static/preordain/dist"
 FOLDER_PATH = "./preordain/v1/images/{type}/{set}/"
 
 # V2
-IMG_FOLDER_PATH_V2 = "./preordain/v2/images/files/{scryfall_uri}"
-V2_DASHBOARD = "preordain/v2/static/preordain/dist"
+IMG_FOLDER_PATH_V2 = "preordain/v2/images/files/{scryfall_uri}"
+V2_DASHBOARD = "./app/dist/"
 
 if TESTING:
     DB_NAME = Secret("test_" + str(DB_NAME))
@@ -60,37 +60,35 @@ if TESTING:
         "description"
     ] = "Environment for testing. This should be enabled if you are running tests or are needing the testing database. "
 
-if DASHBOARD:
-    # if os.path.exists(V1_DASHBOARD):
-    #     API_CONFIG[
-    #         "description"
-    #     ] += "Dashboard Enabled, the dashboard should be available on the /dash part."
-    #     API_CONFIG["routes"].append(
-    #         Mount(
-    #             "/v1/dash",
-    #             app=StaticFiles(directory="preordain/v1/static/preordain/dist", html=True),
-    #             name="dashboard",
-    #         )
-    #     )
-    # else:
-    #     log.warning("Dashboard failed to load! It is not built, please run npm run dev")
-    # API_CONFIG["description"] += "Dashboard Enabled but not build!"
+# if DASHBOARD:
+# if os.path.exists(V1_DASHBOARD):
+#     API_CONFIG[
+#         "description"
+#     ] += "Dashboard Enabled, the dashboard should be available on the /dash part."
+#     API_CONFIG["routes"].append(
+#         Mount(
+#             "/v1/dash",
+#             app=StaticFiles(directory="preordain/v1/static/preordain/dist", html=True),
+#             name="dashboard",
+#         )
+#     )
+# else:
+#     log.warning("Dashboard failed to load! It is not built, please run npm run dev")
+# API_CONFIG["description"] += "Dashboard Enabled but not build!"
 
-    # TODO: This should build the static files, which will then serve right after.
-    if not os.path.exists(V2_DASHBOARD):
-        log.warning("Dashboard failed to load! Building right now...")
-        subprocess.Popen(
-            "npm run dev --prefix preordain/v2/static/preordain/", shell=True
-        )
-
-    # API_CONFIG[
-    #     "description"
-    # ] += "Dashboard Enabled, the dashboard should be available on the /dash part."
-    # API_CONFIG["routes"].append(
-    #     Mount(
-    #         "/v2/dash",
-    #         app=StaticFiles(directory="preordain/v2/static/preordain/dist/", html=True),
-    #         name="dashboard",
-    #     )
-    # )
-    # subprocess.Popen(["npm", "run", "dev", "--prefix", "preordain/v2/static/preordain/"], shell=True)
+# TODO: This should build the static files, which will then serve right after.
+# if not os.path.exists(V2_DASHBOARD):
+#     log.warning("Dashboard failed to load! Building right now...")
+#     subprocess.Popen("npm run dev --prefix ./app", shell=True)
+# --prefix preordain/v2/static/preordain/
+# API_CONFIG[
+#     "description"
+# ] += "Dashboard Enabled, the dashboard should be available on the /dash part."
+# API_CONFIG["routes"].append(
+#     Mount(
+#         "/v2/dash",
+#         app=StaticFiles(directory="preordain/v2/static/preordain/dist/", html=True),
+#         name="dashboard",
+#     )
+# )
+# subprocess.Popen(["npm", "run", "dev", "--prefix", "preordain/v2/static/preordain/"], shell=True)

@@ -1,51 +1,59 @@
 # MTG Price Fetcher
-> A simple price and sale fetcher for Magic: The Gathering, powered via Scryfall and TCGPlayer's API and written in Python.
+> A simple price and sale fetcher for Magic: The Gathering, powered via Scryfall and TCGPlayer's API and written in Python. Front-end written using SvelteKit
 
 
-
-
-Start the API with...
+You can use the docker-compose file to deploy the project. However, there will not be any data in the project so your mileage may vary.
+<!-- Start the API with...
 ```
     pip install -r requirements-base.txt
     hypercorn preordain.main:app
-```
+``` -->
 Written documentation is a WIP. Location is currently [here](docs/api_functions.md). More functions will be added and documented over time.
-
-
-Check out the dashboard @ localhost:8000/docs
-
-
 
 ------------
 
 
 - [MTG Price Fetcher](#mtg-price-fetcher)
   - [Features](#features)
-  - [**To Do:**](#to-do)
+  - [To Do:](#to-do)
   - [Libraries](#libraries)
+    - [**Minimum Python Version is: 3.10**](#minimum-python-version-is-310)
     - [Base](#base)
     - [Dev](#dev)
+  - [Images (of V2)](#images-of-v2)
+  - [Images (of V1)](#images-of-v1)
+    - [Home](#home)
+    - [Groups](#groups)
+    - [Search](#search)
 
 ## Features
 *This list is non-exhaustive.*
-- API
-  - Organize and track personal inventory
-    - Compare current price vs purchase price.
-    - Add, delete, and clear current inventory.
-  - Fetch fresh price data (provided from Scryfall)
-    - See individual card prices
-      - USD, Euro, and Tix, including Day over Day changes
-    - Examine Top gains / losses over USD / Euro / Tix
-  - View and catagorize various cards as different groups
-- Scraper
-  - Automatically scrape Scryfall price data and TCGPlayer sale data
 
-## **To Do:**
+🟩 indicates a feature fully implemented in both **V1** and **V2**.
+
+🟨 indicates a feature partially implemented, missing some features or characteristics of **V1**.
+
+🟥 indicates a feature not implemented into **V2** that was either fully implemented in **V1** or is new as of **V2**
+
+- API
+  - Organize and track personal inventory 🟥
+    - Compare current price vs purchase price. 🟥
+    - Add, delete, and clear current inventory. 🟥
+  - Fetch fresh price data (provided from Scryfall) 🟨
+    - See individual card prices 🟨
+      - USD, Euro, and Tix, including Day over Day changes 🟨
+    - Examine Top gains / losses over USD / Euro / Tix 🟥
+  - View and catagorize various cards as different groups 🟥
+- Scraper 🟥
+  - Automatically scrape Scryfall price data and TCGPlayer sale data 🟥
+
+## To Do:
 
   Just check [here](https://github.com/sbyt32/mtg_price_fetcher/discussions/22)
 
 
 ## Libraries
+  ### **Minimum Python Version is: 3.10**
   ### Base
     arrow
     hypercorn
@@ -55,6 +63,8 @@ Check out the dashboard @ localhost:8000/docs
     requests
     httpx
     python-dotenv
+    sqlalchemy
+    cachetools
   ### Dev
     flake8
     black
@@ -64,7 +74,10 @@ Check out the dashboard @ localhost:8000/docs
     pip-tools
 
 
-## Images
+## Images (of V2)
+![CardData](https://github.com/sbyt32/Preordain/assets/73682114/d8171d3c-2a56-4af6-b49f-6fb097a3eeab)
+
+## Images (of V1)
 
 ### Home
 ![home](https://user-images.githubusercontent.com/73682114/227756059-f62f8074-2d80-4c19-b68f-f7df6fc6914b.png)

@@ -9,3 +9,4 @@ python-dotenv
 cachetools
 beautifulsoup4
 sqlalchemy
+sqlalchemy-utils
